@@ -1,0 +1,362 @@
+{
+ "corpus": {
+  "log_date": "2026-09-15",
+  "span_utc": [
+   "2026-09-15T12:00:00.000Z",
+   "2026-09-15T16:00:00.000Z"
+  ],
+  "hosts": 20,
+  "seed": 20260915,
+  "generator": "tools/gen_logs.py"
+ },
+ "incident": {
+  "primary_host": "host-07",
+  "downstream_hosts": [
+   "host-03",
+   "host-11",
+   "host-16"
+  ],
+  "signatures": [
+   "ERR_CONN_POOL_EXHAUSTED",
+   "ERR_UPSTREAM_TIMEOUT"
+  ],
+  "summary": "db-primary connection pool exhaustion on host-07 cascaded to 5xx on downstream hosts host-03, host-11, host-16 within ~9-21 s",
+  "window_utc": {
+   "start": "2026-09-15T14:02:12.978Z",
+   "end": "2026-09-15T14:06:14.194Z"
+  }
+ },
+ "hosts": {
+  "host-01": {
+   "affected": false,
+   "services": [
+    "api-gateway"
+   ],
+   "files": [
+    "logs/host-01/api-gateway.log"
+   ],
+   "role": "clean"
+  },
+  "host-02": {
+   "affected": false,
+   "services": [
+    "api-gateway",
+    "auth"
+   ],
+   "files": [
+    "logs/host-02/api-gateway.log",
+    "logs/host-02/auth.log"
+   ],
+   "role": "clean",
+   "note": "WARN rate_limit flurry 13:57-14:01, no 5xx"
+  },
+  "host-03": {
+   "affected": true,
+   "services": [
+    "api-gateway",
+    "auth"
+   ],
+   "files": [
+    "logs/host-03/api-gateway.log",
+    "logs/host-03/auth.log"
+   ],
+   "role": "downstream",
+   "window_utc": {
+    "start": "2026-09-15T14:02:21.978Z",
+    "end": "2026-09-15T14:06:31.845Z"
+   },
+   "signatures": [
+    "ERR_UPSTREAM_TIMEOUT"
+   ],
+   "first_occurrence": {
+    "file": "logs/host-03/api-gateway.log",
+    "line": 1730,
+    "timestamp": "2026-09-15T14:02:21.978Z"
+   },
+   "evidence": [
+    {
+     "file": "logs/host-03/api-gateway.log",
+     "first_line": 1730,
+     "last_line": 1933
+    },
+    {
+     "file": "logs/host-03/auth.log",
+     "first_line": 1277,
+     "last_line": 1465
+    }
+   ]
+  },
+  "host-04": {
+   "affected": false,
+   "services": [
+    "orders",
+    "billing"
+   ],
+   "files": [
+    "logs/host-04/orders.log",
+    "logs/host-04/billing.log"
+   ],
+   "role": "clean"
+  },
+  "host-05": {
+   "affected": false,
+   "services": [
+    "cache",
+    "worker"
+   ],
+   "files": [
+    "logs/host-05/cache.log",
+    "logs/host-05/worker.log"
+   ],
+   "role": "clean",
+   "note": "four isolated ERR_DISK_LATENCY ~13:31-13:33"
+  },
+  "host-06": {
+   "affected": false,
+   "services": [
+    "payments"
+   ],
+   "files": [
+    "logs/host-06/payments.log"
+   ],
+   "role": "clean"
+  },
+  "host-07": {
+   "affected": true,
+   "services": [
+    "db-primary",
+    "db-metrics"
+   ],
+   "files": [
+    "logs/host-07/db-primary.log",
+    "logs/host-07/db-metrics.log"
+   ],
+   "role": "primary",
+   "window_utc": {
+    "start": "2026-09-15T14:02:12.978Z",
+    "end": "2026-09-15T14:06:14.194Z"
+   },
+   "signatures": [
+    "ERR_CONN_POOL_EXHAUSTED"
+   ],
+   "first_occurrence": {
+    "file": "logs/host-07/db-primary.log",
+    "line": 2232,
+    "timestamp": "2026-09-15T14:02:12.978Z"
+   },
+   "evidence": [
+    {
+     "file": "logs/host-07/db-primary.log",
+     "first_line": 2191,
+     "last_line": 2445
+    },
+    {
+     "file": "logs/host-07/db-metrics.log",
+     "first_line": 1146,
+     "last_line": 1224
+    }
+   ]
+  },
+  "host-08": {
+   "affected": false,
+   "services": [
+    "catalog",
+    "search"
+   ],
+   "files": [
+    "logs/host-08/catalog.log",
+    "logs/host-08/search.log"
+   ],
+   "role": "clean"
+  },
+  "host-09": {
+   "affected": false,
+   "services": [
+    "notifier",
+    "worker"
+   ],
+   "files": [
+    "logs/host-09/notifier.log",
+    "logs/host-09/worker.log"
+   ],
+   "role": "clean",
+   "note": "three ERR_RETRY_EXCEEDED ~12:47"
+  },
+  "host-10": {
+   "affected": false,
+   "services": [
+    "api-gateway"
+   ],
+   "files": [
+    "logs/host-10/api-gateway.log"
+   ],
+   "role": "clean"
+  },
+  "host-11": {
+   "affected": true,
+   "services": [
+    "orders",
+    "payments"
+   ],
+   "files": [
+    "logs/host-11/orders.log",
+    "logs/host-11/payments.log"
+   ],
+   "role": "downstream",
+   "window_utc": {
+    "start": "2026-09-15T14:02:33.978Z",
+    "end": "2026-09-15T14:06:20.783Z"
+   },
+   "signatures": [
+    "ERR_UPSTREAM_TIMEOUT"
+   ],
+   "first_occurrence": {
+    "file": "logs/host-11/orders.log",
+    "line": 1657,
+    "timestamp": "2026-09-15T14:02:33.978Z"
+   },
+   "evidence": [
+    {
+     "file": "logs/host-11/orders.log",
+     "first_line": 1657,
+     "last_line": 1835
+    },
+    {
+     "file": "logs/host-11/payments.log",
+     "first_line": 1135,
+     "last_line": 1308
+    }
+   ]
+  },
+  "host-12": {
+   "affected": false,
+   "services": [
+    "billing",
+    "worker"
+   ],
+   "files": [
+    "logs/host-12/billing.log",
+    "logs/host-12/worker.log"
+   ],
+   "role": "clean"
+  },
+  "host-13": {
+   "affected": false,
+   "services": [
+    "cache"
+   ],
+   "files": [
+    "logs/host-13/cache.log"
+   ],
+   "role": "clean"
+  },
+  "host-14": {
+   "affected": false,
+   "services": [
+    "auth",
+    "api-gateway"
+   ],
+   "files": [
+    "logs/host-14/auth.log",
+    "logs/host-14/api-gateway.log"
+   ],
+   "role": "clean",
+   "note": "two ERR_TLS blips inside the incident window"
+  },
+  "host-15": {
+   "affected": false,
+   "services": [
+    "worker"
+   ],
+   "files": [
+    "logs/host-15/worker.log"
+   ],
+   "role": "clean"
+  },
+  "host-16": {
+   "affected": true,
+   "services": [
+    "search",
+    "recommendations"
+   ],
+   "files": [
+    "logs/host-16/search.log",
+    "logs/host-16/recommendations.log"
+   ],
+   "role": "downstream",
+   "window_utc": {
+    "start": "2026-09-15T14:02:26.978Z",
+    "end": "2026-09-15T14:06:24.430Z"
+   },
+   "signatures": [
+    "ERR_UPSTREAM_TIMEOUT"
+   ],
+   "first_occurrence": {
+    "file": "logs/host-16/recommendations.log",
+    "line": 939,
+    "timestamp": "2026-09-15T14:02:29.178Z"
+   },
+   "evidence": [
+    {
+     "file": "logs/host-16/search.log",
+     "first_line": 2250,
+     "last_line": 2445
+    },
+    {
+     "file": "logs/host-16/recommendations.log",
+     "first_line": 938,
+     "last_line": 1090
+    }
+   ]
+  },
+  "host-17": {
+   "affected": false,
+   "services": [
+    "notifier"
+   ],
+   "files": [
+    "logs/host-17/notifier.log"
+   ],
+   "role": "clean"
+  },
+  "host-18": {
+   "affected": false,
+   "services": [
+    "catalog",
+    "billing"
+   ],
+   "files": [
+    "logs/host-18/catalog.log",
+    "logs/host-18/billing.log"
+   ],
+   "role": "clean",
+   "note": "WARN/429 rate-limit burst ~14:21-14:26"
+  },
+  "host-19": {
+   "affected": false,
+   "services": [
+    "worker",
+    "queue"
+   ],
+   "files": [
+    "logs/host-19/worker.log",
+    "logs/host-19/queue.log"
+   ],
+   "role": "clean",
+   "note": "queue depth WARNs 13:45-14:10, no errors"
+  },
+  "host-20": {
+   "affected": false,
+   "services": [
+    "api-gateway",
+    "notifier"
+   ],
+   "files": [
+    "logs/host-20/api-gateway.log",
+    "logs/host-20/notifier.log"
+   ],
+   "role": "clean",
+   "note": "three scattered partner-payments 502s straddling the window; different upstream and signature"
+  }
+ }
+}

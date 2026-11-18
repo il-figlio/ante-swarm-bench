@@ -1,0 +1,1 @@
+app.log mixes INFO, WARN and ERROR lines from several services. Make triage.py write errors.json: an object mapping each service name to the number of ERROR lines it logged, services in alphabetical order, services with no errors left out. Run it so errors.json exists.

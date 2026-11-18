@@ -1,0 +1,14 @@
+{"t":"10:00:01","cell":"brain","action":"start","secs":0,"result":"ok","notes":"harness=pi mode=local n=3 model=claude-sonnet-4-6"}
+{"t":"10:00:19","cell":"b01/i01","action":"spawn","secs":0,"result":"ok","notes":"task b01-01"}
+{"t":"10:00:20","cell":"b01/i01","action":"ship base repo","secs":19,"result":"ok"}
+{"t":"10:00:21","cell":"b01/i02","action":"spawn","secs":0,"result":"ok","notes":"task b01-02"}
+{"t":"10:00:22","cell":"b01/i02","action":"ship base repo","secs":21,"result":"ok"}
+{"t":"10:00:30","cell":"b02/i01","action":"spawn","secs":0,"result":"ok","notes":"task b02-01"}
+{"t":"10:00:31","cell":"b02/i01","action":"ship base repo","secs":30,"result":"ok"}
+{"t":"10:05:00","cell":"b01/i02","action":"heartbeat","secs":278,"result":"ok"}
+{"t":"10:14:03","cell":"b01/i01","action":"ante task b01-01","secs":823,"result":"ok"}
+{"t":"10:15:40","cell":"b01/i02","action":"ante task b01-02","secs":918,"result":"FAIL","notes":"ante exited 1"}
+{"t":"10:15:41","cell":"b01/i02","action":"requeue","secs":0,"result":"FAIL","notes":"no cells left"}
+{"t":"10:17:00","cell":"b03/i01","action":"spawn error","secs":2,"result":"FAIL","notes":"image pull failed"}
+{"t":"10:18:00","cell":"b02/i01","action":"kill","secs":0,"result":"ok","notes":"cleanup sweep"}
+{"t":"10:16:00","cell":"brain","action":"total","secs":960,"result":"ok","notes":"3 tasks, 2 finished"}

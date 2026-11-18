@@ -1,0 +1,9 @@
+[task]
+id = "cli-validate"
+allowed_changes = ["temp.py"]
+
+[agent]
+timeout_sec = 120
+
+[metadata]
+tags = ["python", "cli"]

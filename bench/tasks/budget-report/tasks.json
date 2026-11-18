@@ -1,0 +1,52 @@
+[
+ {
+  "id": "b01",
+  "persona": "E",
+  "title": "Weekly spend breakdown per key and team",
+  "prompt": "The Friday spend report. report.py is half-finished — `python3 report.py keys` runs, but it reads every export under data/ (there are two weeks in there; I only report on the current week, 2026-10-05 through 2026-10-11) and it silently drops calls that carry no cost_usd instead of rating them from prices.json. Add a `spend` command: `python3 report.py spend` writes spend.csv in the repo root for the current week only, with this exact shape:\n\nscope,name,team,calls,tokens_in,tokens_out,spend_usd\nkey,vk-eng-alice,eng,…\n\nOne `key` row per key in caps.json, alphabetical by key — including keys that made no calls this week (zero counts, 0.00 spend) — then one `team` row per team, alphabetical (name and team columns both carry the team name), then a final `total,all,all,…` row. calls and token columns are integers; spend_usd is a plain decimal with exactly two places. Effective cost of a call is cost_usd when present, otherwise tokens rated at the per-million prices in prices.json. Verify with `python3 -m unittest tests.check_b01 -q`.",
+  "check": "tests.check_b01",
+  "expect_files": ["report.py", "spend.csv"],
+  "budget_s": 360,
+  "tags": ["python", "reporting", "cost"]
+ },
+ {
+  "id": "b02",
+  "persona": "E",
+  "title": "Flag keys over their weekly cap",
+  "prompt": "Same data, different cut — I need the over-cap list for the Friday note. caps.json gives each virtual key a weekly_cap_usd. Add `python3 report.py caps` which writes over-cap.csv in the repo root for the current week (2026-10-05 through 2026-10-11), exactly this shape:\n\nkey,team,spend_usd,cap_usd,overage_usd\n\nOne row per key whose week's spend exceeds its cap, sorted alphabetically by key; amounts with two decimals; overage_usd is spend minus cap. Keys at or under cap don't appear. Same cost rule as the rest of report.py: cost_usd when the record carries it, otherwise priced from prices.json. Verify with `python3 -m unittest tests.check_b02 -q`.",
+  "check": "tests.check_b02",
+  "expect_files": ["report.py", "over-cap.csv"],
+  "budget_s": 300,
+  "tags": ["python", "reporting", "cost"]
+ },
+ {
+  "id": "b03",
+  "persona": "E",
+  "title": "Draft the Friday cost update",
+  "prompt": "Draft friday-update.md — the cost note I post to the team channel each Friday, covering the week of 2026-10-05 → 2026-10-11 (usage exports under data/, caps in caps.json; calls without cost_usd are priced from prices.json). Structure: a `#` title line, then these `##` sections in this order:\n\n## Total spend\n## By team\n## Over cap\n## Week over week\n\nTotal spend: the week's total versus the sum of all weekly caps. By team: each team's spend against its combined cap. Over cap: the keys that breached their weekly cap — key, spend, cap, overage. Week over week: this week's total against last week (2026-09-28 → 2026-10-04) and the change. Write dollar amounts with a leading `$`; every figure must come from the data — I quote this message upward, so no invented or ballpark numbers. Verify with `python3 -m unittest tests.check_b03 -q`.",
+  "check": "tests.check_b03",
+  "expect_files": ["friday-update.md"],
+  "budget_s": 360,
+  "tags": ["markdown", "reporting", "cost"]
+ },
+ {
+  "id": "b04",
+  "persona": "E",
+  "title": "Top-3 most expensive calls",
+  "prompt": "Leadership keeps asking where the big bills come from. Add `python3 report.py top` writing top-calls.csv in the repo root — the 3 most expensive individual calls in the current week (2026-10-05 → 2026-10-11) by effective cost (cost_usd when present, otherwise priced from prices.json), exactly this shape:\n\nrank,key,team,model,ts,cost_usd,tokens_in,tokens_out\n\nrank 1..3 in descending cost order; cost_usd with two decimals; key/team/model/ts exactly as logged in the export. Verify with `python3 -m unittest tests.check_b04 -q`.",
+  "check": "tests.check_b04",
+  "expect_files": ["report.py", "top-calls.csv"],
+  "budget_s": 300,
+  "tags": ["python", "reporting", "cost"]
+ },
+ {
+  "id": "b05",
+  "persona": "E",
+  "title": "Project October month-end spend",
+  "prompt": "Rough month-end forecast for the same report. Add `python3 report.py project` which writes projection.txt in the repo root — exactly two lines, nothing else:\n\ndaily_rate_usd=NN.NN\nprojected_october_usd=NN.NN\n\ndaily_rate_usd is the current week's total spend (2026-10-05 → 2026-10-11) divided by 7; projected_october_usd is that daily rate times 31 (October's length) — compute from the unrounded rate and round only for display, two decimals each. Verify with `python3 -m unittest tests.check_b05 -q`.",
+  "check": "tests.check_b05",
+  "expect_files": ["report.py", "projection.txt"],
+  "budget_s": 300,
+  "tags": ["python", "reporting", "cost"]
+ }
+]

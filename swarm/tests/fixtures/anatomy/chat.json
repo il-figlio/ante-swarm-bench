@@ -1,0 +1,8 @@
+{"model": "m-1", "stream": true, "max_completion_tokens": 4096, "reasoning_effort": "medium",
+ "messages": [
+  {"role": "system", "content": "You are an agent. Today is 2026-11-12, cwd /tmp/swarm/c001-claude-n1-s001/work."},
+  {"role": "user", "content": "Write ok to out.txt.\n"},
+  {"role": "assistant", "content": "ok"},
+  {"role": "user", "content": [{"type": "text", "text": "continue"}]}
+ ],
+ "tools": [{"type": "function", "function": {"name": "bash", "description": "Run.", "parameters": {"type": "object"}}}]}

@@ -1,0 +1,9 @@
+[task]
+id = "triage-20"
+allowed_changes = ["answer.json"]
+
+[agent]
+timeout_sec = 180
+
+[metadata]
+tags = ["tier0", "ops", "context"]

@@ -1,0 +1,62 @@
+[
+ {
+  "id": "m01",
+  "persona": "A",
+  "title": "Port .claude/settings.json to .ante/settings.json",
+  "prompt": "I'm moving this repo off my current agent setup onto a new one that reads project settings from `.ante/settings.json`. My old config is `.claude/settings.json` — model, a permissions block with allow/ask/deny rule lists, and env vars. Write the equivalent `.ante/settings.json`: keep `\"model\": \"claude-sonnet-4-6\"`, add `\"effort\": \"high\"`, set `\"permission_mode\": \"strict\"` (I want to be asked before anything not on the allow list), carry the permission rule lists over verbatim under a `\"permissions\"` object with `\"allow\"`, `\"ask\"` and `\"deny\"` arrays (same `Bash(...)`/`Read(...)` rule strings), and keep both env vars under an `\"env\"` object. Leave out Claude-only keys like `includeCoAuthoredBy` and `$schema`. Note `.codex/config.toml` uses a different model on purpose — don't take anything from it. Verify with `python3 -m unittest tests.check_m01 -q`.",
+  "check": "tests.check_m01",
+  "expect_files": [".ante/settings.json"],
+  "budget_s": 300,
+  "tags": ["python", "migration", "config"]
+ },
+ {
+  "id": "m02",
+  "persona": "A",
+  "title": "Port /digest to a skill",
+  "prompt": "Same migration — now my custom commands. They live in `.claude/commands/`; in the new setup each becomes a skill at `.ante/skills/<name>/SKILL.md`: markdown whose `---` frontmatter must include `name` and `description`, and may keep `argument-hint` and `allowed-tools` (other command-file keys aren't supported, drop them). Port `.claude/commands/digest.md` to `.ante/skills/digest/SKILL.md`. The body should still say to run `python3 scripts/weekly_digest.py` forwarding my invocation arguments via `$ARGUMENTS`, then shape the output into a standup update (blockers first, one line per theme, under 10 lines). The old file uses the `!`...`` inline-execution syntax — that's command-file only; write the run as an instruction instead. Keep the `argument-hint` and the `allowed-tools` restriction. Verify with `python3 -m unittest tests.check_m02 -q`.",
+  "check": "tests.check_m02",
+  "expect_files": [".ante/skills/digest/SKILL.md"],
+  "budget_s": 240,
+  "tags": ["python", "migration", "skills"]
+ },
+ {
+  "id": "m03",
+  "persona": "A",
+  "title": "Port /label-pr to a skill",
+  "prompt": "Port `.claude/commands/label-pr.md` to a skill at `.ante/skills/label-pr/SKILL.md` — same rules as the other ports: `---` frontmatter with `name` and `description`, keep `argument-hint` and `allowed-tools`, drop keys the skill format doesn't support. The body still runs `python3 scripts/label_pr.py` with `$ARGUMENTS` forwarded, prints the suggested labels with a one-sentence reason each, and keeps the `needs-triage` fallback (say so plainly and ask which label to use). The command pinned `model: claude-haiku-4-5` — skill frontmatter has no model field, so note the cheap-model preference in the body instead. And don't carry over the `!`...`` execution syntax. Verify with `python3 -m unittest tests.check_m03 -q`.",
+  "check": "tests.check_m03",
+  "expect_files": [".ante/skills/label-pr/SKILL.md"],
+  "budget_s": 240,
+  "tags": ["python", "migration", "skills"]
+ },
+ {
+  "id": "m04",
+  "persona": "A",
+  "title": "Port /changelog to a skill",
+  "prompt": "Port `.claude/commands/changelog.md` to `.ante/skills/changelog/SKILL.md`. Same skill format as before: frontmatter needs `name` and `description`, keep `argument-hint` and `allowed-tools` (both script rules stay), drop unsupported keys. Body contract: run `python3 scripts/bump_changelog.py` forwarding my args with `$ARGUMENTS`, then show `git diff CHANGELOG.md`, and keep the rule that CHANGELOG.md is only ever written by the script — never hand-edited. Write the run as an instruction, not the `!`...`` syntax. Verify with `python3 -m unittest tests.check_m04 -q`.",
+  "check": "tests.check_m04",
+  "expect_files": [".ante/skills/changelog/SKILL.md"],
+  "budget_s": 240,
+  "tags": ["python", "migration", "skills"]
+ },
+ {
+  "id": "m05",
+  "persona": "A",
+  "title": "Carry over the shell-env exclusions",
+  "prompt": "One Codex behaviour I want to keep in the new setup: `.codex/config.toml` has a `shell_environment_policy` that excludes `AWS_*` and `PROD_*` so those vars can't leak into the agent's shell. The new settings format supports an `\"env_exclude\"` array of shell patterns for exactly this. Add it to `.ante/settings.json` (create the file if it doesn't exist yet) with both patterns, and set `\"permission_mode\": \"strict\"` while you're in there. Verify with `python3 -m unittest tests.check_m05 -q`.",
+  "check": "tests.check_m05",
+  "expect_files": [".ante/settings.json"],
+  "budget_s": 240,
+  "tags": ["python", "migration", "config"]
+ },
+ {
+  "id": "m06",
+  "persona": "A",
+  "title": "Merge conventions into AGENTS.md",
+  "prompt": "Last piece of the migration: the new setup reads `AGENTS.md` for project conventions, but mine is still the thin Codex version and the real rules live in `CLAUDE.md`. Rewrite `AGENTS.md` so it stands alone: keep the repo overview, and make sure it covers — tests run with `make check`; style is 4-space indents, single quotes, stdlib only; `CHANGELOG.md` is generated by `scripts/bump_changelog.py` and `scripts/` + `tests/` are hands-off unless asked; commit subjects are `area: change`, lowercase, 72 chars max, no Co-Authored-By trailers; notes live in `.devpulse/`. Add a short section pointing at the three skills under `.ante/skills/` (digest, label-pr, changelog). Drop anything that only makes sense for the old tools — no mentions of them in the file. Verify with `python3 -m unittest tests.check_m06 -q`.",
+  "check": "tests.check_m06",
+  "expect_files": ["AGENTS.md"],
+  "budget_s": 300,
+  "tags": ["python", "migration", "docs"]
+ }
+]

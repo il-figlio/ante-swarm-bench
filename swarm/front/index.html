@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark" />
+<meta name="description" content="Coding-agent harnesses, the same task, one small machine each. Work tasks are checked jobs. Harness packs replay a fixed script and measure what the runtime costs." />
+<title>Swarm riders</title>
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <span class="mark">swarms</span>
+    <span class="dim" id="notice">scripted model · no tokens spent</span>
+  </header>
+
+  <h1>Same task, one machine per harness. <span>Work tasks are checked jobs. Harness packs replay a fixed script and measure what the runtime costs.</span></h1>
+
+  <div class="panel" role="group" aria-label="Launch">
+    <div class="row">
+      <span class="lbl">harnesses</span>
+      <div class="chips" id="chips"></div>
+      <button type="button" class="link" id="pick-all">all</button>
+    </div>
+    <div class="row">
+      <span class="lbl">task</span>
+      <div class="tasks">
+        <div class="seg" id="seg-work" aria-label="Real work"></div>
+        <div class="seg" id="seg-harness" aria-label="Harness tests"></div>
+      </div>
+    </div>
+    <div class="row" id="protocol-row" hidden>
+      <span class="lbl">path</span>
+      <div class="seg" id="seg-protocol" aria-label="Script path"></div>
+    </div>
+    <div class="row">
+      <span class="lbl">agents per VM</span><div class="seg" id="seg-size"></div>
+      <span class="lbl" id="lbl-reps" hidden>repetitions</span><div class="seg" id="seg-reps" aria-label="Repetitions" hidden></div>
+      <span class="lbl">model</span><div class="seg" id="seg-provider" aria-label="Provider"></div>
+      <div class="seg" id="mchoice" hidden><button type="button" id="mtoggle" aria-expanded="false" aria-controls="mpane" aria-label="Choose model and effort"></button></div>
+      <input class="key" id="passkey" type="password" placeholder="operator passkey" autocomplete="off" aria-label="Operator passkey" hidden>
+      <p class="blurb" id="blurb"></p>
+      <p class="note" id="note" role="status" aria-live="polite"></p>
+      <button class="cta" id="run" type="button" disabled>Launch</button>
+    </div>
+    <div class="mpane" id="mpane" role="group" aria-label="Model and effort" hidden></div>
+  </div>
+
+  <section>
+    <div class="sec"><span class="num">1</span><span>Watch it run</span>
+      <span class="legend" title="One square per agent. Setting up is the runner building the agent's sandbox, before the agent exists. Starting is the agent's process running before its first model request. Not run means the runner could not set the agent up, stopped it, or never admitted it: that is not a failure of the harness. Charts: memory all agents hold together and whole-machine CPU, same scale for every harness.">
+        <span><i class="k-wait"></i>waiting</span><span><i class="k-prep"></i>setting up</span><span><i class="k-start"></i>starting</span><span><i class="k-alive"></i>working</span><span><i class="k-check"></i>checking</span><span><i class="k-pass"></i>passed</span><span><i class="k-fail"></i>failed</span><span><i class="k-norun"></i>not run</span>
+      </span>
+      <span class="legend heat-key" title="Each number is shaded against the other harnesses it was compared with (hover a number to see which): blue is the better end, red the worse, middling stays plain. A gap under 10% of the larger number is left plain. Resource numbers are ranked only for harnesses where at least half the agents passed; the others are shown dimmed and take no part. Startup is measured before any work, so every harness with a first request is ranked on it. Wall time is not compared when agents were stopped at the time limit. A metric counts toward &quot;best on&quot; only for a sole best. mini is the floor and is not ranked. After Practical Data (philrenaud/practical-data).">
+        <span><i class="k-good"></i>better</span><span><i class="k-bad"></i>worse</span><span><i class="k-unranked"></i>not ranked</span>
+      </span>
+      <div class="seg reps" id="reps" role="group" aria-label="Repetition shown" hidden></div>
+      <span class="status" id="status">idle</span></div>
+    <div class="lanes" id="lanes"></div>
+  </section>
+
+  <section>
+    <div class="sec"><span class="num">2</span><span>Read the receipt</span></div>
+    <div class="bars" id="bars"></div>
+    <div class="tablewrap"><table id="summary"></table></div>
+    <p class="rule" id="rule"></p>
+    <pre class="console" id="console" aria-label="Live agent log"></pre>
+  </section>
+
+  <section id="first-sec" hidden>
+    <div class="sec"><span class="num">3</span><span>First request</span>
+      <span class="legend" title="The first request each agent sends, as it left the harness. System: the system prompt. Tools: the tool definitions offered. Injected: text the harness added to the user turn. Task prompt: the task itself. Other: the rest of the request body. Tokens are bytes divided by 4, an estimate. mini is the floor: the smallest request, not ranked.">
+        <span><i class="s-system"></i>system</span><span><i class="s-tools"></i>tools</span><span><i class="s-injected"></i>injected</span><span><i class="s-task"></i>task prompt</span><span><i class="s-other"></i>other</span>
+      </span></div>
+    <div class="first" id="first"></div>
+  </section>
+
+  <details class="more">
+    <summary>Method</summary>
+    <p>Each harness runs on its own VM (2 vCPU / 8 GB) and does the task through its own native tools, pinned by version and checksum. The <b>scripted</b> model answers locally, so a run measures what the harness costs, not how well a model codes. An agent passes only if it exits cleanly, changes only allowed files and passes tests it never saw. Every run is sealed and verifiable.</p>
+    <p>Harness packs have two paths on the same files. The naive path is one tool call at a time. One program writes the same files in a single step. A pass on either path is conformance to that script. Before each run, the lane checks that its machine is quiet, then runs mini three times at one agent: the control. Startup, step gap and CPU are printed as a ratio to the lane's own control (×4.2 ctl), because a slower machine scales time. Memory and disk are not scaled. A series repeats the race 6 times; each dot is one repetition, and two harnesses are called tied when the 95% bootstrap interval of their paired difference includes 0. Numbers are shaded only when the best and worst differ by at least 10%, and each lane says which harnesses it was compared with. mini is the floor and stays off the ranking.</p>
+    <p>Memory in use is what all of a lane's agents hold together: the anonymous memory, mapped files and kernel memory of the runner's control group, less the runner's own and what was there before the first agent started. Shared pages count once, so it cannot exceed the machine. Memory per agent is that figure divided by the agents alive, at the moment most were alive. Largest process is the biggest single process of each agent (kernel rusage); a harness of several processes holds more than that. CPU is the whole machine, the runner's own setup and checks included. Disk is what the agent itself wrote to its sandbox between launch and exit; the runner's setup (the task's files, the adapter's config, a prepared home) and the checker's copy are not counted. Startup is launch to first model request, over the agents that made one. Step gap is one reply sent to the next request. Context growth is bytes per step after the first request. Wall is the swarm itself, first launch to last exit, without the plan freeze and verification around it; passed per VM-hour divides by it. That rate is blank when the wave did not fill or agents waited to be admitted.</p>
+    <p>An attempt that never ran, because the runner could not set it up (a full disk, a failed copy), stopped it, or never admitted it for lack of room, is counted as <b>not run</b>, never as a failure of the harness; “half passed” is counted of the attempts that ran. Before each launch the runner checks free disk as well as memory, and holds the launch when there is not room. After every run the machine is reset and checked (sandboxes removed, leftover processes stopped, disk and memory back near idle); a lane that is not clean takes no race.</p>
+    <p>Real models go through a Swarm gateway, run by the operator and labelled. Claude Code runs Claude models, Codex runs OpenAI models; the Claude sign-in route is given only to the Claude Code lane, so other harnesses use Claude through the API.</p>
+  </details>
+  <details class="more">
+    <summary>Recent races</summary>
+    <div class="tablewrap"><table id="races"></table></div>
+  </details>
+
+  <footer>Independent testing, not official benchmarks. ante-swarm-bench · Independent work, not an Antigma release.</footer>
+</main>
+<div class="tip" id="tip" hidden></div>
+<script src="heat.js" defer></script>
+<script src="rank.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>

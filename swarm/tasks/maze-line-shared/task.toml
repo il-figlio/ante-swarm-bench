@@ -1,0 +1,20 @@
+[task]
+id = "maze-line-shared"
+allowed_changes = []
+
+[agent]
+timeout_sec = 3600
+
+[maze]
+cols = 40
+rows = 25
+seed = 2026
+generator = "serpentine"
+loops = 0.0
+start = "corner"
+map = "shared"
+step_limit = 4000
+call_budget = 0
+
+[metadata]
+tags = ["maze"]

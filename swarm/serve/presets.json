@@ -1,0 +1,449 @@
+{
+  "presets": [
+    {
+      "id": "fleet-fix",
+      "title": "Fix a fleet of CLIs",
+      "blurb": "Capacity replay: every agent runs the same scripted patch. A pass means the script finished and the hidden tests matched. It does not say who can fix a CLI.",
+      "tasks": [
+        "../tasks/cli-validate"
+      ],
+      "sizes": [
+        1,
+        8,
+        32,
+        128,
+        256
+      ],
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "kind": "work"
+    },
+    {
+      "id": "nightly-reports",
+      "title": "Nightly reports",
+      "blurb": "Capacity replay: one scripted report per agent, checked against the expected file. A pass is conformance to that script.",
+      "tasks": [
+        "../tasks/csv-totals"
+      ],
+      "sizes": [
+        1,
+        8,
+        32,
+        128,
+        256
+      ],
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "kind": "work"
+    },
+    {
+      "id": "log-triage",
+      "title": "Triage error logs",
+      "blurb": "Capacity replay: the script reads one log and writes the known counts. A pass is not a model triaging the log.",
+      "tasks": [
+        "../tasks/log-triage"
+      ],
+      "sizes": [
+        1,
+        8,
+        32,
+        128,
+        256
+      ],
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "kind": "work"
+    },
+    {
+      "id": "config-migrate",
+      "title": "Migrate configs",
+      "blurb": "Capacity replay: the script rewrites the configs to the known format. A pass is conformance, not a migration the harness invented.",
+      "tasks": [
+        "../tasks/config-migrate"
+      ],
+      "sizes": [
+        1,
+        8,
+        32,
+        128,
+        256
+      ],
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "kind": "work"
+    },
+    {
+      "id": "mixed",
+      "title": "All of it at once",
+      "blurb": "Capacity replay of the four scripted jobs in one wave. The mix is the backlog shape. The solutions are already in the scripts.",
+      "tasks": [
+        "../tasks/cli-validate",
+        "../tasks/csv-totals",
+        "../tasks/log-triage",
+        "../tasks/config-migrate"
+      ],
+      "sizes": [
+        4,
+        32,
+        128,
+        256
+      ],
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "kind": "work"
+    },
+    {
+      "id": "maze-branchy-shared",
+      "title": "Maze: a swarm on a branchy maze (shared map)",
+      "blurb": "Every agent explores one hidden maze through ./maze and shares what it has mapped, so agents split the branches. The scripted explorer follows a fixed rule: a pass means that agent made only legal moves and the swarm reached the exit. Time to exit, calls and repeated work are read from the maze service's own log.",
+      "tasks": [
+        "../tasks/maze-branchy-shared"
+      ],
+      "sizes": [
+        1,
+        4,
+        16
+      ],
+      "max_requests": 4100,
+      "timeout_s": 900,
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "kind": "work"
+    },
+    {
+      "id": "maze-branchy-own",
+      "title": "Maze: the same swarm, no shared map",
+      "blurb": "The same maze and the same agents, but each one explores alone and must reach the exit itself. The comparison with the shared-map preset is what coordination buys. A pass means that agent reached the exit with legal moves.",
+      "tasks": [
+        "../tasks/maze-branchy-own"
+      ],
+      "sizes": [
+        1,
+        4,
+        16
+      ],
+      "max_requests": 4100,
+      "timeout_s": 900,
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "kind": "work"
+    },
+    {
+      "id": "maze-corridor-shared",
+      "title": "Maze: long corridors (negative control)",
+      "blurb": "A maze of long winding corridors with few branches, so there is little to split. A swarm should gain little here; if it does not, the method is wrong. Shared map, scripted explorer.",
+      "tasks": [
+        "../tasks/maze-corridor-shared"
+      ],
+      "sizes": [
+        1,
+        4,
+        16
+      ],
+      "max_requests": 4100,
+      "timeout_s": 900,
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "kind": "work"
+    },
+    {
+      "id": "maze-large-shared",
+      "title": "Maze: a larger branchy maze",
+      "blurb": "A 64 by 40 branchy maze with a shared map, for how the gain scales. Scripted explorer; a pass means legal moves and the swarm reached the exit.",
+      "tasks": [
+        "../tasks/maze-large-shared"
+      ],
+      "sizes": [
+        1,
+        4,
+        16
+      ],
+      "max_requests": 4100,
+      "timeout_s": 900,
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "kind": "work"
+    },
+    {
+      "id": "maze-budget-shared",
+      "title": "Maze: shared map on an equal call budget",
+      "blurb": "The branchy maze with a total call budget equal to one agent's calls alone, so the swarm has no extra calls to spend. It shows whether coordination wins when the cost is equal.",
+      "tasks": [
+        "../tasks/maze-budget-shared"
+      ],
+      "sizes": [
+        1,
+        4,
+        16
+      ],
+      "max_requests": 4100,
+      "timeout_s": 900,
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "kind": "work"
+    },
+    {
+      "id": "cold-start",
+      "kind": "harness",
+      "title": "Cold start",
+      "blurb": "One model request, no tools. The number is launch to first request, and final reply to exit. Size 1 runs five rounds. Successes per minute stay blank unless the wave actually filled.",
+      "tasks": [
+        "../tasks/startup"
+      ],
+      "sizes": [
+        1,
+        8,
+        32,
+        128
+      ],
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "primary_outcome": "first_request_s"
+    },
+    {
+      "id": "subagents",
+      "kind": "harness",
+      "title": "Subagent swarm",
+      "blurb": "Three requests and two small writes, no shell: an operating-system process with that shape, not an in-process subagent. The collapsed protocol does both writes in one program.",
+      "tasks": [
+        "../tasks/trivial"
+      ],
+      "sizes": [
+        8,
+        32,
+        128,
+        256,
+        512
+      ],
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "primary_outcome": "successes_per_minute",
+      "protocols": [
+        "naive",
+        "collapsed"
+      ]
+    },
+    {
+      "id": "tool-loop",
+      "kind": "harness",
+      "title": "50 tool calls",
+      "blurb": "Fifty shell steps, one echo at a time. The number is the step gap. The collapsed protocol writes the same ticks.txt in one program.",
+      "tasks": [
+        "../tasks/tool-loop-50"
+      ],
+      "sizes": [
+        1,
+        8,
+        32
+      ],
+      "max_requests": 60,
+      "timeout_s": 300,
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "primary_outcome": "step_gap_s",
+      "protocols": [
+        "naive",
+        "collapsed"
+      ]
+    },
+    {
+      "id": "long-session",
+      "kind": "harness",
+      "title": "250-step session",
+      "blurb": "250 shell steps. The number is context growth and the early-versus-late step gap. The collapsed protocol writes the same file in one program.",
+      "tasks": [
+        "../tasks/session-250"
+      ],
+      "sizes": [
+        1,
+        8
+      ],
+      "max_requests": 260,
+      "timeout_s": 900,
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "primary_outcome": "context_slope",
+      "protocols": [
+        "naive",
+        "collapsed"
+      ]
+    },
+    {
+      "id": "triage-20",
+      "kind": "harness",
+      "title": "Read 20 logs",
+      "blurb": "Naive protocol: one read per log, then the script writes the known answer. The number is how request bytes grow. Collapsed: one program counts the ERROR lines.",
+      "tasks": [
+        "../tasks/triage-20"
+      ],
+      "sizes": [
+        1,
+        8,
+        32
+      ],
+      "max_requests": 30,
+      "timeout_s": 180,
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "primary_outcome": "context_slope",
+      "protocols": [
+        "naive",
+        "collapsed"
+      ]
+    },
+    {
+      "id": "triage-60",
+      "kind": "harness",
+      "title": "Read 60 logs",
+      "blurb": "The same read-per-file protocol at 60 logs. Context slope is the number. Collapsed counts in one program. A pass does not mean the harness chose to read every file.",
+      "tasks": [
+        "../tasks/triage-60"
+      ],
+      "sizes": [
+        1,
+        8,
+        32
+      ],
+      "max_requests": 70,
+      "timeout_s": 300,
+      "harnesses": [
+        "ante",
+        "codex",
+        "claude-code",
+        "nanocode",
+        "hermes",
+        "pi"
+      ],
+      "primary_outcome": "context_slope",
+      "protocols": [
+        "naive",
+        "collapsed"
+      ]
+    },
+    {
+      "id": "lane-baseline",
+      "kind": "baseline",
+      "title": "Lane baseline",
+      "blurb": "Five size-1 startups of the mini agent on this VM. Printed beside a harness number so machine noise is visible. Not ranked.",
+      "tasks": [
+        "../tasks/startup"
+      ],
+      "sizes": [
+        1
+      ],
+      "primary_outcome": "first_request_s",
+      "harnesses": [
+        "mini"
+      ]
+    },
+    {
+      "id": "lane-control",
+      "kind": "control",
+      "title": "Lane control",
+      "blurb": "The mini agent on 50 shell steps, size 1, three rounds, run on this VM with every run. Each lane's time numbers are read against it. Not ranked.",
+      "tasks": [
+        "../tasks/tool-loop-50"
+      ],
+      "sizes": [
+        1
+      ],
+      "repeats": 3,
+      "max_requests": 60,
+      "timeout_s": 120,
+      "primary_outcome": "step_gap_s",
+      "harnesses": [
+        "mini"
+      ]
+    }
+  ]
+}

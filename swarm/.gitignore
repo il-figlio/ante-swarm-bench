@@ -1,0 +1,5 @@
+/runs/
+/bundles/
+__pycache__/
+# Task fixtures are synthetic logs; the repository root ignores *.log.
+!tasks/**/workspace/**/*.log

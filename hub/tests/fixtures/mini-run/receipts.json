@@ -1,0 +1,4 @@
+{"results":[
+  {"task":"b01-01","cell":"b01/i01","passed":true,"check":"npm test -- login","ante_secs":823},
+  {"task":"b01-02","cell":"b01/i02","passed":false,"check":"npm run lint","ante_secs":918,"failure":"lint errors in src/server/mw.ts"}
+],"cancelled":false,"total_secs":960}

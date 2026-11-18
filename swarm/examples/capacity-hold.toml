@@ -1,0 +1,27 @@
+question = "How many Ante instances, each in its own sandbox and alive at the same time, can one 2 vCPU / 8 GB machine hold while still finishing verified work, and does every wave wind down cleanly?"
+primary_outcome = "successes_per_minute"
+model = { source = "scripted", id = "swarm-scripted-1", effort = "medium", max_output_tokens = 16384 }
+harnesses = ["ante"]
+tasks = ["../tasks/hold"]
+sandbox = "process"
+seed = 43
+stop_rule = "Double concurrency from 1 to 1024 with ~32-second sessions (four 8-second commands, inside Ante's 10-second foreground window); stop when a wave passes under 95%, any launch is never admitted, or fewer than half the instances were alive at once."
+
+[ramp]
+start = 1
+factor = 2
+max = 1024
+stop_pass_rate = 0.95
+
+[budget]
+max_requests_per_attempt = 40
+attempt_timeout_s = 300
+
+[admission]
+reserve_mb = 512
+max_pressure = "warn"
+wait_timeout_s = 300
+
+[harness_options.ante]
+telemetry = "on"
+telemetry_env = "swarm-bench-capacity"

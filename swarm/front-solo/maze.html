@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Swarm Maze</title>
+  <meta name="description" content="A maze cartridge for the AX-1: you race simulated Antes through a fogged maze, one call per beat.">
+  <link rel="preload" href="/fonts/spec-mono-400-core.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/solo.css">
+  <link rel="stylesheet" href="/maze.css">
+</head>
+<body data-skin="hardware" data-cart="maze">
+  <main class="stage">
+    <header class="masthead" data-kit="masthead">
+      <h1>swarm maze</h1>
+      <p id="masthead-note">Find the exit before the Antes do. You only see where you have been, and so do they. The Antes here are
+        simulated in your browser: the maze eval's scripted explorer, one call per beat. No model is called.</p>
+    </header>
+
+    <section class="device" data-kit="device" aria-label="AX-1 with the maze cartridge">
+      <div class="device-top">
+        <span class="brand"><b>swarm</b> AX-1 <span class="cart">maze cart</span></span>
+        <span class="lamp-row"><span class="lamp" id="lamp-play" data-on="false" aria-hidden="true"></span><span>live</span>
+          <span class="lamp" id="lamp-pass" data-on="false" aria-hidden="true"></span><span>win</span>
+          <span class="lamp lamp-fail" id="lamp-fail" data-on="false" aria-hidden="true"></span><span>lost</span></span>
+      </div>
+
+      <div class="device-body">
+        <div class="col-screen">
+          <div class="lcd screen maze-screen" id="screen" data-kit="lcd" data-phase="ready">
+            <div class="lcd-tag" data-kit="lcd-tag"><span id="screen-tag">maze</span><span id="screen-opp"></span></div>
+            <canvas id="board" width="640" height="400" role="img" aria-label="your maze"></canvas>
+            <div class="lcd-foot"><span id="screen-caption" aria-live="polite">press A to start</span></div>
+          </div>
+
+          <div class="controls">
+            <div class="dpad" data-kit="dpad" role="group" aria-label="move">
+              <span class="dpad-well" aria-hidden="true"></span>
+              <span class="dpad-cap" aria-hidden="true"></span>
+              <button class="dpad-zone up" data-dir="up" aria-label="north" title="north (↑ or w)"></button>
+              <button class="dpad-zone left" data-dir="left" aria-label="west" title="west (← or a)"></button>
+              <button class="dpad-zone right" data-dir="right" aria-label="east" title="east (→ or d)"></button>
+              <button class="dpad-zone down" data-dir="down" aria-label="south" title="south (↓ or s)"></button>
+            </div>
+            <div class="ab">
+              <div class="ab-key"><button class="key key-round key-accent" id="btn-a" aria-label="start, or race the same maze again" title="start / again (space)">A</button><span id="a-label">start</span></div>
+              <div class="ab-key"><button class="key key-round" id="btn-b" aria-label="new maze" title="new maze (n)">B</button><span>new</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-side">
+          <div class="module" data-kit="module">
+            <div class="module-label">board</div>
+            <div class="dial" data-board="maze" data-kit="mode-dial" role="radiogroup" aria-label="board">
+              <div class="dial-knob" aria-hidden="true"><span class="dial-pointer"></span></div>
+              <a class="dial-stop" role="radio" aria-checked="false" href="/trail/">trail</a>
+              <a class="dial-stop" role="radio" aria-checked="false" href="/hill/">hill</a>
+              <button class="dial-stop" role="radio" aria-checked="true" data-board="maze">maze</button>
+            </div>
+          </div>
+
+          <div class="module" data-kit="module">
+            <div class="module-label">opponent <span class="module-aside" id="opp-aside">simulated</span></div>
+            <div class="live-row">
+              <button class="key switch" id="live" role="switch" aria-checked="false" title="race real Ante processes on this server">live</button>
+              <button class="key switch" id="assist" role="switch" aria-checked="false" aria-disabled="true" title="an Ante on your team (live only)">assist</button>
+              <span class="live-status" id="live-status" aria-live="polite">scripted · no model called</span>
+            </div>
+            <form class="pass" id="pass" hidden>
+              <label for="pass-in">passcode</label>
+              <input id="pass-in" name="passcode" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
+              <button class="key" type="submit">unlock</button>
+              <span class="pass-note" id="pass-note">kept in this tab only, sent only to start a round</span>
+            </form>
+            <div class="tasks opts" id="opp" role="radiogroup" aria-label="opponent">
+              <button class="key" role="radio" data-v="solo">ante ×1</button>
+              <button class="key" role="radio" data-v="swarm4">swarm ×4</button>
+              <button class="key" role="radio" data-v="swarm16">swarm ×16</button>
+              <span class="opts-sub" id="opts-sub" aria-hidden="true">desktop modes</span>
+              <button class="key" role="radio" data-v="parallel3">parallel ×3</button>
+              <button class="key" role="radio" data-v="delegate4">delegate 1+4</button>
+              <button class="key" role="radio" data-v="council3">council ×3</button>
+            </div>
+            <p class="module-note" id="opp-note"></p>
+          </div>
+
+          <div class="module" data-kit="module">
+            <div class="module-label">pace <span class="module-aside" id="pace-aside">calls / s, each</span></div>
+            <div class="tasks opts" id="pace" role="radiogroup" aria-label="pace">
+              <button class="key" role="radio" data-v="3">3 slow</button>
+              <button class="key" role="radio" data-v="6">6 even</button>
+              <button class="key" role="radio" data-v="12">12 fast</button>
+            </div>
+            <div class="module-label">size</div>
+            <div class="tasks opts" id="size" role="radiogroup" aria-label="maze size">
+              <button class="key" role="radio" data-v="s">s 16×10</button>
+              <button class="key" role="radio" data-v="m">m 26×16</button>
+              <button class="key" role="radio" data-v="l">l 40×25</button>
+            </div>
+          </div>
+
+          <div class="module" data-kit="module">
+            <div class="module-label"><span id="opp-name">ante</span> <span id="opp-tally"></span></div>
+            <div class="lcd grid-lcd" data-kit="lcd"><canvas id="opp-board" width="256" height="160" role="img" aria-label="the Antes' maze"></canvas>
+              <ol class="rivals" id="rivals" hidden aria-label="rival Antes"></ol></div>
+          </div>
+
+          <div class="readouts">
+            <div class="lcd lcd-sm" data-kit="lcd"><span class="lcd-tag">t</span><span class="lcd-digits" id="r-time">-.-s</span></div>
+            <div class="lcd lcd-sm" data-kit="lcd"><span class="lcd-tag">moves</span><span class="lcd-digits" id="r-moves">000</span></div>
+            <div class="lcd lcd-sm" data-kit="lcd"><span class="lcd-tag" id="r-best-tag">best</span><span class="lcd-digits" id="r-best">-.-s</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lcd tape" data-kit="lcd" aria-label="simulated calls">
+        <div class="lcd-tag"><span id="tape-tag">calls · simulated</span><span>newest first</span></div>
+        <ol id="tape"></ol>
+      </div>
+    </section>
+
+    <section class="receipt" aria-label="round">
+      <h2>round</h2>
+      <dl id="receipt"></dl>
+      <p class="legend" id="legend"></p>
+    </section>
+
+    <footer class="foot">
+      <p>ante-swarm-bench · Independent work, not an Antigma release.</p>
+      <p>The opponents run the maze eval's scripted explorer (maze-core.js, checked call for call against the eval's
+        Python) in your browser, in the fleet shapes the eval defines. They are not Ante processes and no model is
+        called. Every call they make is replayed from that simulation. Best times stay in this browser, and a maze
+        you have already raced this visit does not set one.</p>
+      <p>With the live switch on (and the operator's passcode) the rivals are real Ante processes on this server, on
+        the model the status line names, in real time: you move as fast as you like and each Ante moves when its call lands. You see their
+        calls, cells mapped and how far from the exit they are, never where they are, until the round ends. A live
+        swarm plays as one team: a lead assigns each worker its own unexplored edge, and the workers post dead ends
+        and corridors to a shared board of notes. You see only how many notes they have posted; the notes themselves
+        come with the end of the round, with the maze. Assist adds an Ante to your team, and its notes show in the
+        call feed as it posts them. The passcode stays in this tab and goes only to the request that starts a round.</p>
+      <p>Back to the <a href="/">console</a> (trail) · stored runs on the <a href="/replay">replay console</a> · the <a href="/maze/prototype">analysis view</a> of the same
+        mazes.</p>
+      <p>Hardware look after <a href="https://github.com/shuding/spec-01">spec-01</a> (MIT); type is Spec Mono, a subset
+        of IBM Plex Mono (OFL). <a href="/NOTICE.txt">Notices</a>.</p>
+      <p class="keys">keys: ← ↑ → ↓ or w a s d move · space start / again · r same maze · n new maze</p>
+    </footer>
+  </main>
+  <script src="/maze/maze-core.js"></script>
+  <script src="/mazeplay.js"></script>
+  <script src="/mazelive.js"></script>
+  <script src="/maze.js"></script>
+</body>
+</html>

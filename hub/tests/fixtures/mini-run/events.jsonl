@@ -1,0 +1,13 @@
+{"t":1775030405,"cell":"b01/i01","task":"b01-01","age_s":5,"data":"{\"type\":\"session\",\"id\":\"s1\"}\n{\"type\":\"agent_start\"}\n"}
+{"t":1775030406,"cell":"b01/i01","task":"b01-01","age_s":6,"data":"{\"type\":\"turn_start\"}\n{\"type\":\"thinking\"}\n"}
+{"t":1775030407,"cell":"b01/i01","task":"b01-01","age_s":7,"data":"{\"type\":\"thinking_delta\",\"text\":\"hmm\"}\n{\"type\":\"toolcall_start\",\"toolName\":\"bash\",\"input\":{\"command\":\"npm install\"}}\n"}
+{"t":1775030410,"cell":"b01/i02","task":"b01-02","age_s":4,"data":"{\"type\":\"session\",\"id\":\"s2\"}\n{\"type\":\"agent_start\"}\n{\"type\":\"message_start\"}\n"}
+{"t":1775030412,"cell":"b01/i01","task":"b01-01","age_s":12,"data":"{\"type\":\"toolcall_end\",\"toolName\":\"bash\"}\n{\"type\":\"tool_execution_start\",\"toolName\":\"read\",\"input\":{\"file_path\":\"src/auth/login.tsx\"}}\n"}
+{"t":1775030414,"cell":"b01/i02","task":"b01-02","age_s":8,"data":"{\"type\":\"turn_start\"}\n{\"type\":\"toolcall_start\",\"toolName\":\"edit\",\"input\":{\"file_path\":\"src/server/mw.ts\"}}\n"}
+{"t":1775030416,"cell":"b01/i01","task":"b01-01","age_s":16,"data":"{\"type\":\"tool_execution_end\",\"toolName\":\"read\"}\n{\"type\":\"message_update\"}\n"}
+{"t":1775030420,"cell":"b02/i01","task":"b02-01","age_s":3,"data":"{\"type\":\"agent_start\"}\n{\"type\":\"thinking\"}\n"}
+{"t":1775030430,"cell":"b01/i02","task":"b01-02","age_s":24,"data":"{\"type\":\"toolcall_end\"}\n{\"type\":\"text_delta\",\"text\":\"...\"}\n"}
+{"t":1775030440,"cell":"b01/i01","task":"b01-01","age_s":40,"data":"{\"type\":\"text\",\"text\":\"Implemented the login page with validation. All tests pass.\"}\n{\"type\":\"turn_end\"}\n"}
+{"t":1775030450,"cell":"b01/i02","task":"b01-02","age_s":44,"data":"{\"type\":\"text\",\"text\":\"Partially done — lint still failing in mw.ts\"}\n{\"type\":\"message_end\"}\n"}
+{"t":1775030460,"cell":"b02/i01","task":"b02-01","age_s":43,"data":"{\"type\":\"tool_execution_start\",\"toolName\":\"write\",\"input\":{\"file_path\":\"docs/auth.md\"}}\n{\"type\":\"tool_execution_end\",\"toolName\":\"write\"}\n"}
+{"t":1775030470,"cell":"b02/i01","task":"b02-01","age_s":53,"data":"{\"type\":\"thinking\"}\n"}

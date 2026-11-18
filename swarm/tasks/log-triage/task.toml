@@ -1,0 +1,9 @@
+[task]
+id = "log-triage"
+allowed_changes = ["triage.py", "errors.json"]
+
+[agent]
+timeout_sec = 120
+
+[metadata]
+tags = ["python", "ops"]

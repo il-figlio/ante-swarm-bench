@@ -1,0 +1,28 @@
+question = "With nanocode's subagent shape (three model requests, two small file writes, no shell), how many instances of each harness can one machine run at once while every one finishes verified, and what does each cost? Scripted model; telemetry, analytics and update checks off for every harness."
+protocol = "naive"
+primary_outcome = "successes_per_minute"
+model = { source = "scripted", id = "swarm-scripted-1", effort = "medium", max_output_tokens = 16384 }
+harnesses = ["mini", "ante", "codex", "claude-code"]
+sandbox = "process"
+tasks = ["../tasks/trivial"]
+seed = 102
+stop_rule = "Double concurrency from 8 to 1024; stop when a wave passes under 95%, any launch is never admitted, or fewer than half the instances were alive at once."
+
+[ramp]
+start = 8
+factor = 2
+max = 1024
+stop_pass_rate = 0.95
+
+[budget]
+max_requests_per_attempt = 6
+attempt_timeout_s = 180
+
+[admission]
+reserve_mb = 512
+max_pressure = "warn"
+wait_timeout_s = 600
+reserve_tasks = 256
+
+[harness_options.ante]
+telemetry = "off"

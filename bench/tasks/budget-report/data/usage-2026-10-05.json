@@ -1,0 +1,1002 @@
+[
+ {
+  "ts": "2026-10-05T06:35:55Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "claude-haiku-4",
+  "tokens_in": 163283,
+  "tokens_out": 9409,
+  "surface": "ide",
+  "cost_usd": 0.1683
+ },
+ {
+  "ts": "2026-10-05T06:55:28Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "claude-haiku-4",
+  "tokens_in": 139587,
+  "tokens_out": 9063,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T06:57:39Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 139271,
+  "tokens_out": 23364,
+  "surface": "ci"
+ },
+ {
+  "ts": "2026-10-05T07:01:17Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "claude-haiku-4",
+  "tokens_in": 129691,
+  "tokens_out": 5936,
+  "surface": "chat",
+  "cost_usd": 0.1275
+ },
+ {
+  "ts": "2026-10-05T07:11:08Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 73344,
+  "tokens_out": 11118,
+  "surface": "ci",
+  "cost_usd": 0.1296
+ },
+ {
+  "ts": "2026-10-05T07:11:32Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 208063,
+  "tokens_out": 18120,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T07:11:59Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 414196,
+  "tokens_out": 18945,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T07:14:10Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 461036,
+  "tokens_out": 28133,
+  "surface": "ide",
+  "cost_usd": 1.8051
+ },
+ {
+  "ts": "2026-10-05T07:15:36Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 582537,
+  "tokens_out": 32199,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T07:16:30Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "gemini-2.5-pro",
+  "tokens_in": 437506,
+  "tokens_out": 24625,
+  "surface": "ide",
+  "cost_usd": 0.7931
+ },
+ {
+  "ts": "2026-10-05T07:25:18Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 274621,
+  "tokens_out": 11344,
+  "surface": "ide",
+  "cost_usd": 0.994
+ },
+ {
+  "ts": "2026-10-05T07:28:20Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gemini-2.5-pro",
+  "tokens_in": 667408,
+  "tokens_out": 13522,
+  "surface": "ci",
+  "cost_usd": 0.9695
+ },
+ {
+  "ts": "2026-10-05T07:36:41Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 406729,
+  "tokens_out": 29820,
+  "surface": "ci"
+ },
+ {
+  "ts": "2026-10-05T07:38:25Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-haiku-4",
+  "tokens_in": 103495,
+  "tokens_out": 7794,
+  "surface": "ci",
+  "cost_usd": 0.114
+ },
+ {
+  "ts": "2026-10-05T07:40:33Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 212659,
+  "tokens_out": 13098,
+  "surface": "chat",
+  "cost_usd": 0.8344
+ },
+ {
+  "ts": "2026-10-05T07:47:58Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 382445,
+  "tokens_out": 30021,
+  "surface": "ci",
+  "cost_usd": 1.5977
+ },
+ {
+  "ts": "2026-10-05T08:42:58Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 120691,
+  "tokens_out": 5549,
+  "surface": "ide",
+  "cost_usd": 0.1572
+ },
+ {
+  "ts": "2026-10-05T08:47:38Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-haiku-4",
+  "tokens_in": 182632,
+  "tokens_out": 8923,
+  "surface": "ide",
+  "cost_usd": 0.1818
+ },
+ {
+  "ts": "2026-10-05T08:56:43Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 596091,
+  "tokens_out": 12149,
+  "surface": "ide",
+  "cost_usd": 1.2894
+ },
+ {
+  "ts": "2026-10-05T09:00:24Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "claude-haiku-4",
+  "tokens_in": 170561,
+  "tokens_out": 3102,
+  "surface": "ci",
+  "cost_usd": 0.1489
+ },
+ {
+  "ts": "2026-10-05T09:04:56Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 694051,
+  "tokens_out": 5134,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T09:24:39Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "o4-mini",
+  "tokens_in": 28287,
+  "tokens_out": 9332,
+  "surface": "ide",
+  "cost_usd": 0.0722
+ },
+ {
+  "ts": "2026-10-05T09:32:59Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 545571,
+  "tokens_out": 17168,
+  "surface": "ide",
+  "cost_usd": 1.8942
+ },
+ {
+  "ts": "2026-10-05T09:38:01Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 565073,
+  "tokens_out": 10393,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T09:48:11Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 165921,
+  "tokens_out": 15282,
+  "surface": "ci"
+ },
+ {
+  "ts": "2026-10-05T09:48:41Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 71791,
+  "tokens_out": 4525,
+  "surface": "ci"
+ },
+ {
+  "ts": "2026-10-05T09:55:59Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "claude-haiku-4",
+  "tokens_in": 196148,
+  "tokens_out": 4313,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T09:59:07Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 541230,
+  "tokens_out": 28851,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T10:08:47Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 589508,
+  "tokens_out": 32604,
+  "surface": "ide",
+  "cost_usd": 2.2576
+ },
+ {
+  "ts": "2026-10-05T10:33:48Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 546598,
+  "tokens_out": 31330,
+  "surface": "ide",
+  "cost_usd": 2.1097
+ },
+ {
+  "ts": "2026-10-05T10:57:00Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 593343,
+  "tokens_out": 17688,
+  "surface": "ci",
+  "cost_usd": 1.3282
+ },
+ {
+  "ts": "2026-10-05T11:04:00Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 148272,
+  "tokens_out": 12823,
+  "surface": "ide",
+  "cost_usd": 0.2195
+ },
+ {
+  "ts": "2026-10-05T11:30:00Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 35696,
+  "tokens_out": 6168,
+  "surface": "ide",
+  "cost_usd": 0.0664
+ },
+ {
+  "ts": "2026-10-05T11:30:04Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "claude-haiku-4",
+  "tokens_in": 103710,
+  "tokens_out": 7899,
+  "surface": "ci",
+  "cost_usd": 0.1146
+ },
+ {
+  "ts": "2026-10-05T11:32:12Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-haiku-4",
+  "tokens_in": 158084,
+  "tokens_out": 9346,
+  "surface": "chat"
+ },
+ {
+  "ts": "2026-10-05T11:33:46Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "o4-mini",
+  "tokens_in": 27091,
+  "tokens_out": 7060,
+  "surface": "ci",
+  "cost_usd": 0.0609
+ },
+ {
+  "ts": "2026-10-05T11:36:40Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 54361,
+  "tokens_out": 10181,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T11:40:36Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "claude-haiku-4",
+  "tokens_in": 37542,
+  "tokens_out": 2409,
+  "surface": "chat",
+  "cost_usd": 0.0397
+ },
+ {
+  "ts": "2026-10-05T11:42:28Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "claude-sonnet-4",
+  "tokens_in": 280765,
+  "tokens_out": 13813,
+  "surface": "ci",
+  "cost_usd": 1.0495
+ },
+ {
+  "ts": "2026-10-05T12:03:18Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-haiku-4",
+  "tokens_in": 86351,
+  "tokens_out": 8553,
+  "surface": "chat",
+  "cost_usd": 0.1033
+ },
+ {
+  "ts": "2026-10-05T12:12:01Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "claude-haiku-4",
+  "tokens_in": 50993,
+  "tokens_out": 5771,
+  "surface": "ide",
+  "cost_usd": 0.0639
+ },
+ {
+  "ts": "2026-10-05T12:12:02Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 127945,
+  "tokens_out": 10319,
+  "surface": "ci",
+  "cost_usd": 0.5386
+ },
+ {
+  "ts": "2026-10-05T12:16:05Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-haiku-4",
+  "tokens_in": 175275,
+  "tokens_out": 10172,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T12:39:34Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 203832,
+  "tokens_out": 29691,
+  "surface": "ci",
+  "cost_usd": 1.0569
+ },
+ {
+  "ts": "2026-10-05T12:52:55Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gemini-2.5-pro",
+  "tokens_in": 596655,
+  "tokens_out": 13433,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T12:59:58Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 135738,
+  "tokens_out": 13762,
+  "surface": "ide",
+  "cost_usd": 0.2099
+ },
+ {
+  "ts": "2026-10-05T13:00:11Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 102794,
+  "tokens_out": 4707,
+  "surface": "ide",
+  "cost_usd": 0.1338
+ },
+ {
+  "ts": "2026-10-05T13:00:21Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 130675,
+  "tokens_out": 5790,
+  "surface": "chat",
+  "cost_usd": 0.1692
+ },
+ {
+  "ts": "2026-10-05T13:11:39Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "o4-mini",
+  "tokens_in": 68941,
+  "tokens_out": 9028,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T13:16:03Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 389854,
+  "tokens_out": 37914,
+  "surface": "ide",
+  "cost_usd": 1.7383
+ },
+ {
+  "ts": "2026-10-05T13:19:44Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 49658,
+  "tokens_out": 13977,
+  "surface": "ci"
+ },
+ {
+  "ts": "2026-10-05T13:26:38Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "claude-haiku-4",
+  "tokens_in": 116476,
+  "tokens_out": 8108,
+  "surface": "ide",
+  "cost_usd": 0.1256
+ },
+ {
+  "ts": "2026-10-05T13:37:24Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 450433,
+  "tokens_out": 14657,
+  "surface": "ide",
+  "cost_usd": 1.0181
+ },
+ {
+  "ts": "2026-10-05T14:26:04Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 845658,
+  "tokens_out": 4529,
+  "surface": "ide",
+  "cost_usd": 1.7275
+ },
+ {
+  "ts": "2026-10-05T14:42:03Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 138284,
+  "tokens_out": 2261,
+  "surface": "ci",
+  "cost_usd": 0.1621
+ },
+ {
+  "ts": "2026-10-05T14:54:45Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gemini-2.5-pro",
+  "tokens_in": 1088645,
+  "tokens_out": 19023,
+  "surface": "chat"
+ },
+ {
+  "ts": "2026-10-05T14:57:27Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gemini-2.5-pro",
+  "tokens_in": 639846,
+  "tokens_out": 7833,
+  "surface": "ci",
+  "cost_usd": 0.8781
+ },
+ {
+  "ts": "2026-10-05T15:23:27Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gemini-2.5-pro",
+  "tokens_in": 660015,
+  "tokens_out": 5467,
+  "surface": "chat",
+  "cost_usd": 0.8797
+ },
+ {
+  "ts": "2026-10-05T15:24:30Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-haiku-4",
+  "tokens_in": 70874,
+  "tokens_out": 11298,
+  "surface": "ci"
+ },
+ {
+  "ts": "2026-10-05T15:29:42Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-haiku-4",
+  "tokens_in": 146375,
+  "tokens_out": 6893,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T15:41:30Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "claude-sonnet-4",
+  "tokens_in": 437176,
+  "tokens_out": 8698,
+  "surface": "ide",
+  "cost_usd": 1.442
+ },
+ {
+  "ts": "2026-10-05T15:51:34Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 439540,
+  "tokens_out": 15085,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T15:59:57Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 169523,
+  "tokens_out": 19545,
+  "surface": "chat"
+ },
+ {
+  "ts": "2026-10-05T16:12:10Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 25643,
+  "tokens_out": 3621,
+  "surface": "ide",
+  "cost_usd": 0.0441
+ },
+ {
+  "ts": "2026-10-05T16:21:50Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "claude-haiku-4",
+  "tokens_in": 63302,
+  "tokens_out": 9005,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T16:28:06Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "claude-haiku-4",
+  "tokens_in": 98331,
+  "tokens_out": 9312,
+  "surface": "ide",
+  "cost_usd": 0.1159
+ },
+ {
+  "ts": "2026-10-05T16:36:05Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 73885,
+  "tokens_out": 7974,
+  "surface": "ide",
+  "cost_usd": 0.1164
+ },
+ {
+  "ts": "2026-10-05T16:50:28Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 124706,
+  "tokens_out": 2321,
+  "surface": "ci"
+ },
+ {
+  "ts": "2026-10-05T16:57:31Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 632644,
+  "tokens_out": 17207,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T17:11:22Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "o4-mini",
+  "tokens_in": 117486,
+  "tokens_out": 6528,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T17:14:20Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 77937,
+  "tokens_out": 3885,
+  "surface": "chat"
+ },
+ {
+  "ts": "2026-10-05T17:33:26Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 828807,
+  "tokens_out": 7309,
+  "surface": "ci",
+  "cost_usd": 1.7161
+ },
+ {
+  "ts": "2026-10-05T17:46:18Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "gemini-2.5-pro",
+  "tokens_in": 375675,
+  "tokens_out": 20036,
+  "surface": "ci"
+ },
+ {
+  "ts": "2026-10-05T17:52:21Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "claude-haiku-4",
+  "tokens_in": 77467,
+  "tokens_out": 2729,
+  "surface": "ci",
+  "cost_usd": 0.0729
+ },
+ {
+  "ts": "2026-10-05T18:00:47Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 84747,
+  "tokens_out": 10663,
+  "surface": "chat",
+  "cost_usd": 0.1401
+ },
+ {
+  "ts": "2026-10-05T18:07:53Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 385624,
+  "tokens_out": 15109,
+  "surface": "ide",
+  "cost_usd": 1.3835
+ },
+ {
+  "ts": "2026-10-05T18:11:11Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "claude-haiku-4",
+  "tokens_in": 175874,
+  "tokens_out": 7780,
+  "surface": "ci",
+  "cost_usd": 0.1718
+ },
+ {
+  "ts": "2026-10-05T18:18:55Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "gemini-2.5-pro",
+  "tokens_in": 906618,
+  "tokens_out": 21043,
+  "surface": "chat",
+  "cost_usd": 1.3437
+ },
+ {
+  "ts": "2026-10-05T18:47:56Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 200607,
+  "tokens_out": 14477,
+  "surface": "ide",
+  "cost_usd": 0.517
+ },
+ {
+  "ts": "2026-10-05T18:54:21Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "o4-mini",
+  "tokens_in": 149175,
+  "tokens_out": 12900,
+  "surface": "ci",
+  "cost_usd": 0.2209
+ },
+ {
+  "ts": "2026-10-05T19:17:05Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 812993,
+  "tokens_out": 14533,
+  "surface": "ide",
+  "cost_usd": 1.7422
+ },
+ {
+  "ts": "2026-10-05T19:20:17Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 123539,
+  "tokens_out": 7079,
+  "surface": "ci"
+ },
+ {
+  "ts": "2026-10-05T19:22:20Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "claude-haiku-4",
+  "tokens_in": 140478,
+  "tokens_out": 8892,
+  "surface": "chat"
+ },
+ {
+  "ts": "2026-10-05T19:27:10Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "claude-haiku-4",
+  "tokens_in": 85106,
+  "tokens_out": 9738,
+  "surface": "ci",
+  "cost_usd": 0.107
+ },
+ {
+  "ts": "2026-10-05T19:32:15Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-haiku-4",
+  "tokens_in": 109853,
+  "tokens_out": 4322,
+  "surface": "ide",
+  "cost_usd": 0.1052
+ },
+ {
+  "ts": "2026-10-05T19:40:09Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 130519,
+  "tokens_out": 12394,
+  "surface": "ci"
+ },
+ {
+  "ts": "2026-10-05T20:08:08Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "gemini-2.5-pro",
+  "tokens_in": 393672,
+  "tokens_out": 20624,
+  "surface": "chat",
+  "cost_usd": 0.6983
+ },
+ {
+  "ts": "2026-10-05T20:17:21Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 50784,
+  "tokens_out": 11592,
+  "surface": "ci",
+  "cost_usd": 0.1069
+ },
+ {
+  "ts": "2026-10-05T20:23:14Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 189165,
+  "tokens_out": 16119,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T20:45:06Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 118985,
+  "tokens_out": 12891,
+  "surface": "chat",
+  "cost_usd": 0.1876
+ },
+ {
+  "ts": "2026-10-05T21:04:43Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 384459,
+  "tokens_out": 31513,
+  "surface": "ci",
+  "cost_usd": 1.6261
+ },
+ {
+  "ts": "2026-10-05T21:33:07Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 32474,
+  "tokens_out": 12350,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T21:37:07Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 96808,
+  "tokens_out": 6448,
+  "surface": "ci",
+  "cost_usd": 0.1349
+ },
+ {
+  "ts": "2026-10-05T22:00:55Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 51449,
+  "tokens_out": 9698,
+  "surface": "ci",
+  "cost_usd": 0.0993
+ },
+ {
+  "ts": "2026-10-05T22:08:19Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 350197,
+  "tokens_out": 8059,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T22:31:00Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 342862,
+  "tokens_out": 9551,
+  "surface": "ide",
+  "cost_usd": 1.1719
+ },
+ {
+  "ts": "2026-10-05T22:42:11Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 425881,
+  "tokens_out": 4839,
+  "surface": "ide",
+  "cost_usd": 1.3502
+ },
+ {
+  "ts": "2026-10-05T22:42:13Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "o4-mini",
+  "tokens_in": 75559,
+  "tokens_out": 2572,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T22:43:37Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 226374,
+  "tokens_out": 14431,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T22:46:33Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 811557,
+  "tokens_out": 8952,
+  "surface": "ide",
+  "cost_usd": 1.6947
+ },
+ {
+  "ts": "2026-10-05T22:49:13Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-haiku-4",
+  "tokens_in": 72196,
+  "tokens_out": 3236,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-05T22:50:26Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "claude-haiku-4",
+  "tokens_in": 165923,
+  "tokens_out": 2407,
+  "surface": "chat"
+ },
+ {
+  "ts": "2026-10-05T22:52:45Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "gemini-2.5-pro",
+  "tokens_in": 998038,
+  "tokens_out": 9928,
+  "surface": "chat"
+ },
+ {
+  "ts": "2026-10-05T22:53:10Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-haiku-4",
+  "tokens_in": 191947,
+  "tokens_out": 3542,
+  "surface": "ci",
+  "cost_usd": 0.1677
+ }
+]

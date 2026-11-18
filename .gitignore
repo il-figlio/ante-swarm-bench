@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+*.db
+*.sqlite*
+.env
+.env.*
+*.log
+node_modules/
+dist/
+runs/
+.DS_Store
+.local/
+*.orig
+*.rej
+
+# fetched third-party inputs (bench/tasks/tbench-ported/fetch_inputs.py)
+bench/tasks/tbench-ported/personal-site.tar.gz
+bench/tasks/tbench-ported/trunc.db
+bench/tasks/tbench-ported/log.stack

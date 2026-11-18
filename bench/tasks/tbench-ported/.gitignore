@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.DS_Store
+meeting_scheduled.ics
+recover.json
+output.txt
+server.log
+nohup.out
+personal-site/
+# fetched by fetch_inputs.py, never committed
+personal-site.tar.gz
+trunc.db
+log.stack
+*.part

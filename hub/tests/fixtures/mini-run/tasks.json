@@ -1,0 +1,5 @@
+[
+  {"id":"b01-01","prompt":"Build the login page with email/password form and client-side validation","check":"npm test -- login"},
+  {"id":"b01-02","prompt":"Add rate limiting middleware to the API server","check":"npm run lint"},
+  {"id":"b02-01","prompt":"Write docs for the auth flow","check":"true"}
+]

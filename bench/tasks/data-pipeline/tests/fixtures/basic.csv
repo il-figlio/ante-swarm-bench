@@ -1,0 +1,13 @@
+order_id,date,customer,category,amount,note
+B4001,2026-08-02,Ana Lopez,groceries,42.10,weekly shop
+B4002,2026-08-05,Priya S,coffee,3.50,flat white
+B4003,2026-08-08,Tom Garcia,transport,18.75,train to brimley
+B4004,2026-08-11,Marta R,groceries,120.00,bulk staples
+B4005,2026-08-14,Ana Lopez,groceries,9.20,top-up
+B4006,2026-08-17,K. Osei,fun,64.00,climbing gym pass
+B4007,2026-08-21,Priya S,coffee,3.80,cortado
+B4008,2026-08-25,Tom Garcia,groceries,27.40,weekly shop
+B4009,2026-08-28,Wei Chen,transport,15.00,bus card
+B4010,2026-08-30,Ana Lopez,fun,41.60,cinema + noodles
+B4011,2026-09-03,Priya S,coffee,4.20,beans
+B4012,2026-09-06,Tom Garcia,transport,12.00,taxi split

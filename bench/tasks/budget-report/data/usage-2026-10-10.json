@@ -1,0 +1,310 @@
+[
+ {
+  "ts": "2026-10-10T06:10:14Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 107482,
+  "tokens_out": 2498,
+  "surface": "chat",
+  "cost_usd": 0.1292
+ },
+ {
+  "ts": "2026-10-10T06:40:10Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gemini-2.5-pro",
+  "tokens_in": 606593,
+  "tokens_out": 26775,
+  "surface": "ide",
+  "cost_usd": 1.026
+ },
+ {
+  "ts": "2026-10-10T06:51:01Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 522539,
+  "tokens_out": 13649,
+  "surface": "ci"
+ },
+ {
+  "ts": "2026-10-10T08:06:28Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 121230,
+  "tokens_out": 14633,
+  "surface": "ide",
+  "cost_usd": 0.5832
+ },
+ {
+  "ts": "2026-10-10T08:07:43Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 112521,
+  "tokens_out": 13943,
+  "surface": "ci"
+ },
+ {
+  "ts": "2026-10-10T08:11:18Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-haiku-4",
+  "tokens_in": 98331,
+  "tokens_out": 6950,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-10T09:35:36Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 444093,
+  "tokens_out": 16486,
+  "surface": "ide",
+  "cost_usd": 1.5796
+ },
+ {
+  "ts": "2026-10-10T10:16:45Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "claude-haiku-4",
+  "tokens_in": 125851,
+  "tokens_out": 9265,
+  "surface": "ci",
+  "cost_usd": 0.1377
+ },
+ {
+  "ts": "2026-10-10T10:47:36Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 287041,
+  "tokens_out": 31317,
+  "surface": "chat",
+  "cost_usd": 1.3309
+ },
+ {
+  "ts": "2026-10-10T10:47:39Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 34389,
+  "tokens_out": 13030,
+  "surface": "ide",
+  "cost_usd": 0.0952
+ },
+ {
+  "ts": "2026-10-10T11:11:44Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 429385,
+  "tokens_out": 18901,
+  "surface": "ci",
+  "cost_usd": 1.01
+ },
+ {
+  "ts": "2026-10-10T13:12:24Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "o4-mini",
+  "tokens_in": 91098,
+  "tokens_out": 2477,
+  "surface": "ide",
+  "cost_usd": 0.1111
+ },
+ {
+  "ts": "2026-10-10T14:09:33Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "claude-haiku-4",
+  "tokens_in": 115340,
+  "tokens_out": 6390,
+  "surface": "chat"
+ },
+ {
+  "ts": "2026-10-10T14:18:59Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 408664,
+  "tokens_out": 15928,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-10T14:33:43Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 342903,
+  "tokens_out": 9262,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-10T14:52:45Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 118798,
+  "tokens_out": 2838,
+  "surface": "ci",
+  "cost_usd": 0.1432
+ },
+ {
+  "ts": "2026-10-10T14:58:00Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 872362,
+  "tokens_out": 14940,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-10T15:04:07Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 143557,
+  "tokens_out": 8663,
+  "surface": "ci",
+  "cost_usd": 0.196
+ },
+ {
+  "ts": "2026-10-10T15:13:37Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 110930,
+  "tokens_out": 7339,
+  "surface": "chat"
+ },
+ {
+  "ts": "2026-10-10T15:16:37Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 158492,
+  "tokens_out": 22778,
+  "surface": "ide",
+  "cost_usd": 0.8171
+ },
+ {
+  "ts": "2026-10-10T15:29:53Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 31984,
+  "tokens_out": 12366,
+  "surface": "ide",
+  "cost_usd": 0.0896
+ },
+ {
+  "ts": "2026-10-10T15:35:28Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gemini-2.5-pro",
+  "tokens_in": 974330,
+  "tokens_out": 12195,
+  "surface": "ci",
+  "cost_usd": 1.3399
+ },
+ {
+  "ts": "2026-10-10T15:50:20Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gpt-4.1",
+  "tokens_in": 748003,
+  "tokens_out": 13992,
+  "surface": "ci",
+  "cost_usd": 1.6079
+ },
+ {
+  "ts": "2026-10-10T16:11:07Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 402481,
+  "tokens_out": 22405,
+  "surface": "ide",
+  "cost_usd": 1.5435
+ },
+ {
+  "ts": "2026-10-10T16:12:58Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 421250,
+  "tokens_out": 10392,
+  "surface": "ide",
+  "cost_usd": 1.4196
+ },
+ {
+  "ts": "2026-10-10T19:16:28Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 356806,
+  "tokens_out": 12212,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-10T19:44:26Z",
+  "key": "vk-data-sam",
+  "team": "data",
+  "model": "gemini-2.5-pro",
+  "tokens_in": 973091,
+  "tokens_out": 10386,
+  "surface": "ide"
+ },
+ {
+  "ts": "2026-10-10T20:30:52Z",
+  "key": "vk-data-marta",
+  "team": "data",
+  "model": "o4-mini",
+  "tokens_in": 129155,
+  "tokens_out": 5817,
+  "surface": "ci"
+ },
+ {
+  "ts": "2026-10-10T20:38:05Z",
+  "key": "vk-ops-jules",
+  "team": "ops",
+  "model": "o4-mini",
+  "tokens_in": 60470,
+  "tokens_out": 8425,
+  "surface": "chat",
+  "cost_usd": 0.1036
+ },
+ {
+  "ts": "2026-10-10T21:10:08Z",
+  "key": "vk-eng-priya",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 133573,
+  "tokens_out": 13646,
+  "surface": "ide",
+  "cost_usd": 0.207
+ },
+ {
+  "ts": "2026-10-10T21:55:17Z",
+  "key": "vk-eng-alice",
+  "team": "eng",
+  "model": "claude-sonnet-4",
+  "tokens_in": 490644,
+  "tokens_out": 12500,
+  "surface": "ci",
+  "cost_usd": 1.6594
+ },
+ {
+  "ts": "2026-10-10T22:30:54Z",
+  "key": "vk-eng-bob",
+  "team": "eng",
+  "model": "o4-mini",
+  "tokens_in": 82935,
+  "tokens_out": 4318,
+  "surface": "ide"
+ }
+]

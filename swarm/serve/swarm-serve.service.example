@@ -1,0 +1,30 @@
+# Example systemd unit for one `swarm serve` lane. Every value in <angle brackets> is a placeholder.
+# Install: copy to /etc/systemd/system/swarm-serve.service, put SWARM_INGRESS_SECRET=<random> (and optionally
+# SWARM_PASSKEY=<random>) in /etc/swarm-serve.env with mode 600, then:
+#   systemctl daemon-reload && systemctl enable --now swarm-serve
+[Unit]
+Description=swarm serve: preset swarm runs for one harness lane
+After=network-online.target
+
+[Service]
+User=<service-user>
+WorkingDirectory=<app-dir>
+Environment=PYTHONPATH=<app-dir>/src
+Environment=PATH=<dir-holding-the-ante-binary>:/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=/etc/swarm-serve.env
+# --host 0.0.0.0 only behind a proxy that adds X-Swarm-Ingress; otherwise keep the default 127.0.0.1.
+ExecStart=/usr/bin/python3 -m swarm.cli serve --presets serve/presets.json --data <data-dir> \
+  --host 0.0.0.0 --port 8000 --telemetry off \
+  --harness-binary codex=<path-to-codex-binary> \
+  --harness-binary claude-code=<path-to-claude-binary>
+Restart=on-failure
+RestartSec=3
+# Runs launch hundreds of short-lived processes; keep them inside this unit's budget.
+TasksMax=4096
+MemoryMax=6G
+KillMode=control-group
+# Maze cells under cgroup limits need a delegated cgroup v2 subtree:
+# Delegate=yes
+
+[Install]
+WantedBy=multi-user.target

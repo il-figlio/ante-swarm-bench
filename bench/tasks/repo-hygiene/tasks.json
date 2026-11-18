@@ -1,0 +1,52 @@
+[
+ {
+  "id": "h01",
+  "persona": "C",
+  "title": "Add a CI workflow that runs the tests",
+  "prompt": "This repo has no CI. Add a GitHub Actions workflow at `.github/workflows/ci.yml` that runs the test suite on push and on pull_request: check out the repo, set up Python 3, then run `python3 -m unittest discover -s tests -t . -p 'test_*.py'`. Verify with `python3 -m unittest tests.check_h01 -q`.",
+  "check": "tests.check_h01",
+  "expect_files": [".github/workflows/ci.yml"],
+  "budget_s": 300,
+  "tags": ["python", "ci", "yaml"]
+ },
+ {
+  "id": "h02",
+  "persona": "A",
+  "title": "Remove the dead functions",
+  "prompt": "The tally package has a few top-level functions that nothing calls anymore — leftovers from old features. Find every one that is never called (from the CLI, the tests, or elsewhere in the package), delete them, and don't touch anything else. The suite must still pass. Verify with `python3 -m unittest tests.check_h02 -q`.",
+  "check": "tests.check_h02",
+  "expect_files": ["tally/ledger.py", "tally/report.py"],
+  "budget_s": 300,
+  "tags": ["python", "refactor"]
+ },
+ {
+  "id": "h03",
+  "persona": "C",
+  "title": "Make tools/check_style.py pass",
+  "prompt": "`python3 tools/check_style.py` reports style violations in the tally package — it's the repo's style gate (double-quoted strings, 4-space indents, no tabs, no trailing whitespace, newline at end of file). Reformat the offending files so the script exits 0, but change no behaviour: formatting only — same strings, same logic. The test suite must still pass. Verify with `python3 -m unittest tests.check_h03 -q`.",
+  "check": "tests.check_h03",
+  "expect_files": ["tally/cli.py", "tally/ledger.py", "tally/report.py"],
+  "budget_s": 300,
+  "tags": ["python", "style"]
+ },
+ {
+  "id": "h04",
+  "persona": "A",
+  "title": "Write CONTRIBUTING.md",
+  "prompt": "This repo has no CONTRIBUTING.md and I keep having to explain the setup. Write one from what's actually in the tree: how to run the tests (the real command — there's no Makefile target for it), the module layout under `tally/` and what lives where, the style rules `tools/check_style.py` enforces and how to run it, and that it's standard library only — no dependencies. Verify with `python3 -m unittest tests.check_h04 -q`.",
+  "check": "tests.check_h04",
+  "expect_files": ["CONTRIBUTING.md"],
+  "budget_s": 300,
+  "tags": ["python", "docs"]
+ },
+ {
+  "id": "h05",
+  "persona": "A",
+  "title": "Sync the README with the real CLI",
+  "prompt": "The README has drifted from the code — it documents at least one command that no longer exists and points at a test runner that isn't there. Read the actual CLI and fix the README so everything it tells a user to run actually works. Change only the README. Verify with `python3 -m unittest tests.check_h05 -q`.",
+  "check": "tests.check_h05",
+  "expect_files": ["README.md"],
+  "budget_s": 240,
+  "tags": ["python", "docs"]
+ }
+]

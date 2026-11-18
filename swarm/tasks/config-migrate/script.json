@@ -1,0 +1,37 @@
+[
+ {
+  "op": "read",
+  "path": "services/api.json"
+ },
+ {
+  "op": "write",
+  "path": "services/api.json",
+  "content": "{\"name\": \"api\", \"port\": 8080, \"timeout_ms\": 5000, \"retries\": 3}\n"
+ },
+ {
+  "op": "read",
+  "path": "services/billing.json"
+ },
+ {
+  "op": "write",
+  "path": "services/billing.json",
+  "content": "{\"name\": \"billing\", \"port\": 8081, \"timeout_ms\": 12000, \"currency\": \"USD\"}\n"
+ },
+ {
+  "op": "read",
+  "path": "services/search.json"
+ },
+ {
+  "op": "write",
+  "path": "services/search.json",
+  "content": "{\"name\": \"search\", \"port\": 8082, \"timeout_ms\": 2500, \"replicas\": 2}\n"
+ },
+ {
+  "op": "bash",
+  "command": "cat services/*.json"
+ },
+ {
+  "op": "final",
+  "text": "Migrated timeout to timeout_ms in all three configs."
+ }
+]

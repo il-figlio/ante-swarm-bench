@@ -1,0 +1,42 @@
+[
+ {
+  "id": "t01",
+  "prompt": "Implement slugify in toolbox/slugify.py so that tests/test_01_slugify.py passes. Run `python3 -m unittest tests.test_01_slugify -q` to verify. Change only toolbox/slugify.py. Do not touch other files.",
+  "check": "tests.test_01_slugify",
+  "expect_files": [
+   "toolbox/slugify.py"
+  ],
+  "persona": "A",
+  "budget_s": 300
+ },
+ {
+  "id": "t02",
+  "prompt": "Implement word_frequencies in toolbox/wordfreq.py so that tests/test_02_wordfreq.py passes. Run `python3 -m unittest tests.test_02_wordfreq -q` to verify. Change only toolbox/wordfreq.py. Do not touch other files.",
+  "check": "tests.test_02_wordfreq",
+  "expect_files": [
+   "toolbox/wordfreq.py"
+  ],
+  "persona": "A",
+  "budget_s": 300
+ },
+ {
+  "id": "t03",
+  "prompt": "Implement parse_duration in toolbox/duration.py so that tests/test_03_duration.py passes. Run `python3 -m unittest tests.test_03_duration -q` to verify. Change only toolbox/duration.py. Do not touch other files.",
+  "check": "tests.test_03_duration",
+  "expect_files": [
+   "toolbox/duration.py"
+  ],
+  "persona": "A",
+  "budget_s": 300
+ },
+ {
+  "id": "t04",
+  "prompt": "Implement running_median in toolbox/median.py so that tests/test_04_median.py passes. Run `python3 -m unittest tests.test_04_median -q` to verify. Change only toolbox/median.py. Do not touch other files.",
+  "check": "tests.test_04_median",
+  "expect_files": [
+   "toolbox/median.py"
+  ],
+  "persona": "A",
+  "budget_s": 300
+ }
+]

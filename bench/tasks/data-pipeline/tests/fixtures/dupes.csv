@@ -1,0 +1,15 @@
+order_id,date,customer,category,amount,note
+D3001,2026-09-01,Ana Lopez,coffee,4.20,beans
+D3002,2026-09-01,Tom Garcia,groceries,55.10,weekly shop
+D3003,2026-09-02,Priya S,transport,18.75,train
+D3004,2026-09-02,Wei Chen,fun,64.00,climbing pass
+D3002,2026-09-02,Tom Garcia,groceries,55.10,weekly shop RETRY
+D3005,2026-09-03,Marta R,coffee,3.80,cortado
+D3006,2026-09-04,Ana Lopez,fun,15.00,cinema
+D3003,2026-09-05,Priya S,transport,99.99,duplicate resend
+D3007,2026-09-05,K. Osei,groceries,27.40,top-up
+D3008,2026-09-06,Tom Garcia,transport,15.00,bus card
+D3006,2026-09-07,Ana Lopez,fun,22.50,cinema reupload
+D3009,2026-09-08,Wei Chen,coffee,4.20,beans
+D3008,2026-09-08,Tom Garcia,transport,15.00,bus card duplicate
+D3010,2026-09-09,Marta R,groceries,41.60,weekly shop

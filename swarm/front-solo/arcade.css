@@ -1,0 +1,73 @@
+/* The trail and hill cartridges on the AX-1. solo.css is the console; maze.css brings the option keys, the live switch
+   and the passcode field (shared with the maze cartridge); this file lays out the game screen and the standings, the
+   same way maze.css lays out the maze. */
+
+[data-arcade] .stage { padding-top: 28px; }
+[data-arcade] .masthead h1 { font-size: 44px; }
+[data-arcade] .masthead p { margin-bottom: 20px; max-width: 96ch; }
+[data-arcade] [hidden] { display: none !important; }
+
+.game-screen canvas {
+  aspect-ratio: 8 / 5;
+  width: min(100%, calc((100svh - 150px) * 1.6));
+  margin-inline: auto;
+  touch-action: manipulation;
+}
+[data-arcade="hill"] .game-screen canvas { aspect-ratio: 6 / 5; width: min(100%, calc((100svh - 250px) * 1.2)); }
+.game-screen[data-phase="live"] canvas { touch-action: none; }   /* swipes steer, not scroll */
+
+[data-arcade] .dpad { --arm: 42px; }
+[data-arcade] .dpad-zone { touch-action: none; -webkit-user-select: none; user-select: none; }
+[data-arcade] .key-round { -webkit-user-select: none; user-select: none; }
+.dial[data-board="trail"] .dial-knob { --angle: -50deg; }
+.replay-link { float: right; }
+.replay-link { color: var(--dim); text-decoration: none; box-shadow: inset 0 -1px 0 var(--hair); text-transform: none; letter-spacing: 0.04em; }
+.replay-link:hover { color: var(--ink); }
+
+/* Standings: who, the score, a detail; the winner in the key colour, the out ones faded. */
+.standings { list-style: none; margin: 0; padding: 8px 10px; display: grid; gap: 3px; font-size: 12px; border-radius: 6px;
+  color: var(--gray-ink); background: var(--gray-glass); box-shadow: var(--gray-well); }
+.standings li { display: grid; grid-template-columns: 5ch 4ch minmax(0, 1fr); gap: 10px; align-items: center; white-space: nowrap; }
+.standings .st-val { text-align: right; font-weight: 500; }
+.standings .st-detail { overflow: hidden; text-overflow: ellipsis; color: var(--gray-dim); }
+.standings li[data-state="you"] .st-who, .standings li[data-state="win"] .st-who { font-weight: 500; }
+.standings li[data-state="win"] .st-who::after { content: " ◆"; color: var(--key); }
+.standings li[data-state="out"] { opacity: 0.45; }
+
+[data-arcade] .tape li { grid-template-columns: 4ch 5ch minmax(0, 1fr); }
+[data-arcade] .tape li[data-hit="true"] { font-weight: 500; }
+[data-arcade] .tape ol { max-height: 150px; }
+[data-arcade] .foot code { font: inherit; }
+
+@media (max-width: 900px) {
+  [data-arcade] .device-body { grid-template-columns: minmax(0, 1fr); }
+  [data-arcade] .col-side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-arcade] .readouts { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  [data-arcade] .stage { padding-top: 16px; }
+  [data-arcade] .masthead h1 { font-size: 34px; margin-bottom: 6px; }
+  [data-arcade] .masthead p { font-size: 11px; margin-bottom: 12px; }
+  [data-arcade] .col-side { grid-template-columns: minmax(0, 1fr); }
+  [data-arcade] .dpad { --arm: 44px; }
+  [data-arcade] .screen { padding: 10px 10px 8px; }
+}
+@media (orientation: landscape) and (max-height: 540px) {
+  [data-arcade] .stage { padding-top: 8px; max-width: none; }
+  [data-arcade] .masthead h1 { font-size: 18px; margin: 0 0 6px; }
+  [data-arcade] .masthead p { display: none; }
+  [data-arcade] .device { padding: 8px 10px 12px; }
+  [data-arcade] .device-top { padding-bottom: 6px; }
+  [data-arcade] .device-body { grid-template-columns: minmax(0, 1fr); }
+  [data-arcade] .col-side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-arcade] .readouts { grid-column: 1 / -1; }
+  [data-arcade] .col-screen { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+  [data-arcade] .controls { display: contents; }
+  [data-arcade] .dpad { grid-column: 1; grid-row: 1; --arm: 40px; margin: 14px; }
+  [data-arcade] .game-screen { grid-column: 2; grid-row: 1; padding: 8px 10px 6px; }
+  [data-arcade] .ab { grid-column: 3; grid-row: 1; flex-direction: column; align-items: center; transform: none; gap: 10px; }
+  [data-arcade] .ab-key:first-child { margin-bottom: 0; }
+  [data-arcade] .key-round { width: 48px; height: 48px; }
+  .game-screen canvas { width: min(100%, calc((100svh - 140px) * 1.6)); }
+  [data-arcade="hill"] .game-screen canvas { width: min(100%, calc((100svh - 140px) * 1.2)); }
+}

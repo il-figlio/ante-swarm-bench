@@ -1,0 +1,1 @@
+report.py should read sales.csv and write totals.csv with one row per region: `region,total`, regions in alphabetical order, totals as integers, with a header row. Right now it does nothing. Make it work and run it so totals.csv exists.

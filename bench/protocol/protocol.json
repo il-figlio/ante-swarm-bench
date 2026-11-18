@@ -1,0 +1,106 @@
+{
+ "id": "shared-v3-20261031",
+ "protocol_revision": "shared-v3",
+ "derived_from": "shared-v2 (worker, relay, tasks, timeouts, RSS sampling, checker gate, per-run home cleanup unchanged except as listed in README)",
+ "concurrency": [
+  1,
+  8
+ ],
+ "repeats": 3,
+ "attempts_per_cell": 32,
+ "task_order": "t01,t02,t03,t04 repeated 8, same original toolbox prompts/checkers as shared-v1/v2",
+ "max_output_tokens_per_request": 16384,
+ "task_deadline_s": 600,
+ "checker_deadline_s": 30,
+ "request_read_timeout_s": 180,
+ "max_output_bytes": 8388608,
+ "free_disk_preflight_gib": 6,
+ "reasoning_effort": "medium",
+ "cohorts": {
+  "claude": {
+   "matrix_id": "shared-v3-claude-20261031",
+   "gate_id": "shared-v3-claude-20261031-gate",
+   "harnesses": [
+    "ante",
+    "pi",
+    "hermes",
+    "claude-code"
+   ],
+   "models": [
+    "claude-sonnet-5-5"
+   ],
+   "model_id_status": "UNVERIFIED: claude-sonnet-5-5 is the first-party ID; the gateway may use another spelling (e.g. anthropic/claude-sonnet-5-5). probe-claude.sh settles it; if it differs, edit only this field (and nothing else) before gate-v3.sh.",
+   "wire": "anthropic-messages",
+   "provider_route": "managed model gateway · anthropic(gateway)",
+   "billing": "managed gateway credits",
+   "effort_mapping": {
+    "label": "medium",
+    "thinking": {
+     "type": "adaptive"
+    },
+    "output_config.effort": "medium",
+    "budget_tokens": "not used: rejected with HTTP 400 on Claude Sonnet 5.5",
+    "reason": "Sonnet 5.5 supports adaptive thinking only; the depth control is output_config.effort (low|medium|high|xhigh|max, default high). 'medium' is the same label as the GPT cohorts and the level Anthropic recommends as the starting point for agentic coding on Sonnet 5.5. Thinking can not be disabled (disabled returns 400), so every harness runs thinking-on.",
+    "enforcement": "the relay overwrites thinking and output_config.effort on every request, whatever the harness sent, and records both the requested and the forced values per request",
+    "sampling": "temperature, top_p and top_k are removed by the relay (non-default values return 400 on Sonnet 5.5); removals are audited",
+    "thinking_display": "default (omitted); display does not change thinking or billing"
+   },
+   "relay_anthropic_headers": "anthropic-version defaults to 2023-06-01 when the client omits it; anthropic-beta is forwarded as sent and recorded per request; x-api-key and authorization are never forwarded"
+  },
+  "codex": {
+   "matrix_id": "shared-v3-codex-20261031",
+   "gate_id": "shared-v3-codex-20261031-gate",
+   "harnesses": [
+    "codex"
+   ],
+   "models": [
+    "openai/gpt-6.1-sol",
+    "openai/gpt-6.1-terra"
+   ],
+   "wire": "openai-responses",
+   "provider_route": "managed model gateway · openai(chatgpt)",
+   "billing": "ChatGPT subscription via the managed model gateway",
+   "effort_mapping": {
+    "label": "medium",
+    "reasoning.effort": "medium",
+    "enforcement": "relay forces reasoning.effort and max_output_tokens (as shared-v2)"
+   },
+   "model_id_note": "Same ids as shared-v2 (proven through the integration for Ante/Pi/Hermes). Codex sends the -m value verbatim; if Codex rejects the slash form at gate time, change here only."
+  }
+ },
+ "cell_order": "for repeat 1..3, for model, for level (1, 8), for harness in an order rotated by repeat",
+ "cells": {
+  "claude": 24,
+  "codex": 12
+ },
+ "versions": {
+  "ante": {
+   "version": "0.3.0",
+   "sha256": "acd49a8c38a773bdcde0a2dcbf826f07a065bf4f53c74db4011183b9a3a9b2b8",
+   "note": "same binary as shared-v2 (campaign-20261030), referenced read-only"
+  },
+  "pi": {
+   "package": "@earendil-works/pi-coding-agent",
+   "version": "1.4.0",
+   "note": "same install as shared-v2, referenced read-only"
+  },
+  "hermes": {
+   "release": "v0.22.5",
+   "note": "same install as shared-v2, referenced read-only"
+  },
+  "codex": {
+   "package": "@openai/codex",
+   "version": "0.165.0",
+   "note": "newest release at least 3 days old on 2026-10-30 (npm min-release-age=3); 0.166.0 existed but was newer"
+  },
+  "claude-code": {
+   "package": "@anthropic-ai/claude-code",
+   "version": "2.1.312",
+   "note": "newest release at least 3 days old on 2026-10-30; 2.1.314 to 2.1.316 existed but were newer"
+  }
+ },
+ "telemetry": "off for every harness (ANTE_TELEMETRY=off; Claude Code DISABLE_TELEMETRY and nonessential traffic off; Codex analytics and update checks off)",
+ "fallbacks": [],
+ "raw_homes": "deleted after each run once receipts/meta/samples are durable; homes-manifest.json retained; workspaces kept",
+ "measurement": "3 repeats per cell; provider routing/model backend snapshot and upstream caching uncontrolled; Claude (gateway credits) and GPT (ChatGPT subscription) use different provider routes; the GPT cohorts are not comparable with Claude timings on infrastructure grounds"
+}

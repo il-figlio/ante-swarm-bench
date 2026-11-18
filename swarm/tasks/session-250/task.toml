@@ -1,0 +1,9 @@
+[task]
+id = "session-250"
+allowed_changes = ["ticks.txt"]
+
+[agent]
+timeout_sec = 900
+
+[metadata]
+tags = ["tier0", "overhead"]

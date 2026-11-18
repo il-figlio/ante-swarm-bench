@@ -1,0 +1,24 @@
+question = "Over a 250-step session of trivial shell steps, how do each harness's per-step overhead, memory and resent context grow? Scripted model; telemetry, analytics and update checks off for every harness."
+protocol = "naive"
+primary_outcome = "context_slope"
+model = { source = "scripted", id = "swarm-scripted-1", effort = "medium", max_output_tokens = 16384 }
+harnesses = ["mini", "ante", "codex", "claude-code"]
+sandbox = "process"
+tasks = ["../tasks/session-250"]
+seed = 104
+stop_rule = "Run every cell; five rounds."
+levels = [1]
+repeats = 5
+
+[budget]
+max_requests_per_attempt = 260
+attempt_timeout_s = 900
+
+[admission]
+reserve_mb = 512
+max_pressure = "warn"
+wait_timeout_s = 600
+reserve_tasks = 256
+
+[harness_options.ante]
+telemetry = "off"

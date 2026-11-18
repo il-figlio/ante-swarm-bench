@@ -1,0 +1,22 @@
+question = "With telemetry off, what does Ante 0.3.0 cost per instance at 1 and 256 live ~32-second sessions?"
+primary_outcome = "successes_per_minute"
+model = { source = "scripted", id = "swarm-scripted-1", effort = "medium", max_output_tokens = 16384 }
+harnesses = ["ante"]
+tasks = ["../tasks/hold"]
+levels = [1, 256]
+sandbox = "process"
+seed = 53
+stop_rule = "Run n=1 and n=256 once each."
+
+
+[budget]
+max_requests_per_attempt = 40
+attempt_timeout_s = 300
+
+[admission]
+reserve_mb = 512
+max_pressure = "warn"
+wait_timeout_s = 300
+
+[harness_options.ante]
+telemetry = "off"

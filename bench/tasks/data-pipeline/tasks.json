@@ -1,0 +1,52 @@
+[
+ {
+  "id": "d01",
+  "persona": "C",
+  "title": "Fix quoted-field parsing in the CSV reader",
+  "prompt": "The order export quotes fields that contain commas, double-quotes or line breaks, and the reader in pipeline/extract.py just does line.split(',') — so those rows land in the database mangled: columns shifted, records split in half, stray quote characters left in values. You can see it by running `python3 run.py` and inspecting the orders table. Fix the parsing so standard CSV quoting loads correctly (commas, `\"\"`-escaped quotes and embedded newlines inside quoted fields all preserved). Keep the `read_records(path)` interface — it returns a list of dicts keyed by the header row. Verify with `python3 -m unittest tests.check_d01 -q`.",
+  "check": "tests.check_d01",
+  "expect_files": ["pipeline/extract.py"],
+  "budget_s": 300,
+  "tags": ["python", "etl", "csv"]
+ },
+ {
+  "id": "d02",
+  "persona": "C",
+  "title": "Dedupe orders on order_id",
+  "prompt": "The upstream export occasionally sends the same order twice — identical order_id, sometimes with a different note or amount on the resend. Add a dedupe step so only the FIRST occurrence in file order is loaded and the later copies are dropped. pipeline/transform.py already has a dedupe() stub wired into run.py — implement it there (or equivalent). Verify with `python3 -m unittest tests.check_d02 -q`.",
+  "check": "tests.check_d02",
+  "expect_files": ["pipeline/transform.py"],
+  "budget_s": 300,
+  "tags": ["python", "etl", "dedupe"]
+ },
+ {
+  "id": "d03",
+  "persona": "C",
+  "title": "Make the pipeline run idempotent",
+  "prompt": "Running `python3 run.py` twice against the same database currently crashes on the second run with `sqlite3.OperationalError: table orders already exists`. Make the load idempotent: back-to-back runs should exit cleanly and leave the database in exactly the same state as a single run — same rows, nothing doubled. Verify with `python3 -m unittest tests.check_d03 -q`.",
+  "check": "tests.check_d03",
+  "expect_files": ["pipeline/load.py", "run.py"],
+  "budget_s": 300,
+  "tags": ["python", "etl", "sqlite"]
+ },
+ {
+  "id": "d04",
+  "persona": "C",
+  "title": "Write a summary report after each load",
+  "prompt": "After a run I want a plain-text summary written next to the database file as `report.txt` (so a load to out/orders.db produces out/report.txt). Exact format, no header beyond the first line:\n\norders report\nrows: <rows loaded>\ntotal_amount: <sum of amount, 2 decimals>\ndate_range: <earliest date> to <latest date>\nby_category:\n  <category>: <count>\n\nOne indented `  <category>: <count>` line per category, two spaces, categories alphabetical. Write it on every run, after the load. Verify with `python3 -m unittest tests.check_d04 -q`.",
+  "check": "tests.check_d04",
+  "expect_files": ["pipeline/report.py", "run.py"],
+  "budget_s": 360,
+  "tags": ["python", "etl", "reporting"]
+ },
+ {
+  "id": "d05",
+  "persona": "C",
+  "title": "Skip malformed export rows instead of loading them",
+  "prompt": "Some rows in the export are junk and currently get loaded as garbage (or worse). Add a malformed-row policy: a row is malformed if it has the wrong number of fields for the header, an amount that isn't a number, or a date that isn't ISO YYYY-MM-DD. Malformed rows should be skipped — never loaded — and the run should still exit 0, printing a line `skipped N malformed rows` (N = the count skipped) at the end. Valid rows load as before. Verify with `python3 -m unittest tests.check_d05 -q`.",
+  "check": "tests.check_d05",
+  "expect_files": ["pipeline/transform.py", "pipeline/extract.py"],
+  "budget_s": 300,
+  "tags": ["python", "etl", "validation"]
+ }
+]

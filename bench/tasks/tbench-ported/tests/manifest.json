@@ -1,0 +1,31 @@
+{
+ "t01": {
+  "input_sha256": {
+   "alice_calendar.ics": "5a5d45804bffd339c2479d49e76fe817b38244d14d389afe1de583443808ecbc",
+   "bob_calendar.ics": "c97e85dbcdd756758f8a80f4db5fd5c1dcacee79298e4d2262f46de5ff680b50",
+   "carol_calendar.ics": "32a0f8687637df0a12b8e5c56d49c4192bc3e790856943632d70f237c7c1363b"
+  }
+ },
+ "t02": {
+  "min_matches": 7,
+  "entry_sha256": [
+   "b7184c19973b956be858d44b9a1b003b06ad6e1386c5ccd36192fab3319734f9",
+   "a0cace19d98ba27c150df8ced50455a629219b81d61a56b3c2ce9e0b6daa627a",
+   "c6308d270e7d2846733e8557def79696acefa5f1e764766c727a8f1480990ebd",
+   "3c7164c915d76a45f61c62f548eb956d74645038d7cafe6a3d3f55a5dc86cd99",
+   "d67c9fe3db6ea0c686bcfce16a5fb3b21f6c7d3d78f4456b8f1de4cd2676e5b7",
+   "c0debd919a8d4ac180c6d0bda36057717c7778c996b9faf0f03659e337cb3c28",
+   "40f890912cae8312d5c35e0cc41c3a5986c261abe308d4a88843355601153668",
+   "15f9efeb5acb4c07aa08baafb618ee7ef2fcb4c84ddbe78711155957eca9bfc3"
+  ]
+ },
+ "t03": {
+  "output_sha256": "8a7a6e80e30eafd0400594b9db340ec9692199a78fac3914c571cbec07094bc6"
+ },
+ "t05": {
+  "file_md5": {
+   "_includes/about.md": "0273104059c6bf524e767b8847b22946",
+   "_layouts/default.html": "0f879389f66640f45316e393a71c5f2f"
+  }
+ }
+}

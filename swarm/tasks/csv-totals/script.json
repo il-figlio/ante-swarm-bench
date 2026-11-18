@@ -1,0 +1,19 @@
+[
+  {
+    "op": "read",
+    "path": "report.py"
+  },
+  {
+    "op": "write",
+    "path": "report.py",
+    "content": "\"\"\"Sales totals by region.\"\"\"\nimport csv\n\n\ndef main():\n    totals = {}\n    with open(\"sales.csv\", newline=\"\") as stream:\n        for row in csv.DictReader(stream):\n            totals[row[\"region\"]] = totals.get(row[\"region\"], 0) + int(row[\"amount\"])\n    with open(\"totals.csv\", \"w\", newline=\"\") as stream:\n        stream.write(\"region,total\\n\")\n        for region in sorted(totals):\n            stream.write(f\"{region},{totals[region]}\\n\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+  },
+  {
+    "op": "bash",
+    "command": "python3 report.py && cat totals.csv"
+  },
+  {
+    "op": "final",
+    "text": "report.py now writes totals.csv; ran it."
+  }
+]

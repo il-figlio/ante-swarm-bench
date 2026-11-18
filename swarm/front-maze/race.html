@@ -1,0 +1,356 @@
+<title>Maze Race</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+/* One screen: a bar, then your maze (big) and Ante's maze (small). Side by side when wide, stacked when tall.
+   Each pane sizes its cells from its own box, in whole pixels. Same tokens as the maze swarm page. */
+:root {
+  --bg: #e9ecea; --panel: #f8f9f8; --ink: #15191a; --muted: #5a6264; --line: #cfd5d3;
+  --fog: #c3cac8; --floor: #f8f9f8; --wall: #15191a;
+  --you: #c2410c; --you-soft: rgb(194 65 12 / 0.16);
+  --ante: #2c56d6; --ante-soft: rgb(44 86 214 / 0.14);
+  --good: #1f8a52;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1112; --panel: #161a1b; --ink: #e3e8e7; --muted: #95a0a1; --line: #2b3233;
+    --fog: #22292a; --floor: #11151a; --wall: #d7dedd;
+    --you: #fb8a4c; --you-soft: rgb(251 138 76 / 0.2); --ante: #84a3ff; --ante-soft: rgb(132 163 255 / 0.18);
+    --good: #4cc488; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1112; --panel: #161a1b; --ink: #e3e8e7; --muted: #95a0a1; --line: #2b3233;
+  --fog: #22292a; --floor: #11151a; --wall: #d7dedd;
+  --you: #fb8a4c; --you-soft: rgb(251 138 76 / 0.2); --ante: #84a3ff; --ante-soft: rgb(132 163 255 / 0.18);
+  --good: #4cc488; color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font: 400 14px/1.45 var(--sans); overflow: hidden; }
+* { box-sizing: border-box; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ante); outline-offset: 2px; }
+
+.app {
+  height: 100%; display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 8px;
+  padding-block: 10px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; }
+.brand h1 { margin: 0; font: 600 20px/1.1 var(--display); letter-spacing: -0.01em; white-space: nowrap; }
+.tag { font: 500 10px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+  border: 1px solid var(--line); padding: 4px 6px; border-radius: 4px; white-space: nowrap; }
+.group { display: flex; align-items: center; gap: 6px; }
+.label { font: 500 10px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--panel); }
+.seg button { min-height: 32px; min-width: 34px; padding: 0 9px; border: 0; background: none; cursor: pointer; font-size: 13px; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ante-soft); font-weight: 500; box-shadow: inset 0 -2px 0 var(--ante); }
+.btn { min-height: 34px; padding: 0 12px; border-radius: 6px; cursor: pointer; border: 1px solid var(--line); background: var(--panel); font-size: 13px; }
+.btn.primary { background: var(--ink); color: var(--panel); border-color: var(--ink); font-weight: 500; }
+
+.status { font: 400 12px/1.4 var(--mono); color: var(--muted); min-height: 17px; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.status b { color: var(--ink); font-weight: 500; }
+
+.stage { min-height: 0; display: grid; gap: 8px; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+@media (max-aspect-ratio: 1/1) { .stage { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1.6fr) minmax(0, 1fr) auto; } }
+.pane { position: relative; min-height: 0; min-width: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; }
+.pane-head { display: flex; align-items: baseline; gap: 10px; padding: 7px 10px; border-bottom: 1px solid var(--line); font: 400 12px/1.3 var(--mono); color: var(--muted); }
+.pane-head .who { font: 600 14px/1 var(--display); letter-spacing: 0.01em; }
+.pane.you .who { color: var(--you); }
+.pane.ante .who { color: var(--ante); }
+.pane-head .num { margin-left: auto; font-variant-numeric: tabular-nums; }
+.box { position: relative; min-height: 0; display: grid; place-items: center; }
+canvas { display: block; }
+
+.overlay { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 16px;
+  background: color-mix(in srgb, var(--panel) 90%, transparent); }
+.overlay[hidden] { display: none; }
+.overlay h2 { margin: 0 0 6px; font: 600 clamp(28px, 7vmin, 64px)/1 var(--display); text-wrap: balance; }
+.overlay p { margin: 0 auto 12px; max-width: 34ch; color: var(--muted); }
+.overlay .row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.keys { font: 500 11px/2.2 var(--mono); color: var(--muted); }
+.overlay .hint { margin-top: 12px; }
+kbd { font: 500 11px/1 var(--mono); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 2px 5px; background: var(--bg); color: var(--ink); }
+
+/* Touch: a d-pad under the mazes, only where there is no fine pointer. Swipes on your maze work too. */
+.pad { display: none; justify-content: center; gap: 6px; padding-block: 2px; }
+.pad button { width: 56px; height: 44px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); font: 600 16px/1 var(--mono); touch-action: manipulation; }
+@media (pointer: coarse) { .pad { display: flex; } }
+@media (pointer: coarse) and (min-aspect-ratio: 1/1) { .pad { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(12px + env(safe-area-inset-bottom, 0px)); } }
+.note { font: 400 11px/1.4 var(--sans); color: var(--muted); }
+@media (max-height: 520px) { .note { display: none; } }
+</style>
+
+<div class="app">
+  <div class="bar">
+    <div class="brand"><h1>Maze race</h1><span class="tag">you vs Ante · simulated</span></div>
+    <div class="group"><span class="label">Ante</span>
+      <div class="seg" id="opp"><button data-v="1" aria-pressed="true">1</button><button data-v="4">4</button><button data-v="16">16</button></div></div>
+    <div class="group"><span class="label">Pace</span>
+      <div class="seg" id="pace"><button data-v="3">slow</button><button data-v="6" aria-pressed="true">even</button><button data-v="12">fast</button></div></div>
+    <div class="group"><span class="label">Size</span>
+      <div class="seg" id="size"><button data-v="s">S</button><button data-v="m" aria-pressed="true">M</button><button data-v="l">L</button></div></div>
+    <button class="btn" id="newMaze" title="New maze (N)">New maze</button>
+  </div>
+  <div class="status" id="status"></div>
+  <div class="stage">
+    <section class="pane you">
+      <div class="pane-head"><span class="who">You</span><span id="youMeta"></span><span class="num" id="youNum"></span></div>
+      <div class="box" id="youBox"><canvas id="youCv" aria-label="Your maze"></canvas>
+        <div class="overlay" id="overlay"></div></div>
+    </section>
+    <section class="pane ante">
+      <div class="pane-head"><span class="who" id="anteWho">Ante</span><span id="anteMeta"></span><span class="num" id="anteNum"></span></div>
+      <div class="box" id="anteBox"><canvas id="anteCv" aria-label="Ante's maze"></canvas></div>
+    </section>
+    <div class="pad" id="pad" aria-label="Arrow buttons">
+      <button data-d="W" aria-label="West">←</button><button data-d="N" aria-label="North">↑</button>
+      <button data-d="S" aria-label="South">↓</button><button data-d="E" aria-label="East">→</button>
+    </div>
+  </div>
+  <footer><p>ante-swarm-bench · Independent work, not an Antigma release.</p></footer>
+</div>
+
+<script src="maze-core.js"></script>
+<script>
+'use strict';
+const Core = window.MazeCore;
+const DIRS = { N: { bit: 1, dx: 0, dy: -1 }, E: { bit: 2, dx: 1, dy: 0 }, S: { bit: 4, dx: 0, dy: 1 }, W: { bit: 8, dx: -1, dy: 0 } };
+const KEYS = { ArrowUp: 'N', ArrowRight: 'E', ArrowDown: 'S', ArrowLeft: 'W', w: 'N', d: 'E', s: 'S', a: 'W', W: 'N', D: 'E', S: 'S', A: 'W' };
+const SIZES = { s: [16, 10], m: [26, 16], l: [40, 25] };
+const $ = (id) => document.getElementById(id);
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+function store(key, value) {
+  try { if (value === undefined) return JSON.parse(localStorage.getItem(key) || 'null'); localStorage.setItem(key, JSON.stringify(value)); }
+  catch (e) { return null; }
+}
+
+const cfg = { opp: 1, pace: 6, size: 'm', seed: (Math.random() * 1e9) >>> 0 };
+let g = null; // the current round
+const played = new Set(); // mazes (size:seed) already raced this visit: a replay is from memory, so it sets no best
+
+function newRound() {
+  const [cols, rows] = SIZES[cfg.size];
+  const params = { cols, rows, seed: cfg.seed, generator: 'prim', loops: 0.05, start: 'center', map: 'shared' };
+  const run = Core.createRun(params, cfg.opp, { label: cfg.opp === 1 ? 'solo' : 'swarm' });
+  const maze = run.maze, n = cols * rows;
+  const seen = new Uint8Array(n); seen[maze.start] = 1;
+  g = { params, run, maze, phase: 'ready', t0: 0, now: 0, acc: 0, you: { pos: maze.start, seen, trail: [maze.start], moves: 0, bumps: 0, done: null },
+    ante: null, bump: 0, shortest: Core.shortestRoute(maze).length - 1,
+    // Settings are fixed for the round: the clock and the best-time key read these, never cfg.
+    size: cfg.size, opp: cfg.opp, pace: cfg.pace, replay: played.has(`${cfg.size}:${cfg.seed}`) };
+  showOverlay('ready');
+  layout(); draw();
+}
+
+// ---------- your moves: the same rules as `./maze move` ----------
+function move(dir) {
+  if (!g) return;
+  if (g.phase === 'ready') { start(); }
+  if (g.phase !== 'live' && g.phase !== 'count') return;
+  if (g.phase === 'count') return; // no jump starts
+  const { maze, you } = g, d = DIRS[dir];
+  if (maze.walls[you.pos] & d.bit) { you.bumps++; g.bump = performance.now(); return; }
+  you.pos += d.dy * maze.cols + d.dx; you.moves++;
+  you.seen[you.pos] = 1; you.trail.push(you.pos);
+  if (you.pos === maze.exit) finish('you');
+}
+
+function start() {
+  if (g.phase !== 'ready') return;
+  g.phase = 'count'; g.countAt = performance.now();
+  played.add(`${g.size}:${g.params.seed}`);
+  $('overlay').hidden = true;
+}
+
+function finish(who) {
+  if (g.phase !== 'live') return;
+  const t = (g.now - g.t0) / 1000;
+  if (who === 'you') g.you.done = t; else g.ante = t;
+  g.phase = 'over'; g.winner = who;
+  const key = `maze-race:${g.size}:${g.opp}:${g.pace}`, best = store(key);
+  g.best = best;
+  if (who === 'you' && !g.replay && (best === null || t < best)) { store(key, t); g.newBest = true; }
+  showOverlay('over');
+}
+
+// ---------- overlay ----------
+function showOverlay(kind) {
+  const o = $('overlay'), opp = cfg.opp === 1 ? 'one Ante' : `${cfg.opp} Antes sharing one map`;
+  if (kind === 'ready') {
+    o.innerHTML = `<div><h2>Find the exit</h2><p>You and ${opp} start in the middle of the same maze. You only see where you've been, same as Ante's <code>./maze look</code>.</p>
+      <p class="note">Ante here is simulated in your browser, running the same move rule real Antes run in the maze eval.</p>
+      <div class="row"><button class="btn primary" id="go">Start</button></div>
+      <p class="keys hint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or arrows · <kbd>Space</kbd> start · <kbd>R</kbd> same maze · <kbd>N</kbd> new</p></div>`;
+    $('go').onclick = start;
+  } else {
+    const you = g.you, r = g.run, won = g.winner === 'you', t = (g.now - g.t0) / 1000;
+    const head = won ? 'You win' : (cfg.opp === 1 ? 'Ante wins' : 'The swarm wins');
+    const detail = won
+      ? `${t.toFixed(1)}s, ${you.moves} moves (shortest route ${g.shortest}). Ante had made ${r.calls} calls.`
+      : `${t.toFixed(1)}s, ${r.calls} calls by ${cfg.opp === 1 ? 'Ante' : cfg.opp + ' Antes'}. You'd made ${you.moves} move${you.moves === 1 ? '' : 's'}.`;
+    const best = (g.newBest ? ' New best.' : (g.best !== null ? ` Your best here: ${g.best.toFixed(1)}s.` : ''))
+      + (g.replay && won ? ' Replays of a maze you have seen do not count toward your best.' : '');
+    o.innerHTML = `<div><h2>${head}</h2><p>${detail}${best}</p>
+      <div class="row"><button class="btn primary" id="again">Same maze</button><button class="btn" id="next">New maze</button></div></div>`;
+    $('again').onclick = () => newRound();
+    $('next').onclick = () => { cfg.seed = (Math.random() * 1e9) >>> 0; newRound(); };
+  }
+  o.hidden = false;
+}
+
+// ---------- drawing ----------
+const panes = { you: { cv: $('youCv'), box: $('youBox'), c: 8 }, ante: { cv: $('anteCv'), box: $('anteBox'), c: 4 } };
+function layout() {
+  if (!g) return;
+  const { cols, rows } = g.maze, dpr = window.devicePixelRatio || 1;
+  for (const p of Object.values(panes)) {
+    const w = p.box.clientWidth - 12, h = p.box.clientHeight - 12;
+    p.c = Math.max(2, Math.floor(Math.min(w / cols, h / rows)));
+    p.cv.width = cols * p.c * dpr; p.cv.height = rows * p.c * dpr;
+    p.cv.style.width = cols * p.c + 'px'; p.cv.style.height = rows * p.c + 'px';
+    p.dpr = dpr;
+  }
+}
+
+function drawMaze(p, known, reveal) {
+  const { cols, rows, walls, exit, start } = g.maze, c = p.c, x2 = p.cv.getContext('2d');
+  x2.setTransform(p.dpr, 0, 0, p.dpr, 0, 0);
+  x2.fillStyle = css('--fog'); x2.fillRect(0, 0, cols * c, rows * c);
+  x2.fillStyle = css('--floor');
+  for (let i = 0; i < cols * rows; i++) if (reveal || known[i]) x2.fillRect((i % cols) * c, ((i / cols) | 0) * c, c, c);
+  // Exit: shown once it has been seen (or at the end).
+  if (reveal || known[exit]) { x2.fillStyle = css('--good'); x2.fillRect((exit % cols) * c + 1, ((exit / cols) | 0) * c + 1, c - 2, c - 2); }
+  x2.strokeStyle = css('--wall'); x2.lineWidth = c >= 12 ? 2 : 1; x2.lineCap = 'square';
+  x2.beginPath();
+  for (let i = 0; i < cols * rows; i++) {
+    if (!(reveal || known[i])) continue;
+    const x = (i % cols) * c, y = ((i / cols) | 0) * c, w = walls[i];
+    if (w & 1) { x2.moveTo(x, y); x2.lineTo(x + c, y); }
+    if (w & 2) { x2.moveTo(x + c, y); x2.lineTo(x + c, y + c); }
+    if (w & 4) { x2.moveTo(x, y + c); x2.lineTo(x + c, y + c); }
+    if (w & 8) { x2.moveTo(x, y); x2.lineTo(x, y + c); }
+  }
+  x2.stroke();
+  return x2;
+}
+
+function trail(x2, cells, c, color, width) {
+  const { cols } = g.maze;
+  x2.strokeStyle = color; x2.lineWidth = width; x2.lineJoin = 'round'; x2.lineCap = 'round';
+  x2.beginPath();
+  cells.forEach((i, k) => { const x = (i % cols) * c + c / 2, y = ((i / cols) | 0) * c + c / 2; k ? x2.lineTo(x, y) : x2.moveTo(x, y); });
+  x2.stroke();
+}
+
+function dot(x2, i, c, color, r) {
+  const { cols } = g.maze;
+  x2.fillStyle = color; x2.beginPath();
+  x2.arc((i % cols) * c + c / 2, ((i / cols) | 0) * c + c / 2, Math.max(2, c * r), 0, Math.PI * 2); x2.fill();
+}
+
+function draw() {
+  if (!g) return;
+  const over = g.phase === 'over', run = g.run;
+  // You
+  const pu = panes.you, xu = drawMaze(pu, g.you.seen, over);
+  trail(xu, g.you.trail, pu.c, css('--you-soft'), Math.max(2, pu.c * 0.36));
+  if (over && g.winner !== 'you' && run.done) trail(xu, run.done.route, pu.c, css('--ante'), Math.max(1.5, pu.c * 0.12));
+  const bumping = performance.now() - g.bump < 160;
+  dot(xu, g.you.pos, pu.c, css('--you'), bumping ? 0.24 : 0.32);
+  // Ante
+  const pa = panes.ante, xa = drawMaze(pa, run.seen, over);
+  for (const a of run.agents) if (a.trail.length > 1) trail(xa, a.trail, pa.c, css('--ante-soft'), Math.max(1.5, pa.c * 0.36));
+  for (const a of run.agents) if (g.phase !== 'ready' && run.tick >= a.startTick) dot(xa, a.pos, pa.c, css('--ante'), 0.3);
+  if (over) dot(xa, g.you.pos, pa.c, css('--you'), 0.3);
+
+  $('youMeta').textContent = '';
+  $('youNum').textContent = `${g.you.moves} moves${g.you.bumps ? ` · ${g.you.bumps} bump${g.you.bumps === 1 ? '' : 's'}` : ''}`;
+  $('anteWho').textContent = cfg.opp === 1 ? 'Ante' : `${cfg.opp} Antes`;
+  $('anteMeta').textContent = cfg.opp === 1 ? '' : 'shared map';
+  $('anteNum').textContent = `${run.calls} calls`;
+  const t = g.phase === 'live' || over ? ((g.now - g.t0) / 1000).toFixed(1) + 's' : '–';
+  const seen = (map) => { let k = 0; for (const v of map) k += v; return Math.round(100 * k / map.length); };
+  $('status').innerHTML = `<span>time <b>${t}</b></span><span>you mapped <b>${seen(g.you.seen)}%</b></span>`
+    + `<span>Ante mapped <b>${seen(run.seen)}%</b></span><span>${g.maze.cols}×${g.maze.rows} · seed ${cfg.seed}</span>`;
+  // Countdown, drawn over your maze.
+  if (g.phase === 'count') {
+    const left = 3 - Math.floor((performance.now() - g.countAt) / 700);
+    xu.fillStyle = css('--ink'); xu.font = `600 ${Math.min(pu.c * g.maze.rows * 0.4, 120)}px ${css('--display')}`;
+    xu.textAlign = 'center'; xu.textBaseline = 'middle';
+    xu.fillText(left > 0 ? String(left) : 'Go', g.maze.cols * pu.c / 2, g.maze.rows * pu.c / 2);
+  }
+}
+
+// ---------- the clock: Ante makes `pace` calls per second per agent ----------
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(500, now - last); last = now;
+  if (g && g.phase === 'count' && now - g.countAt >= 2100) { g.phase = 'live'; g.t0 = now; g.acc = 0; }
+  if (g && g.phase === 'live') {
+    g.now = now;
+    g.acc += dt * g.pace / 1000;
+    while (g.acc >= 1 && g.phase === 'live') {
+      g.acc -= 1;
+      Core.stepRun(g.run);
+      if (g.run.done) finish('ante');
+      else if (Core.finished(g.run)) { g.phase = 'over'; g.winner = 'you'; showOverlay('over'); }
+    }
+  }
+  draw();
+  requestAnimationFrame(frame);
+}
+
+// ---------- input ----------
+addEventListener('keydown', (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const dir = KEYS[e.key];
+  if (dir) { e.preventDefault(); move(dir); return; }
+  if ((e.key === ' ' || e.key === 'Enter') && g && g.phase === 'ready') { e.preventDefault(); start(); }
+  else if ((e.key === ' ' || e.key === 'Enter') && g && g.phase === 'over') { e.preventDefault(); newRound(); }
+  else if (e.key === 'r' || e.key === 'R') newRound();
+  else if (e.key === 'n' || e.key === 'N') { cfg.seed = (Math.random() * 1e9) >>> 0; newRound(); }
+});
+for (const b of $('pad').querySelectorAll('button')) {
+  let timer = null;
+  const stop = () => { clearInterval(timer); timer = null; };
+  b.addEventListener('pointerdown', (e) => { e.preventDefault(); move(b.dataset.d); stop(); timer = setInterval(() => move(b.dataset.d), 140); });
+  for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) b.addEventListener(ev, stop);
+}
+// Swipe on your maze: one move per swipe, in the swipe's main direction.
+let touch = null;
+$('youBox').addEventListener('touchstart', (e) => { const t = e.touches[0]; touch = [t.clientX, t.clientY]; }, { passive: true });
+$('youBox').addEventListener('touchend', (e) => {
+  if (!touch) return;
+  const t = e.changedTouches[0], dx = t.clientX - touch[0], dy = t.clientY - touch[1]; touch = null;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+  move(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'E' : 'W') : (dy > 0 ? 'S' : 'N'));
+});
+for (const [id, key, parse] of [['opp', 'opp', Number], ['pace', 'pace', Number], ['size', 'size', String]]) {
+  const seg = $(id);
+  seg.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    for (const o of seg.children) o.setAttribute('aria-pressed', String(o === b));
+    cfg[key] = parse(b.dataset.v);
+    newRound(); // pace too: a mid-race change would otherwise file the time under the wrong pace
+    b.blur();
+  });
+}
+$('newMaze').onclick = (e) => { cfg.seed = (Math.random() * 1e9) >>> 0; newRound(); e.currentTarget.blur(); };
+new ResizeObserver(() => { layout(); draw(); }).observe(document.querySelector('.stage'));
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+
+newRound();
+requestAnimationFrame(frame);
+</script>

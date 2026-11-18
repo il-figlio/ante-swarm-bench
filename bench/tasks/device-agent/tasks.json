@@ -1,0 +1,52 @@
+[
+ {
+  "id": "v01",
+  "persona": "D",
+  "title": "Add a stats command to the sensor client",
+  "prompt": "The client can take single readings, but what I actually need on the bench is whether a channel is stable. Add a `stats` command: `python3 sensor_client.py --device \"<cmd>\" stats temp 5` should take 5 readings of the channel (issue `READ <chan>` that many times on the same connection) and print exactly one line like `STATS temp n=5 min=21.00 max=23.50 avg=22.06` — channel name, how many readings, and the min / max / mean of the values it got, two decimals. Reject a bad count the way the other commands reject bad args, put it in the same dispatch table as the rest, and add it to the README usage section. Standard library only — this ships to an embedded box. Verify with `python3 -m unittest tests.check_v01 -q`.",
+  "check": "tests.check_v01",
+  "expect_files": ["sensor_client.py", "README.md"],
+  "budget_s": 300,
+  "tags": ["python", "embedded", "protocol"]
+ },
+ {
+  "id": "v02",
+  "persona": "D",
+  "title": "Recover from malformed frames mid-stream",
+  "prompt": "Streamed reads keep dying in the field: the pod occasionally emits garbage between frames (line noise on the UART) or a frame whose checksum doesn't verify, and the client falls over with a traceback instead of recovering. Reproduce with `python3 sensor_client.py --device \"python3 tests/fake_device.py --scenario corrupt\" stream 8`. Make the frame reader drop bad bytes and bad frames, log a warning to stderr for each one it drops, and resync at the next magic byte — stdout must still be exactly the good SAMPLE lines, in order. Verify with `python3 -m unittest tests.check_v02 -q`.",
+  "check": "tests.check_v02",
+  "expect_files": ["sensor_client.py"],
+  "budget_s": 300,
+  "tags": ["python", "embedded", "protocol", "robustness"]
+ },
+ {
+  "id": "v03",
+  "persona": "D",
+  "title": "Reconnect and resume when the pod drops the pipe",
+  "prompt": "The pod browns out on battery sag: it closes the pipe partway through a `stream` and the client dies with a traceback and partial output. Reproduce with `python3 sensor_client.py --device \"python3 tests/fake_device.py --scenario flaky --state-dir /tmp/podstate\" stream 8` — the first connection drops after a few samples, the respawned pod is healthy. Teach the client to detect the closed pipe, reconnect (respawn the device command and redo the HELLO handshake), and resume the stream: re-issue it and skip any SAMPLE sequence numbers already printed, so the output is each sample exactly once, in order — still just the SAMPLE lines on stdout. Give up with a clean error after a few failed reconnects rather than looping forever. Verify with `python3 -m unittest tests.check_v03 -q`.",
+  "check": "tests.check_v03",
+  "expect_files": ["sensor_client.py"],
+  "budget_s": 360,
+  "tags": ["python", "embedded", "protocol", "robustness"]
+ },
+ {
+  "id": "v04",
+  "persona": "D",
+  "title": "Bring the README protocol table up to firmware 2.4",
+  "prompt": "The README's protocol table is stale — it predates firmware 2.4, which added `CHANNELS` and `CALIBRATE`, and it still claims `STREAM` answers with `DATA` frames when the pod actually sends `SAMPLE` frames (the banner says the bench pod is running 2.4.1). Update the command table in the wire-protocol section so it lists every command the firmware answers and the shape of each reply. `tests/fake_device.py` speaks the real protocol if you need ground truth. Verify with `python3 -m unittest tests.check_v04 -q`.",
+  "check": "tests.check_v04",
+  "expect_files": ["README.md"],
+  "budget_s": 240,
+  "tags": ["docs", "embedded", "protocol"]
+ },
+ {
+  "id": "v05",
+  "persona": "D",
+  "title": "Expose the CHANNELS command",
+  "prompt": "The firmware has answered `CHANNELS` since 2.4 but the client never exposed it. Add a `channels` command that asks the pod and prints each channel it reports on its own line, in the order the pod gives them — `python3 sensor_client.py --device \"<cmd>\" channels` should print `temp`, `hum`, `press`. Add it to the README usage section too. Standard library only. Verify with `python3 -m unittest tests.check_v05 -q`.",
+  "check": "tests.check_v05",
+  "expect_files": ["sensor_client.py", "README.md"],
+  "budget_s": 240,
+  "tags": ["python", "embedded", "protocol"]
+ }
+]

@@ -1,0 +1,21 @@
+question = "How do Ante's verified throughput and per-instance memory scale from 1 to 32 concurrent instances on one machine, against a minimal reference agent?"
+primary_outcome = "successes_per_minute"
+model = { source = "scripted", id = "swarm-scripted-1", effort = "medium", max_output_tokens = 16384 }
+harnesses = ["ante", "mini"]
+levels = [1, 4, 8, 16, 32]
+repeats = 3
+tasks = ["../tasks/csv-totals", "../tasks/cli-validate"]
+sandbox = "process"
+seed = 29
+stop_rule = "Run all 30 planned cells once; report every attempt including failures and admission holds."
+
+[budget]
+max_requests_per_attempt = 40
+attempt_timeout_s = 120
+
+[admission]
+reserve_mb = 512
+max_pressure = "warn"
+
+[harness_options.ante]
+telemetry = "off"

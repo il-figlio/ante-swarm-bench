@@ -1,0 +1,6 @@
+{
+  "name": "swarm-pages",
+  "private": true,
+  "description": "No npm dependencies. Marks this app's browser scripts as CommonJS so the Python tests can load them in Node (so a parent \"type\": \"module\" cannot change how they load).",
+  "type": "commonjs"
+}

@@ -1,0 +1,118 @@
+/* The maze cartridge on the AX-1. Everything else (paper, body, glass, keys, D-pad, dial) is solo.css; this file only
+   sizes the game screen and lays the console out so the screen and the controls are in view together. */
+
+[data-cart="maze"] .stage { padding-top: 28px; }
+[data-cart="maze"] .masthead h1 { font-size: 44px; }
+[data-cart="maze"] .masthead p { margin-bottom: 20px; max-width: 96ch; }
+
+.cart {
+  margin-left: 8px; padding: 2px 6px; border-radius: 4px; font-size: 9px; letter-spacing: 0.14em; color: var(--dim);
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+
+/* The game screen: the maze is about 8:5 at every size, and the screen never grows taller than the viewport
+   leaves room for, so the D-pad stays in reach. */
+.maze-screen canvas {
+  aspect-ratio: 8 / 5;
+  width: min(100%, calc((100svh - 150px) * 1.6));
+  margin-inline: auto;
+  touch-action: manipulation;
+}
+.maze-screen[data-phase="live"] canvas, .maze-screen[data-phase="count"] canvas { touch-action: none; }  /* swipes move, not scroll */
+.grid-lcd #opp-board { aspect-ratio: 8 / 5; cursor: default; }
+#opp-tally { float: right; letter-spacing: 0.04em; text-transform: none; }
+
+[data-cart="maze"] .dpad { --arm: 42px; }
+[data-cart="maze"] .dpad-zone { touch-action: none; -webkit-user-select: none; user-select: none; }
+[data-cart="maze"] .key-round { -webkit-user-select: none; user-select: none; }
+
+/* Option keys: a wrapping row of the tasks keys from the replay console. */
+.opts .key { height: 28px; }
+.opts .key[aria-checked="true"] { color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--key), 0 1px 0 #c4c4be; translate: 0 1px; }
+.opts-sub { flex-basis: 100%; margin-top: 4px; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+.module-aside { float: right; letter-spacing: 0.04em; text-transform: none; }
+.module-note { margin: 8px 0 0; font-size: 11px; line-height: 1.45; color: var(--dim); }
+
+/* The call tape: tick, who, call. */
+[data-cart="maze"] .tape li { grid-template-columns: 4ch 5ch minmax(0, 1fr); }
+[data-cart="maze"] .tape li[data-hit="true"] { font-weight: 500; }
+[data-cart="maze"] .tape ol { max-height: 150px; }
+
+/* Tablet and narrow desktop: one column, the screen first, the modules two by two below. */
+@media (max-width: 900px) {
+  [data-cart="maze"] .device-body { grid-template-columns: minmax(0, 1fr); }
+  [data-cart="maze"] .col-side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-cart="maze"] .readouts { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  [data-cart="maze"] .stage { padding-top: 16px; }
+  [data-cart="maze"] .masthead h1 { font-size: 34px; margin-bottom: 6px; }
+  [data-cart="maze"] .masthead p { font-size: 11px; margin-bottom: 12px; }
+  [data-cart="maze"] .col-side { grid-template-columns: minmax(0, 1fr); }
+  [data-cart="maze"] .dpad { --arm: 44px; }
+  [data-cart="maze"] .screen { padding: 10px 10px 8px; }
+  [data-cart="maze"] .tape li { grid-template-columns: 4ch 5ch minmax(0, 1fr); }
+}
+
+/* A phone on its side: the classic handheld layout, D-pad left of the screen and A/B right of it. */
+@media (orientation: landscape) and (max-height: 540px) {
+  [data-cart="maze"] .stage { padding-top: 8px; max-width: none; }
+  [data-cart="maze"] .masthead h1 { font-size: 18px; margin: 0 0 6px; }
+  [data-cart="maze"] .masthead p { display: none; }
+  [data-cart="maze"] .device { padding: 8px 10px 12px; }
+  [data-cart="maze"] .device-top { padding-bottom: 6px; }
+  [data-cart="maze"] .device-body { grid-template-columns: minmax(0, 1fr); }
+  [data-cart="maze"] .col-side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-cart="maze"] .readouts { grid-column: 1 / -1; }
+  [data-cart="maze"] .col-screen { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+  [data-cart="maze"] .controls { display: contents; }
+  [data-cart="maze"] .dpad { grid-column: 1; grid-row: 1; --arm: 40px; margin: 14px; }
+  [data-cart="maze"] .maze-screen { grid-column: 2; grid-row: 1; padding: 8px 10px 6px; }
+  [data-cart="maze"] .ab { grid-column: 3; grid-row: 1; flex-direction: column; align-items: center; transform: none; gap: 10px; }
+  [data-cart="maze"] .ab-key:first-child { margin-bottom: 0; }
+  [data-cart="maze"] .key-round { width: 48px; height: 48px; }
+  [data-cart="maze"] .screen { gap: 4px; }
+  .maze-screen canvas { width: min(100%, calc((100svh - 140px) * 1.6)); }
+}
+
+/* ---------- live: the switch, the passcode field, the rival rows ---------- */
+[data-cart="maze"] [hidden] { display: none !important; }
+.live-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 8px; }
+.switch { height: 26px; font-size: 11px; gap: 6px; grid-auto-flow: column; }
+.switch::before {   /* a small lamp in the key: lit when on */
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #d6d6d0, #a9a9a3); box-shadow: inset 0 0 0 0.5px rgb(0 0 0 / 0.3);
+}
+.switch[aria-checked="true"] { color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--key), 0 1px 0 #c4c4be; translate: 0 1px; }
+.switch[aria-checked="true"]::before { background: radial-gradient(circle at 35% 30%, #ffd2bd, var(--key)); box-shadow: 0 0 6px 1px rgb(232 80 30 / 0.5); }
+.key[aria-disabled="true"] { color: var(--dim); opacity: 0.55; cursor: not-allowed; }
+.live-status { flex: 1 1 100%; min-width: 0; font-size: 11px; line-height: 1.4; color: var(--dim); overflow-wrap: anywhere; }
+
+.pass { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 6px 8px; margin: 0 0 10px; }
+.pass label { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+.pass input {
+  min-width: 0; height: 28px; padding: 0 8px; border: 0; border-radius: 5px; font: 400 13px/1 var(--mono);
+  color: var(--gray-ink); background: var(--gray-glass); box-shadow: var(--gray-well);
+}
+.pass input:focus-visible { outline: 2px solid var(--key-ink); outline-offset: 1px; }
+.pass .key { height: 28px; font-size: 11px; }
+.pass-note { grid-column: 1 / -1; font-size: 10px; color: var(--dim); }
+
+/* Rival Antes: name, distance bucket (three segments, lit from far to near), cells mapped, calls, last call age. */
+.rivals { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; max-height: 230px; overflow: auto; font-size: 11px; }
+.rivals li { display: grid; grid-template-columns: 4ch 4ch 26px minmax(0, 1fr) 5ch 3ch; align-items: center; gap: 8px; white-space: nowrap; }
+.rivals li.rivals-empty { display: block; white-space: normal; color: var(--gray-dim); line-height: 1.45; }
+.rivals li[data-state="found"] .rv-name { font-weight: 500; }
+.rivals li[data-state="stopped"], .rivals li[data-state="killed"] { opacity: 0.5; }
+.rv-bucket { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; height: 8px; }
+.rv-bucket i { background: rgb(20 20 19 / 0.1); border-radius: 1px; }
+.rivals li[data-bucket="far"] .rv-bucket i:nth-child(-n + 1),
+.rivals li[data-bucket="mid"] .rv-bucket i:nth-child(-n + 2),
+.rivals li[data-bucket="near"] .rv-bucket i { background: var(--gray-ink); }
+.rivals li[data-bucket="near"] .rv-bucket i:last-child { background: var(--key); }
+.rv-bar { height: 6px; border-radius: 1px; background: rgb(20 20 19 / 0.1); overflow: hidden; }
+.rv-bar i { display: block; height: 100%; width: 0; background: var(--gray-ink); }
+.rv-calls, .rv-age { text-align: right; color: var(--gray-dim); }
+.rv-role { color: var(--gray-dim); font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+.rivals li[data-role="lead"] .rv-role { color: var(--gray-ink); font-weight: 500; }
+.grid-lcd .rivals { padding: 2px 2px 0; }

@@ -1,0 +1,9 @@
+[task]
+id = "tool-loop-50"
+allowed_changes = ["ticks.txt"]
+
+[agent]
+timeout_sec = 300
+
+[metadata]
+tags = ["tier0", "overhead"]

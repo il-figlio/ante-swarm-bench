@@ -1,0 +1,9 @@
+[
+  {"op": "read", "path": "notes.txt"},
+  {"op": "write", "path": "status.txt", "content": "ready"},
+  {"op": "bash", "command": "sleep 8"},
+  {"op": "bash", "command": "sleep 8"},
+  {"op": "bash", "command": "sleep 8"},
+  {"op": "bash", "command": "sleep 8"},
+  {"op": "final", "text": "Held for about 32 seconds."}
+]

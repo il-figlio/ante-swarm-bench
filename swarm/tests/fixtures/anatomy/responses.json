@@ -1,0 +1,11 @@
+{"model": "m-1", "stream": true, "reasoning": {"effort": "medium"}, "max_output_tokens": 16384,
+ "instructions": "You are a coding agent. Work in /tmp/swarm/c001-codex-n1-s001/work on 2026-11-12.",
+ "input": [
+  {"role": "developer", "content": [{"type": "input_text", "text": "Sandbox: workspace-write."}]},
+  {"role": "user", "content": [{"type": "input_text", "text": "<environment_context>cwd: /tmp/swarm/c001-codex-n1-s001/work</environment_context>"}]},
+  {"role": "user", "content": [{"type": "input_text", "text": "Write ok to out.txt.\n"}]}
+ ],
+ "tools": [
+  {"type": "function", "name": "shell", "description": "Run a shell command.", "parameters": {"type": "object", "properties": {"command": {"type": "string"}}}},
+  {"type": "function", "name": "mcp__docs__search", "description": "Search docs.", "parameters": {"type": "object"}}
+ ]}

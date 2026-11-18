@@ -1,0 +1,37 @@
+{
+ "vk-data-marta": {
+  "owner": "marta",
+  "team": "data",
+  "weekly_cap_usd": 80.0
+ },
+ "vk-data-sam": {
+  "owner": "sam",
+  "team": "data",
+  "weekly_cap_usd": 60.0
+ },
+ "vk-eng-alice": {
+  "owner": "alice",
+  "team": "eng",
+  "weekly_cap_usd": 150.0
+ },
+ "vk-eng-bob": {
+  "owner": "bob",
+  "team": "eng",
+  "weekly_cap_usd": 100.0
+ },
+ "vk-eng-intern": {
+  "owner": "intern",
+  "team": "eng",
+  "weekly_cap_usd": 25.0
+ },
+ "vk-eng-priya": {
+  "owner": "priya",
+  "team": "eng",
+  "weekly_cap_usd": 100.0
+ },
+ "vk-ops-jules": {
+  "owner": "jules",
+  "team": "ops",
+  "weekly_cap_usd": 40.0
+ }
+}

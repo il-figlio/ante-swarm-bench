@@ -1,0 +1,9 @@
+[task]
+id = "hold"
+allowed_changes = ["status.txt"]
+
+[agent]
+timeout_sec = 300
+
+[metadata]
+tags = ["capacity"]

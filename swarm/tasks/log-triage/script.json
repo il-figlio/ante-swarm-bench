@@ -1,0 +1,23 @@
+[
+ {
+  "op": "read",
+  "path": "app.log"
+ },
+ {
+  "op": "read",
+  "path": "triage.py"
+ },
+ {
+  "op": "write",
+  "path": "triage.py",
+  "content": "\"\"\"Count ERROR lines per service in app.log.\"\"\"\nimport json\n\n\ndef main():\n    counts = {}\n    with open(\"app.log\") as stream:\n        for line in stream:\n            parts = line.split()\n            if len(parts) >= 3 and parts[1] == \"ERROR\":\n                counts[parts[2]] = counts.get(parts[2], 0) + 1\n    with open(\"errors.json\", \"w\") as stream:\n        json.dump(dict(sorted(counts.items())), stream)\n\n\nif __name__ == \"__main__\":\n    main()\n"
+ },
+ {
+  "op": "bash",
+  "command": "python3 triage.py && cat errors.json"
+ },
+ {
+  "op": "final",
+  "text": "errors.json counts ERROR lines per service."
+ }
+]

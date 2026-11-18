@@ -1,0 +1,10 @@
+[
+  {
+    "op": "bash",
+    "command": "python3 -c \"open('note.txt','w').write('hello from agent\\n'); open('result.txt','w').write('done\\n')\""
+  },
+  {
+    "op": "final",
+    "text": "Wrote note.txt and result.txt."
+  }
+]

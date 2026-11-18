@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Swarm Replay</title>
+  <meta name="description" content="Ante, by itself: stored runs replayed as a small handheld game, one real trace event per move.">
+  <link rel="preload" href="/fonts/spec-mono-400-core.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/solo.css">
+  <link rel="stylesheet" href="/arcade.css">
+</head>
+<body data-skin="hardware">
+  <main class="stage">
+    <header class="masthead" data-kit="masthead">
+      <h1>swarm replay</h1>
+      <p>Stored Ante runs, replayed as a game. Every move on the board is a real event from that run's trace: a file read,
+        an edit, a command, the closing turn and the checker's verdict. No model is called to show you this. To play
+        trail and hill yourself, against Antes, take the <a href="/trail/">trail</a> or <a href="/hill/">hill</a> cartridge.</p>
+    </header>
+
+    <section class="device" data-kit="device" aria-label="AX-1 replay device">
+      <div class="device-top">
+        <span class="brand"><b>swarm</b> AX-1</span>
+        <span class="lamp-row"><span class="lamp" id="lamp-play" data-on="false" aria-hidden="true"></span><span>play</span>
+          <span class="lamp" id="lamp-pass" data-on="false" aria-hidden="true"></span><span>pass</span>
+          <span class="lamp lamp-fail" id="lamp-fail" data-on="false" aria-hidden="true"></span><span>fail</span></span>
+      </div>
+
+      <div class="device-body">
+        <div class="col-screen">
+          <div class="lcd screen" data-kit="lcd">
+            <div class="lcd-tag" data-kit="lcd-tag"><span id="screen-tag">board</span><span id="screen-task"></span></div>
+            <canvas id="board" width="640" height="440" role="img" aria-label="board"></canvas>
+            <div class="lcd-foot"><span id="screen-caption">loading runs…</span></div>
+          </div>
+
+          <div class="controls">
+            <div class="dpad" data-kit="dpad" role="group" aria-label="step and pick">
+              <span class="dpad-well" aria-hidden="true"></span>
+              <span class="dpad-cap" aria-hidden="true"></span>
+              <button class="dpad-zone up" data-dir="up" aria-label="previous agent" title="previous agent (↑)"></button>
+              <button class="dpad-zone left" data-dir="left" aria-label="step back" title="step back (←)"></button>
+              <button class="dpad-zone right" data-dir="right" aria-label="step forward" title="step forward (→)"></button>
+              <button class="dpad-zone down" data-dir="down" aria-label="next agent" title="next agent (↓)"></button>
+            </div>
+            <div class="ab">
+              <div class="ab-key"><button class="key key-round key-accent" id="btn-a" aria-label="play or pause" title="play / pause (space)">A</button><span>play</span></div>
+              <div class="ab-key"><button class="key key-round" id="btn-b" aria-label="restart" title="restart (r)">B</button><span>reset</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-side">
+          <div class="module" data-kit="module">
+            <div class="module-label">replay board <a class="module-aside replay-link" href="/trail/">play the games ▸</a></div>
+            <div class="dial" data-kit="mode-dial" role="radiogroup" aria-label="board">
+              <div class="dial-knob" aria-hidden="true"><span class="dial-pointer"></span></div>
+              <button class="dial-stop" role="radio" data-board="trail" aria-checked="true">trail</button>
+              <button class="dial-stop" role="radio" data-board="hill" aria-checked="false">hill</button>
+              <a class="dial-stop" role="radio" aria-checked="false" href="/maze/" title="the maze cartridge (m)">maze</a>
+            </div>
+          </div>
+
+          <div class="module" data-kit="module">
+            <div class="module-label">run</div>
+            <div class="run-pick">
+              <button class="key key-sm" id="run-prev" aria-label="previous run">◂</button>
+              <div class="lcd lcd-sm" data-kit="lcd"><span class="lcd-digits" id="run-id">------</span><span class="lcd-sub" id="run-meta"></span></div>
+              <button class="key key-sm" id="run-next" aria-label="next run">▸</button>
+            </div>
+            <div class="module-label">task</div>
+            <div class="tasks" id="tasks" role="radiogroup" aria-label="task"></div>
+          </div>
+
+          <div class="module" data-kit="module">
+            <div class="module-label">swarm <span id="grid-tally"></span></div>
+            <div class="lcd grid-lcd" data-kit="lcd"><canvas id="grid" width="256" height="256" role="img" aria-label="swarm"></canvas></div>
+          </div>
+
+          <div class="readouts">
+            <div class="lcd lcd-sm" data-kit="lcd"><span class="lcd-tag">step</span><span class="lcd-digits" id="r-step">--/--</span></div>
+            <div class="lcd lcd-sm" data-kit="lcd"><span class="lcd-tag">t</span><span class="lcd-digits" id="r-time">-.--s</span></div>
+            <div class="lcd lcd-sm" data-kit="lcd"><span class="lcd-tag" id="r-third-tag">trail</span><span class="lcd-digits" id="r-third">--</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lcd tape" data-kit="lcd" aria-label="trace">
+        <div class="lcd-tag">trace</div>
+        <ol id="tape"></ol>
+      </div>
+    </section>
+
+    <section class="receipt" aria-label="receipt">
+      <h2>receipt</h2>
+      <dl id="receipt"></dl>
+      <p class="legend" id="legend"></p>
+    </section>
+
+    <footer class="foot">
+      <p>ante-swarm-bench · Independent work, not an Antigma release.</p>
+      <p>Scripted model runs on the Ante harness, recorded on a Swarm lane. The race between harnesses is a
+        separate page (<code>swarm front</code>). Play against Antes yourself on the
+        <a href="/trail/">trail</a>, <a href="/hill/">hill</a> and <a href="/maze/">maze</a> cartridges.</p>
+      <p>Hardware look after <a href="https://github.com/shuding/spec-01">spec-01</a> (MIT); type is Spec Mono, a subset
+        of IBM Plex Mono (OFL). <a href="/NOTICE.txt">Notices</a>.</p>
+      <p class="keys">keys: ← → step · ↑ ↓ agent · space play · r reset · t board · m maze</p>
+    </footer>
+  </main>
+  <script src="/boards.js"></script>
+  <script src="/solo.js"></script>
+</body>
+</html>

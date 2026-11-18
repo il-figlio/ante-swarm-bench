@@ -1,0 +1,34 @@
+order_id,date,customer,category,amount,note
+A1001,2026-08-31,"Lopez, Ana",groceries,55.10,weekly shop
+A1002,2026-09-01,Marta R,coffee,4.20,beans refill
+A1003,2026-09-01,"Chen, Wei",transport,18.75,"train, return leg"
+A1004,2026-09-02,K. Osei,fun,64.00,climbing gym pass
+A1005,2026-09-02,"Garcia, Tom",groceries,9.20,top-up
+A1002,2026-09-03,Marta R,coffee,4.20,beans refill (resend)
+A1006,2026-09-03,Priya S,coffee,3.80,"flat white, extra shot"
+A1007,2026-09-04,"Lopez, Ana",fun,15.00,cinema + noodles
+A1008,2026-09-04,Marta R,groceries,38.90,"weekly shop, top-up"
+A1009,2026-09-05,"Chen, Wei",transport,12.00,taxi split
+A1010,2026-09-05,K. Osei,coffee,4.20,beans
+A1011,2026-09-06,"Garcia, Tom",fun,9.50,"rain check, ""maybe later"""
+A1012,2026-09-07,Priya S,groceries,27.40,weekly shop
+A1013,2026-09-08,"Lopez, Ana",transport,15.00,bus card
+A1014,2026-09-08,Marta R,fun,41.60,"dinner, set menu"
+A1015,2026-09-09,"Chen, Wei",coffee,3.50,cortado
+A1009,2026-09-09,"Chen, Wei",transport,12.00,taxi split RETRY
+A1016,2026-09-10,K. Osei,groceries,41.60,weekly shop
+A1017,2026-09-10,"Garcia, Tom",coffee,4.20,beans
+A1018,2026-09-11,Priya S,fun,22.50,"climbing, guest"
+A1019,2026-09-11,"Lopez, Ana",transport,9.90,bus top-up
+A1020,2026-09-12,Marta R,groceries,120.00,bulk staples
+A1021,2026-09-12,"Chen, Wei",fun,15.00,cinema
+A1022,2026-09-13,K. Osei,coffee,3.80,flat white
+A1023,2026-09-14,"Garcia, Tom",groceries,33.75,weekly shop
+A1024,2026-09-14,Priya S,transport,18.75,train
+A1025,2026-09-15,"Lopez, Ana",coffee,4.20,"beans, dark roast"
+A1026,2026-09-15,Marta R,fun,12.50,board game night
+A1027,2026-09-16,"Chen, Wei",groceries,8.40,top-up
+A1028,2026-09-16,K. Osei,transport,6.00,metro card
+A1014,2026-09-17,Marta R,fun,41.60,"dinner, set menu (duplicate)"
+A1029,2026-09-17,"Garcia, Tom",coffee,3.50,flat white
+A1030,2026-09-18,Priya S,groceries,21.30,weekly shop

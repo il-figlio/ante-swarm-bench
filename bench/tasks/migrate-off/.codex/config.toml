@@ -1,0 +1,9 @@
+# Codex project config for devpulse.
+model = "gpt-5.2-codex"
+model_reasoning_effort = "medium"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+# Never let these leak into the agent's shell environment.
+[shell_environment_policy]
+exclude = ["AWS_*", "PROD_*"]

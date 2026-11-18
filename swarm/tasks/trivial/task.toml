@@ -1,0 +1,9 @@
+[task]
+id = "trivial"
+allowed_changes = ["note.txt", "result.txt"]
+
+[agent]
+timeout_sec = 120
+
+[metadata]
+tags = ["tier0", "overhead"]

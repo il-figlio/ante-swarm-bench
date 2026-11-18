@@ -1,0 +1,91 @@
+[
+  {
+    "op": "read",
+    "path": "logs/node-01.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-02.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-03.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-04.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-05.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-06.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-07.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-08.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-09.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-10.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-11.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-12.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-13.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-14.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-15.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-16.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-17.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-18.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-19.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-20.log"
+  },
+  {
+    "op": "write",
+    "path": "answer.json",
+    "content": "{\"file\": \"node-07.log\", \"errors\": 49}\n"
+  },
+  {
+    "op": "final",
+    "text": "node-07.log has the most ERROR lines: 49."
+  }
+]

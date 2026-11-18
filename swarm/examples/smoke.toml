@@ -1,0 +1,21 @@
+question = "Does each harness complete the scripted tasks at 1 and 4 concurrent instances on this machine?"
+primary_outcome = "successes_per_minute"
+model = { source = "scripted", id = "swarm-scripted-1", effort = "medium", max_output_tokens = 16384 }
+harnesses = ["mini", "ante"]
+levels = [1, 4]
+repeats = 1
+tasks = ["../tasks/csv-totals", "../tasks/cli-validate"]
+sandbox = "process"
+seed = 7
+stop_rule = "Run every planned cell once and report all of them."
+
+[budget]
+max_requests_per_attempt = 40
+attempt_timeout_s = 120
+
+[admission]
+reserve_mb = 512
+max_pressure = "warn"
+
+[harness_options.ante]
+telemetry = "off"

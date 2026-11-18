@@ -1,0 +1,44 @@
+{
+  "id": "hermes-lean-20261015-v3",
+  "protocol_revision": "lean-v1",
+  "harnesses": [
+    "hermes",
+    "ante-hermes",
+    "ante-hermes-lean"
+  ],
+  "concurrency": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "repeats": 3,
+  "attempts_per_cell": 8,
+  "task_order": "t01,t02,t03,t04 repeated twice",
+  "model": "openai/gpt-5.6-terra",
+  "reasoning_effort": "medium",
+  "request_budget_per_task": 40,
+  "max_output_tokens_per_request": 16384,
+  "task_deadline_s": 600,
+  "checker_deadline_s": 30,
+  "output_limit_bytes": 8388608,
+  "sampling_interval_s": 0.25,
+  "order": "round1 H,F,L; round2 F,L,H; round3 L,H,F at each concurrency; concurrency ascending",
+  "scanner": "read-only seed hardlink all three; catalog copies, fresh homes/workspaces",
+  "current_adapter": "full Hermes CLI adapter0.2 with effort fix; medium same as measured0.1; identical bridge/schema to lean",
+  "lean_adapter": "stdlib supervisor, Ante core, identical Hermes MCP bridge; no retained Hermes CLI",
+  "tools": [
+    "patch",
+    "read_file",
+    "search_files",
+    "terminal",
+    "write_file"
+  ],
+  "tool_scope": "Native Hermes tool search disabled; relay rejects unexpected tool grants. MCP names differ from native encoding.",
+  "prompt_scope": "Identical user prompts, common supplemental instruction; native Hermes retains base system prompt. Both adapters use identical semantic system prompt/MCP schema. Wrapper ablation between adapters, not pure core swap vs native.",
+  "budget_scope": "Common relay40 requests/task,600s task,16k output/request; native Hermes also40 internal turns. Different internal turn semantics remain.",
+  "repetition_limit": "3 sequential rotated rounds; same host; provider cache/load/backend nondeterminism uncontrolled",
+  "usage": "private admin logs; ChatGPT-backed OpenAI via the VM platform; no plan tier public",
+  "native_grant": "Public create_custom_toolset API registers bench-five; native Hermes CLI/loop unchanged; process_manage and discovery tools excluded",
+  "auxiliary": "Native auto-title generation disabled in shared fresh config; all requests must carry assigned model/effort/five tools"
+}

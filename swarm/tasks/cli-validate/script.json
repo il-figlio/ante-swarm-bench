@@ -1,0 +1,19 @@
+[
+  {
+    "op": "read",
+    "path": "temp.py"
+  },
+  {
+    "op": "write",
+    "path": "temp.py",
+    "content": "import sys\n\n\ndef main(argv):\n    try:\n        celsius = float(argv[1])\n    except (IndexError, ValueError):\n        print(\"error: expected a number\", file=sys.stderr)\n        return 2\n    print(f\"{celsius * 9 / 5 + 32:.1f}\")\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main(sys.argv))\n"
+  },
+  {
+    "op": "bash",
+    "command": "python3 temp.py 21.5; python3 temp.py abc; echo exit=$?"
+  },
+  {
+    "op": "final",
+    "text": "temp.py validates its argument."
+  }
+]

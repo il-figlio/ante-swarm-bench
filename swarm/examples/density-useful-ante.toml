@@ -1,0 +1,22 @@
+question = "Does Ante 0.3.0 finish the four mixed live tasks (cli-validate, csv-totals, log-triage, config-migrate) with 32 instances at once on one 2 vCPU / 8 GB machine, with the scripted model, and at what cost per success? Telemetry, analytics and update checks are off for every harness in this comparison (Ante telemetry off too, for parity)."
+primary_outcome = "successes_per_minute"
+model = { source = "scripted", id = "swarm-scripted-1", effort = "medium", max_output_tokens = 16384 }
+harnesses = ["ante"]
+tasks = ["../tasks/cli-validate", "../tasks/csv-totals", "../tasks/log-triage", "../tasks/config-migrate"]
+levels = [32]
+sandbox = "process"
+seed = 62
+stop_rule = "Run n=32 once, the four tasks mixed evenly."
+
+[budget]
+max_requests_per_attempt = 40
+attempt_timeout_s = 300
+
+[admission]
+reserve_mb = 512
+max_pressure = "warn"
+wait_timeout_s = 600
+reserve_tasks = 256
+
+[harness_options.ante]
+telemetry = "off"

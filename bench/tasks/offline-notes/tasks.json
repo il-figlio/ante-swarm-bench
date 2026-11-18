@@ -1,0 +1,63 @@
+[
+ {
+  "id": "n01",
+  "persona": "B",
+  "title": "Write a broken-link checker for the notes",
+  "prompt": "Some of the cross-links in my notes have gone stale — files got renamed or moved and the links still point at the old paths. Write tools/check_links.py that checks every markdown file under notes/ (links are relative markdown links resolved against the linking note's folder — see the README) and prints each broken link as `path/to/note.md:LINE -> target`, one per line. Exit code 1 if any links are broken, 0 if the tree is clean. Standard library only, and nothing that touches the network — this machine is offline. Verify with `python3 -m unittest tests.check_n01 -q`.",
+  "check": "tests.check_n01",
+  "expect_files": ["tools/check_links.py"],
+  "budget_s": 300,
+  "tags": ["markdown", "offline", "scripting"]
+ },
+ {
+  "id": "n02",
+  "persona": "B",
+  "title": "Generate INDEX.md for the whole notes tree",
+  "prompt": "My notes have outgrown memory. Create INDEX.md at the repo root listing every note under notes/, grouped by folder: one `## <folder>` section per subfolder of notes/ (folder name as the heading, sections alphabetical), and under each section every note in that folder listed exactly once as a relative markdown link, per the linking convention in the README. Verify with `python3 -m unittest tests.check_n02 -q`.",
+  "check": "tests.check_n02",
+  "expect_files": ["INDEX.md"],
+  "budget_s": 300,
+  "tags": ["markdown", "offline", "index"]
+ },
+ {
+  "id": "n03",
+  "persona": "B",
+  "title": "Fix the broken cross-links",
+  "prompt": "A bunch of the cross-links in the notes are broken — targets were renamed or moved and the links were never updated. Find every broken link under notes/ and fix it to point at the right existing note. Update only the link targets: don't rewrite prose, don't add or delete files, don't rename or move anything. Verify with `python3 -m unittest tests.check_n03 -q`.",
+  "check": "tests.check_n03",
+  "expect_files": [
+   "notes/areas/backup-routine.md",
+   "notes/areas/finances.md",
+   "notes/areas/home-maintenance.md",
+   "notes/daily/2026-08-30.md",
+   "notes/daily/2026-09-14.md",
+   "notes/daily/2026-10-02.md",
+   "notes/projects/bike-tour-alps.md",
+   "notes/projects/ceramics-studio.md",
+   "notes/projects/zine-issue-3.md",
+   "notes/resources/git-cheat-sheet.md"
+  ],
+  "budget_s": 360,
+  "tags": ["markdown", "offline", "editing"]
+ },
+ {
+  "id": "n04",
+  "persona": "B",
+  "title": "Summarise notes/projects/ into a README",
+  "prompt": "Write notes/projects/README.md summarising that folder: one `- [title](file.md)` line for each of the other notes in notes/projects/ (a relative markdown link, per the convention in the README), followed by an em-dash and a one-line description of what the note is about. Every note in the folder exactly once, keep it compact. Verify with `python3 -m unittest tests.check_n04 -q`.",
+  "check": "tests.check_n04",
+  "expect_files": ["notes/projects/README.md"],
+  "budget_s": 300,
+  "tags": ["markdown", "offline", "writing"]
+ },
+ {
+  "id": "n05",
+  "persona": "B",
+  "title": "Build TAGS.md index of inline tags",
+  "prompt": "I use inline `#tag`s across the notes. Build TAGS.md at the repo root indexing them all: one `## #tag` section per tag (alphabetical), each followed by relative markdown links to every note that uses that tag, per the linking convention in the README. Verify with `python3 -m unittest tests.check_n05 -q`.",
+  "check": "tests.check_n05",
+  "expect_files": ["TAGS.md"],
+  "budget_s": 300,
+  "tags": ["markdown", "offline", "index"]
+ }
+]

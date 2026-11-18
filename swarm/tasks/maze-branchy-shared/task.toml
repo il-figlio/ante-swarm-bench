@@ -1,0 +1,20 @@
+[task]
+id = "maze-branchy-shared"
+allowed_changes = []
+
+[agent]
+timeout_sec = 1800
+
+[maze]
+cols = 40
+rows = 25
+seed = 2026
+generator = "prim"
+loops = 0.05
+start = "center"
+map = "shared"
+step_limit = 4000
+call_budget = 0
+
+[metadata]
+tags = ["maze"]

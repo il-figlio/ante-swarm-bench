@@ -1,0 +1,28 @@
+question = "With admission that watches memory, pressure and the cgroup task limit, how many live Ante instances does one 2 vCPU / 8 GB machine sustain, and do over-limit launches queue instead of failing?"
+primary_outcome = "successes_per_minute"
+model = { source = "scripted", id = "swarm-scripted-1", effort = "medium", max_output_tokens = 16384 }
+harnesses = ["ante"]
+tasks = ["../tasks/hold"]
+sandbox = "process"
+seed = 47
+stop_rule = "Double concurrency from 128 to 1024 with ~32-second sessions; stop when a wave passes under 95%, any launch is never admitted, or fewer than half the instances were alive at once."
+
+[ramp]
+start = 128
+factor = 2
+max = 1024
+stop_pass_rate = 0.95
+
+[budget]
+max_requests_per_attempt = 40
+attempt_timeout_s = 300
+
+[admission]
+reserve_mb = 512
+max_pressure = "warn"
+wait_timeout_s = 600
+reserve_tasks = 256
+
+[harness_options.ante]
+telemetry = "on"
+telemetry_env = "swarm-bench-capacity"

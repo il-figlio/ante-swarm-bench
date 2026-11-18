@@ -1,0 +1,643 @@
+{
+ "columns": [
+  "order_id",
+  "date",
+  "customer",
+  "category",
+  "amount",
+  "note"
+ ],
+ "data/orders.csv": {
+  "expected_rows": [
+   [
+    "A1001",
+    "2026-08-31",
+    "Lopez, Ana",
+    "groceries",
+    55.1,
+    "weekly shop"
+   ],
+   [
+    "A1002",
+    "2026-09-01",
+    "Marta R",
+    "coffee",
+    4.2,
+    "beans refill"
+   ],
+   [
+    "A1003",
+    "2026-09-01",
+    "Chen, Wei",
+    "transport",
+    18.75,
+    "train, return leg"
+   ],
+   [
+    "A1004",
+    "2026-09-02",
+    "K. Osei",
+    "fun",
+    64.0,
+    "climbing gym pass"
+   ],
+   [
+    "A1005",
+    "2026-09-02",
+    "Garcia, Tom",
+    "groceries",
+    9.2,
+    "top-up"
+   ],
+   [
+    "A1006",
+    "2026-09-03",
+    "Priya S",
+    "coffee",
+    3.8,
+    "flat white, extra shot"
+   ],
+   [
+    "A1007",
+    "2026-09-04",
+    "Lopez, Ana",
+    "fun",
+    15.0,
+    "cinema + noodles"
+   ],
+   [
+    "A1008",
+    "2026-09-04",
+    "Marta R",
+    "groceries",
+    38.9,
+    "weekly shop, top-up"
+   ],
+   [
+    "A1009",
+    "2026-09-05",
+    "Chen, Wei",
+    "transport",
+    12.0,
+    "taxi split"
+   ],
+   [
+    "A1010",
+    "2026-09-05",
+    "K. Osei",
+    "coffee",
+    4.2,
+    "beans"
+   ],
+   [
+    "A1011",
+    "2026-09-06",
+    "Garcia, Tom",
+    "fun",
+    9.5,
+    "rain check, \"maybe later\""
+   ],
+   [
+    "A1012",
+    "2026-09-07",
+    "Priya S",
+    "groceries",
+    27.4,
+    "weekly shop"
+   ],
+   [
+    "A1013",
+    "2026-09-08",
+    "Lopez, Ana",
+    "transport",
+    15.0,
+    "bus card"
+   ],
+   [
+    "A1014",
+    "2026-09-08",
+    "Marta R",
+    "fun",
+    41.6,
+    "dinner, set menu"
+   ],
+   [
+    "A1015",
+    "2026-09-09",
+    "Chen, Wei",
+    "coffee",
+    3.5,
+    "cortado"
+   ],
+   [
+    "A1016",
+    "2026-09-10",
+    "K. Osei",
+    "groceries",
+    41.6,
+    "weekly shop"
+   ],
+   [
+    "A1017",
+    "2026-09-10",
+    "Garcia, Tom",
+    "coffee",
+    4.2,
+    "beans"
+   ],
+   [
+    "A1018",
+    "2026-09-11",
+    "Priya S",
+    "fun",
+    22.5,
+    "climbing, guest"
+   ],
+   [
+    "A1019",
+    "2026-09-11",
+    "Lopez, Ana",
+    "transport",
+    9.9,
+    "bus top-up"
+   ],
+   [
+    "A1020",
+    "2026-09-12",
+    "Marta R",
+    "groceries",
+    120.0,
+    "bulk staples"
+   ],
+   [
+    "A1021",
+    "2026-09-12",
+    "Chen, Wei",
+    "fun",
+    15.0,
+    "cinema"
+   ],
+   [
+    "A1022",
+    "2026-09-13",
+    "K. Osei",
+    "coffee",
+    3.8,
+    "flat white"
+   ],
+   [
+    "A1023",
+    "2026-09-14",
+    "Garcia, Tom",
+    "groceries",
+    33.75,
+    "weekly shop"
+   ],
+   [
+    "A1024",
+    "2026-09-14",
+    "Priya S",
+    "transport",
+    18.75,
+    "train"
+   ],
+   [
+    "A1025",
+    "2026-09-15",
+    "Lopez, Ana",
+    "coffee",
+    4.2,
+    "beans, dark roast"
+   ],
+   [
+    "A1026",
+    "2026-09-15",
+    "Marta R",
+    "fun",
+    12.5,
+    "board game night"
+   ],
+   [
+    "A1027",
+    "2026-09-16",
+    "Chen, Wei",
+    "groceries",
+    8.4,
+    "top-up"
+   ],
+   [
+    "A1028",
+    "2026-09-16",
+    "K. Osei",
+    "transport",
+    6.0,
+    "metro card"
+   ],
+   [
+    "A1029",
+    "2026-09-17",
+    "Garcia, Tom",
+    "coffee",
+    3.5,
+    "flat white"
+   ],
+   [
+    "A1030",
+    "2026-09-18",
+    "Priya S",
+    "groceries",
+    21.3,
+    "weekly shop"
+   ]
+  ],
+  "input_rows": 33
+ },
+ "fixtures": {
+  "basic.csv": {
+   "duplicate_ids": [],
+   "expected_rows": [
+    [
+     "B4001",
+     "2026-08-02",
+     "Ana Lopez",
+     "groceries",
+     42.1,
+     "weekly shop"
+    ],
+    [
+     "B4002",
+     "2026-08-05",
+     "Priya S",
+     "coffee",
+     3.5,
+     "flat white"
+    ],
+    [
+     "B4003",
+     "2026-08-08",
+     "Tom Garcia",
+     "transport",
+     18.75,
+     "train to brimley"
+    ],
+    [
+     "B4004",
+     "2026-08-11",
+     "Marta R",
+     "groceries",
+     120.0,
+     "bulk staples"
+    ],
+    [
+     "B4005",
+     "2026-08-14",
+     "Ana Lopez",
+     "groceries",
+     9.2,
+     "top-up"
+    ],
+    [
+     "B4006",
+     "2026-08-17",
+     "K. Osei",
+     "fun",
+     64.0,
+     "climbing gym pass"
+    ],
+    [
+     "B4007",
+     "2026-08-21",
+     "Priya S",
+     "coffee",
+     3.8,
+     "cortado"
+    ],
+    [
+     "B4008",
+     "2026-08-25",
+     "Tom Garcia",
+     "groceries",
+     27.4,
+     "weekly shop"
+    ],
+    [
+     "B4009",
+     "2026-08-28",
+     "Wei Chen",
+     "transport",
+     15.0,
+     "bus card"
+    ],
+    [
+     "B4010",
+     "2026-08-30",
+     "Ana Lopez",
+     "fun",
+     41.6,
+     "cinema + noodles"
+    ],
+    [
+     "B4011",
+     "2026-09-03",
+     "Priya S",
+     "coffee",
+     4.2,
+     "beans"
+    ],
+    [
+     "B4012",
+     "2026-09-06",
+     "Tom Garcia",
+     "transport",
+     12.0,
+     "taxi split"
+    ]
+   ],
+   "input_rows": 12,
+   "malformed_count": 0,
+   "malformed_ids": [],
+   "report": {
+    "by_category": {
+     "coffee": 3,
+     "fun": 2,
+     "groceries": 4,
+     "transport": 3
+    },
+    "date_range": [
+     "2026-08-02",
+     "2026-09-06"
+    ],
+    "rows": 12,
+    "total_amount": "361.55"
+   }
+  },
+  "dupes.csv": {
+   "duplicate_ids": [
+    "D3002",
+    "D3003",
+    "D3006",
+    "D3008"
+   ],
+   "expected_rows": [
+    [
+     "D3001",
+     "2026-09-01",
+     "Ana Lopez",
+     "coffee",
+     4.2,
+     "beans"
+    ],
+    [
+     "D3002",
+     "2026-09-01",
+     "Tom Garcia",
+     "groceries",
+     55.1,
+     "weekly shop"
+    ],
+    [
+     "D3003",
+     "2026-09-02",
+     "Priya S",
+     "transport",
+     18.75,
+     "train"
+    ],
+    [
+     "D3004",
+     "2026-09-02",
+     "Wei Chen",
+     "fun",
+     64.0,
+     "climbing pass"
+    ],
+    [
+     "D3005",
+     "2026-09-03",
+     "Marta R",
+     "coffee",
+     3.8,
+     "cortado"
+    ],
+    [
+     "D3006",
+     "2026-09-04",
+     "Ana Lopez",
+     "fun",
+     15.0,
+     "cinema"
+    ],
+    [
+     "D3007",
+     "2026-09-05",
+     "K. Osei",
+     "groceries",
+     27.4,
+     "top-up"
+    ],
+    [
+     "D3008",
+     "2026-09-06",
+     "Tom Garcia",
+     "transport",
+     15.0,
+     "bus card"
+    ],
+    [
+     "D3009",
+     "2026-09-08",
+     "Wei Chen",
+     "coffee",
+     4.2,
+     "beans"
+    ],
+    [
+     "D3010",
+     "2026-09-09",
+     "Marta R",
+     "groceries",
+     41.6,
+     "weekly shop"
+    ]
+   ],
+   "input_rows": 14,
+   "malformed_count": 0,
+   "malformed_ids": []
+  },
+  "malformed.csv": {
+   "duplicate_ids": [],
+   "expected_rows": [
+    [
+     "M5001",
+     "2026-09-01",
+     "Ana Lopez",
+     "coffee",
+     4.2,
+     "beans"
+    ],
+    [
+     "M5002",
+     "2026-09-01",
+     "Tom Garcia",
+     "groceries",
+     55.1,
+     "weekly shop"
+    ],
+    [
+     "M5003",
+     "2026-09-02",
+     "Priya S",
+     "transport",
+     18.75,
+     "train"
+    ],
+    [
+     "M5006",
+     "2026-09-03",
+     "Ana Lopez",
+     "fun",
+     15.0,
+     "cinema"
+    ],
+    [
+     "M5008",
+     "2026-09-05",
+     "Tom Garcia",
+     "transport",
+     15.0,
+     "bus card"
+    ],
+    [
+     "M5009",
+     "2026-09-06",
+     "Wei Chen",
+     "coffee",
+     4.2,
+     "beans"
+    ],
+    [
+     "M5010",
+     "2026-09-07",
+     "Marta R",
+     "groceries",
+     41.6,
+     "weekly shop"
+    ],
+    [
+     "M5012",
+     "2026-09-08",
+     "K. Osei",
+     "fun",
+     12.5,
+     "board game"
+    ],
+    [
+     "M5013",
+     "2026-09-09",
+     "Ana Lopez",
+     "coffee",
+     3.5,
+     "flat white"
+    ]
+   ],
+   "input_rows": 13,
+   "malformed_count": 4,
+   "malformed_ids": [
+    "M5004",
+    "M5005",
+    "M5007",
+    "M5011"
+   ]
+  },
+  "quoted.csv": {
+   "duplicate_ids": [],
+   "expected_rows": [
+    [
+     "Q2001",
+     "2026-09-01",
+     "Lopez, Ana",
+     "coffee",
+     4.2,
+     "beans refill"
+    ],
+    [
+     "Q2002",
+     "2026-09-02",
+     "Marta R",
+     "fun",
+     64.0,
+     "2x mugs, gift-wrapped"
+    ],
+    [
+     "Q2003",
+     "2026-09-03",
+     "K. Osei",
+     "transport",
+     18.75,
+     "call before delivery\nleave at side door"
+    ],
+    [
+     "Q2004",
+     "2026-09-04",
+     "Chen, Wei",
+     "groceries",
+     42.1,
+     "she said \"keep the receipt\""
+    ],
+    [
+     "Q2005",
+     "2026-09-05",
+     "Priya S",
+     "coffee",
+     3.8,
+     "flat white, extra shot"
+    ],
+    [
+     "Q2006",
+     "2026-09-08",
+     "Garcia, Tom",
+     "fun",
+     15.0,
+     "cinema"
+    ],
+    [
+     "Q2007",
+     "2026-09-09",
+     "Marta R",
+     "groceries",
+     38.9,
+     "weekly shop, top-up"
+    ],
+    [
+     "Q2008",
+     "2026-09-10",
+     "Lopez, Ana",
+     "transport",
+     12.0,
+     "taxi split"
+    ],
+    [
+     "Q2009",
+     "2026-09-11",
+     "K. Osei",
+     "fun",
+     9.5,
+     "rain check, \"maybe later\""
+    ],
+    [
+     "Q2010",
+     "2026-09-12",
+     "Chen, Wei",
+     "coffee",
+     4.2,
+     "beans"
+    ]
+   ],
+   "input_rows": 10,
+   "malformed_count": 0,
+   "malformed_ids": []
+  }
+ },
+ "note": "generated by tools/gen_data.py \u2014 do not edit",
+ "table": "orders"
+}

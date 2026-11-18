@@ -1,0 +1,206 @@
+[
+  {
+    "op": "bash",
+    "command": "echo 1 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 2 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 3 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 4 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 5 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 6 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 7 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 8 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 9 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 10 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 11 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 12 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 13 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 14 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 15 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 16 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 17 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 18 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 19 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 20 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 21 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 22 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 23 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 24 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 25 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 26 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 27 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 28 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 29 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 30 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 31 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 32 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 33 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 34 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 35 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 36 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 37 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 38 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 39 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 40 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 41 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 42 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 43 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 44 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 45 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 46 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 47 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 48 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 49 >> ticks.txt"
+  },
+  {
+    "op": "bash",
+    "command": "echo 50 >> ticks.txt"
+  },
+  {
+    "op": "final",
+    "text": "Appended 1 to 50 to ticks.txt."
+  }
+]

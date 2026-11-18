@@ -1,0 +1,20 @@
+[task]
+id = "maze-large-shared"
+allowed_changes = []
+
+[agent]
+timeout_sec = 7200
+
+[maze]
+cols = 64
+rows = 40
+seed = 2026
+generator = "prim"
+loops = 0.05
+start = "center"
+map = "shared"
+step_limit = 12000
+call_budget = 0
+
+[metadata]
+tags = ["maze"]

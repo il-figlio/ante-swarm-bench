@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Swarm Hill</title>
+  <meta name="description" content="A hill cartridge for the AX-1: stack the same pieces as the Antes in wells side by side, clear rows, send them garbage.">
+  <link rel="preload" href="/fonts/spec-mono-400-core.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/solo.css">
+  <link rel="stylesheet" href="/maze.css">
+  <link rel="stylesheet" href="/arcade.css">
+</head>
+<body data-skin="hardware" data-cart="hill" data-arcade="hill">
+  <main class="stage">
+    <header class="masthead" data-kit="masthead">
+      <h1>swarm hill</h1>
+      <p id="masthead-note">Your well and the Antes' wells, side by side. Move and turn your piece, drop it, clear rows. Two rows at
+        once send a garbage row to the other side, three send three. A swarm plays its own wells and pools its rows. Last side
+        standing wins, or the most rows cleared in three minutes (a swarm counts its rows per well).</p>
+    </header>
+
+    <section class="device" data-kit="device" aria-label="AX-1 with the hill cartridge">
+      <div class="device-top">
+        <span class="brand"><b>swarm</b> AX-1 <span class="cart">hill cart</span></span>
+        <span class="lamp-row"><span class="lamp" id="lamp-play" data-on="false" aria-hidden="true"></span><span>live</span>
+          <span class="lamp" id="lamp-pass" data-on="false" aria-hidden="true"></span><span>win</span>
+          <span class="lamp lamp-fail" id="lamp-fail" data-on="false" aria-hidden="true"></span><span>lost</span></span>
+      </div>
+
+      <div class="device-body">
+        <div class="col-screen">
+          <div class="lcd screen game-screen" id="screen" data-kit="lcd" data-phase="ready">
+            <div class="lcd-tag" data-kit="lcd-tag"><span id="screen-tag">hill</span><span id="screen-opp"></span></div>
+            <canvas id="board" width="640" height="576" role="img" aria-label="your well and the rival wells"></canvas>
+            <div class="lcd-foot"><span id="screen-caption" aria-live="polite">press A to start</span></div>
+          </div>
+
+          <div class="controls">
+            <div class="dpad" data-kit="dpad" role="group" aria-label="move, turn, drop">
+              <span class="dpad-well" aria-hidden="true"></span>
+              <span class="dpad-cap" aria-hidden="true"></span>
+              <button class="dpad-zone up" data-dir="up" aria-label="turn" title="turn (↑ or w)"></button>
+              <button class="dpad-zone left" data-dir="left" aria-label="left" title="left (← or a)"></button>
+              <button class="dpad-zone right" data-dir="right" aria-label="right" title="right (→ or d)"></button>
+              <button class="dpad-zone down" data-dir="down" aria-label="drop" title="drop (↓ or s)"></button>
+            </div>
+            <div class="ab">
+              <div class="ab-key"><button class="key key-round key-accent" id="btn-a" aria-label="start, drop, or play again" title="start / drop / again (space)">A</button><span id="a-label">start</span></div>
+              <div class="ab-key"><button class="key key-round" id="btn-b" aria-label="turn, or new pieces" title="turn / new pieces (b or n)">B</button><span id="b-label">new</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-side">
+          <div class="module" data-kit="module">
+            <div class="module-label">board <a class="module-aside replay-link" href="/replay?b=hill">replay stored runs ▸</a></div>
+            <div class="dial" data-board="hill" data-kit="mode-dial" role="radiogroup" aria-label="cartridge">
+              <div class="dial-knob" aria-hidden="true"><span class="dial-pointer"></span></div>
+              <a class="dial-stop" role="radio" aria-checked="false" href="/trail/">trail</a>
+              <button class="dial-stop" role="radio" aria-checked="true" data-board="hill">hill</button>
+              <a class="dial-stop" role="radio" aria-checked="false" href="/maze/">maze</a>
+            </div>
+          </div>
+
+          <div class="module" data-kit="module">
+            <div class="module-label">opponent <span class="module-aside" id="opp-aside">simulated</span></div>
+            <div class="live-row">
+              <button class="key switch" id="live" role="switch" aria-checked="false" title="race real Ante processes on this server">live</button>
+              <span class="live-status" id="live-status" aria-live="polite">scripted · no model called</span>
+            </div>
+            <form class="pass" id="pass" hidden>
+              <label for="pass-in">passcode</label>
+              <input id="pass-in" name="passcode" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
+              <button class="key" type="submit">unlock</button>
+              <span class="pass-note" id="pass-note">kept in this tab only, sent only to start a round</span>
+            </form>
+            <div class="tasks opts" id="opp" role="radiogroup" aria-label="opponent">
+              <button class="key" role="radio" data-v="1">ante ×1</button>
+              <button class="key" role="radio" data-v="4">swarm ×4</button>
+            </div>
+            <p class="module-note" id="opp-note"></p>
+          </div>
+
+          <div class="module" data-kit="module">
+            <div class="module-label">pace <span class="module-aside" id="pace-aside">pieces / s, each</span></div>
+            <div class="tasks opts" id="pace" role="radiogroup" aria-label="pace">
+              <button class="key" role="radio" data-v="0.5">½ slow</button>
+              <button class="key" role="radio" data-v="1">1 even</button>
+              <button class="key" role="radio" data-v="2">2 fast</button>
+            </div>
+            <p class="module-note" id="pace-note">Your piece drops by itself after a 6 s fuse.</p>
+          </div>
+
+          <div class="module" data-kit="module">
+            <div class="module-label">standings <span class="module-aside" id="stand-aside">rows · a swarm pools</span></div>
+            <ol class="standings" id="standings" aria-label="standings"></ol>
+          </div>
+
+          <div class="readouts">
+            <div class="lcd lcd-sm" data-kit="lcd"><span class="lcd-tag">left</span><span class="lcd-digits" id="r-time">-.-s</span></div>
+            <div class="lcd lcd-sm" data-kit="lcd"><span class="lcd-tag">rows</span><span class="lcd-digits" id="r-score">00</span></div>
+            <div class="lcd lcd-sm" data-kit="lcd"><span class="lcd-tag" id="r-best-tag">best</span><span class="lcd-digits" id="r-best">--</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lcd tape" data-kit="lcd" aria-label="events">
+        <div class="lcd-tag"><span id="tape-tag">events · simulated</span><span>newest first</span></div>
+        <ol id="tape"></ol>
+      </div>
+    </section>
+
+    <section class="receipt" aria-label="round">
+      <h2>round</h2>
+      <dl id="receipt"></dl>
+      <p class="legend" id="legend"></p>
+    </section>
+
+    <footer class="foot">
+      <p>ante-swarm-bench · Independent work, not an Antigma release.</p>
+      <p>Scripted opponents run the hill rules and policy in your browser (hill-core.js, checked drop for drop against the
+        server's Python twin), one piece each per beat at the pace you pick. They are not Ante processes and no model is
+        called. With the live switch on (and the operator's passcode) the rivals are real Ante processes on this server,
+        calling <code>./hill look</code> and <code>./hill drop &lt;col&gt; &lt;rot&gt;</code> in real time; a piece any
+        player leaves hovering past its fuse drops where it is.</p>
+      <p>A swarm plays hill alone together: each Ante has its own well and its own piece sequence (seeded from the
+        round's seed and its seat; yours is the round's own), and the team pools its rows. At the clock your rows are
+        compared with the swarm's rows per well. All the garbage the swarm sends lands in your well, and yours goes round
+        its wells in turn. The swarm is out only when every one of its wells is.</p>
+      <p>The pieces are the cartridge's own seven: a domino, two trominoes and four pentominoes. The stored Ante runs
+        are still here: <a href="/replay?b=hill">replay them</a> on the hill replay board, or on the
+        <a href="/replay">trail</a> one. Other cartridges: <a href="/trail/">trail</a> · <a href="/maze/">maze</a>.</p>
+      <p>Hardware look after <a href="https://github.com/shuding/spec-01">spec-01</a> (MIT); type is Spec Mono, a subset
+        of IBM Plex Mono (OFL). <a href="/NOTICE.txt">Notices</a>.</p>
+      <p class="keys">keys: ← → or a d move · ↑ or w turn · ↓ or s drop · space A start / drop / again · b B turn (new pieces between rounds) · r same pieces</p>
+    </footer>
+  </main>
+  <script src="/hill-core.js"></script>
+  <script src="/arcadelive.js"></script>
+  <script src="/arcade.js"></script>
+  <script src="/hill.js"></script>
+</body>
+</html>

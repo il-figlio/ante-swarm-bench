@@ -1,0 +1,62 @@
+[
+ {
+  "id": "f01",
+  "persona": "A",
+  "title": "Return 400 on empty POST body",
+  "prompt": "POST /notes returns a 500 when the request body is empty (issue #31 in the README). It should return 400 with a JSON error body instead, and malformed JSON should get the same treatment. Valid POSTs must still create notes. The crash is in the POST /notes handler in app/routes.py. Verify with `python3 -m unittest tests.check_f01 -q`.",
+  "check": "tests.check_f01",
+  "expect_files": ["app/routes.py"],
+  "budget_s": 300,
+  "tags": ["python", "webapp"]
+ },
+ {
+  "id": "f02",
+  "persona": "A",
+  "title": "Paginate GET /notes",
+  "prompt": "GET /notes returns every note and ignores query params. Add pagination: `?limit=N&offset=M` should slice the list (still newest first), so `GET /notes?limit=5&offset=10` works. Keep the response shape `{\"notes\": [...]}` and update the endpoint docs in the README's API section to mention the new params. Verify with `python3 -m unittest tests.check_f02 -q`.",
+  "check": "tests.check_f02",
+  "expect_files": ["app/routes.py", "app/store.py", "README.md"],
+  "budget_s": 300,
+  "tags": ["python", "webapp"]
+ },
+ {
+  "id": "f03",
+  "persona": "A",
+  "title": "Add --port flag to cli.py",
+  "prompt": "cli.py always binds port 8000. Add a `--port` flag (integer, default 8000) so I can run `python3 cli.py --port 9000`. Verify with `python3 -m unittest tests.check_f03 -q`.",
+  "check": "tests.check_f03",
+  "expect_files": ["cli.py"],
+  "budget_s": 240,
+  "tags": ["python", "webapp"]
+ },
+ {
+  "id": "f04",
+  "persona": "A",
+  "title": "Recreate tests/test_note_404.py",
+  "prompt": "tests/test_note_404.py was lost in a bad merge (issue #12 in the README). Recreate it: it should cover `GET /notes/<id>` — an unknown id returns 404 with a JSON error, and an existing note returns 200. There's a live-server helper in tests/support.py you can use. The file must be importable as tests.test_note_404 and pass under `python3 -m unittest tests.test_note_404 -q`. Verify with `python3 -m unittest tests.check_f04 -q`.",
+  "check": "tests.check_f04",
+  "expect_files": ["tests/test_note_404.py"],
+  "budget_s": 360,
+  "tags": ["python", "webapp"]
+ },
+ {
+  "id": "f05",
+  "persona": "A",
+  "title": "Fix stale DELETE docs in README",
+  "prompt": "The README's API docs for `DELETE /notes/<id>` are stale: they say it returns 204 No Content, but the endpoint actually returns 200 with a JSON body `{\"deleted\": true, \"id\": <id>}` (or 404 for an unknown id). Update the docs in README.md so they match the code. Verify with `python3 -m unittest tests.check_f05 -q`.",
+  "check": "tests.check_f05",
+  "expect_files": ["README.md"],
+  "budget_s": 240,
+  "tags": ["python", "webapp"]
+ },
+ {
+  "id": "f06",
+  "persona": "A",
+  "title": "Make `make check` pass",
+  "prompt": "`make check` is failing — one of the tests in tests/test_app.py fails against the app. Find the bug and fix it; don't modify the tests. Verify with `make check` and then `python3 -m unittest tests.check_f06 -q`.",
+  "check": "tests.check_f06",
+  "expect_files": ["app/store.py"],
+  "budget_s": 360,
+  "tags": ["python", "webapp"]
+ }
+]

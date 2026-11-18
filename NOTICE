@@ -1,0 +1,44 @@
+ante-swarm-bench
+Copyright 2026 il-figlio
+
+Licensed under the Apache License, Version 2.0 (see LICENSE). Independent work, not an Antigma release.
+
+Trademarks
+----------
+"Ante" and "Antigma" are trademarks of their owner and are not licensed by this repository. They are used only
+to name the product under test. Claude Code, Codex CLI, Hermes, Pi, nanocode and Terminal-Bench are named
+descriptively; their names belong to their owners. Section 6 of the Apache License applies: no permission is
+granted to use any of these names or marks.
+
+Third-party material
+--------------------
+This repository includes the following third-party material, each under its own license:
+
+1. spec-01 design values and D-pad outline
+   Files: swarm/front-solo/ (CSS values and the D-pad outline, adapted into plain CSS)
+   Source: https://github.com/shuding/spec-01
+   License: MIT. Copyright (c) 2026 Shu Ding. Full text: swarm/front-solo/NOTICE.txt
+
+2. Spec Mono (a subset of IBM Plex Mono, as distributed with spec-01)
+   Files: swarm/front-solo/fonts/spec-mono-400-core.woff2, spec-mono-500-core.woff2
+   License: SIL Open Font License 1.1. Copyright 2017 IBM Corp., with Reserved Font Name "Plex".
+   Full text: swarm/front-solo/fonts/OFL.txt
+
+3. Terminal-Bench tasks (bench/tasks/tbench-ported/)
+   Sources: https://github.com/harbor-framework/terminal-bench-2-1, https://github.com/harbor-framework/terminal-bench-1
+   License: Apache License 2.0. Task text, the three .ics inputs and the test logic are adapted from the upstream
+   tasks; the changes and per-task authors are listed in bench/tasks/tbench-ported/ATTRIBUTION.md. Other inputs
+   are fetched, not redistributed (bench/tasks/tbench-ported/fetch_inputs.py).
+
+4. Practical Data (credit only)
+   swarm/front/heat.js shades tables after the approach of Practical Data
+   (https://github.com/philrenaud/practical-data, MIT, Copyright (c) 2026 Phil Renaud). It is an independent
+   implementation; no Practical Data code is included.
+
+Not included
+------------
+Ante, Claude Code, Codex CLI, Hermes, Pi and nanocode are configured by the adapters and used unmodified at pinned
+versions; none of their code is included. Pages under swarm/front-maze/, and the bundle report written by
+swarm/src/swarm/report.py, load IBM Plex and Space Grotesk from Google Fonts at runtime; no copies are bundled.
+The hub console (hub/hub/static/index.html) also loads Space Grotesk and IBM Plex Mono from Google Fonts at
+runtime; no copies are bundled. site/live/ uses system font stacks only.

@@ -1,0 +1,27 @@
+question = "On one 2 vCPU / 8 GB machine, how many live Ante 0.3.0 instances, each in its own sandbox running a ~32-second session against the scripted model, does admission sustain as concurrency doubles from 1 to 512, and what does each instance cost? Telemetry, analytics and update checks are off for every harness in this comparison (Ante telemetry off too, for parity)."
+primary_outcome = "successes_per_minute"
+model = { source = "scripted", id = "swarm-scripted-1", effort = "medium", max_output_tokens = 16384 }
+harnesses = ["ante"]
+tasks = ["../tasks/hold"]
+sandbox = "process"
+seed = 61
+stop_rule = "Double concurrency from 1 to 512 with ~32-second sessions; stop when a wave passes under 95%, any launch is never admitted, or fewer than half the instances were alive at once."
+
+[ramp]
+start = 1
+factor = 2
+max = 512
+stop_pass_rate = 0.95
+
+[budget]
+max_requests_per_attempt = 40
+attempt_timeout_s = 300
+
+[admission]
+reserve_mb = 512
+max_pressure = "warn"
+wait_timeout_s = 600
+reserve_tasks = 256
+
+[harness_options.ante]
+telemetry = "off"

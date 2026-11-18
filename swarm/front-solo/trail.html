@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Swarm Trail</title>
+  <meta name="description" content="A trail cartridge for the AX-1: steer your trail against Antes on one grid, eat tokens, grow, don't crash.">
+  <link rel="preload" href="/fonts/spec-mono-400-core.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/solo.css">
+  <link rel="stylesheet" href="/maze.css">
+  <link rel="stylesheet" href="/arcade.css">
+</head>
+<body data-skin="hardware" data-cart="trail" data-arcade="trail">
+  <main class="stage">
+    <header class="masthead" data-kit="masthead">
+      <h1>swarm trail</h1>
+      <p id="masthead-note">Steer your trail around one grid with the Antes. Every token you eat makes you one longer. Hit a wall
+        or any trail, yours included, and you are out. Most tokens when the clock runs out, or when the others are out, wins.</p>
+    </header>
+
+    <section class="device" data-kit="device" aria-label="AX-1 with the trail cartridge">
+      <div class="device-top">
+        <span class="brand"><b>swarm</b> AX-1 <span class="cart">trail cart</span></span>
+        <span class="lamp-row"><span class="lamp" id="lamp-play" data-on="false" aria-hidden="true"></span><span>live</span>
+          <span class="lamp" id="lamp-pass" data-on="false" aria-hidden="true"></span><span>win</span>
+          <span class="lamp lamp-fail" id="lamp-fail" data-on="false" aria-hidden="true"></span><span>lost</span></span>
+      </div>
+
+      <div class="device-body">
+        <div class="col-screen">
+          <div class="lcd screen game-screen" id="screen" data-kit="lcd" data-phase="ready">
+            <div class="lcd-tag" data-kit="lcd-tag"><span id="screen-tag">trail</span><span id="screen-opp"></span></div>
+            <canvas id="board" width="640" height="400" role="img" aria-label="the trail grid"></canvas>
+            <div class="lcd-foot"><span id="screen-caption" aria-live="polite">press A to start</span></div>
+          </div>
+
+          <div class="controls">
+            <div class="dpad" data-kit="dpad" role="group" aria-label="steer">
+              <span class="dpad-well" aria-hidden="true"></span>
+              <span class="dpad-cap" aria-hidden="true"></span>
+              <button class="dpad-zone up" data-dir="up" aria-label="north" title="north (↑ or w)"></button>
+              <button class="dpad-zone left" data-dir="left" aria-label="west" title="west (← or a)"></button>
+              <button class="dpad-zone right" data-dir="right" aria-label="east" title="east (→ or d)"></button>
+              <button class="dpad-zone down" data-dir="down" aria-label="south" title="south (↓ or s)"></button>
+            </div>
+            <div class="ab">
+              <div class="ab-key"><button class="key key-round key-accent" id="btn-a" aria-label="start, or race again" title="start / again (space)">A</button><span id="a-label">start</span></div>
+              <div class="ab-key"><button class="key key-round" id="btn-b" aria-label="new grid" title="new grid (b or n)">B</button><span id="b-label">new</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-side">
+          <div class="module" data-kit="module">
+            <div class="module-label">board <a class="module-aside replay-link" href="/replay">replay stored runs ▸</a></div>
+            <div class="dial" data-board="trail" data-kit="mode-dial" role="radiogroup" aria-label="cartridge">
+              <div class="dial-knob" aria-hidden="true"><span class="dial-pointer"></span></div>
+              <button class="dial-stop" role="radio" aria-checked="true" data-board="trail">trail</button>
+              <a class="dial-stop" role="radio" aria-checked="false" href="/hill/">hill</a>
+              <a class="dial-stop" role="radio" aria-checked="false" href="/maze/">maze</a>
+            </div>
+          </div>
+
+          <div class="module" data-kit="module">
+            <div class="module-label">opponent <span class="module-aside" id="opp-aside">simulated</span></div>
+            <div class="live-row">
+              <button class="key switch" id="live" role="switch" aria-checked="false" title="race real Ante processes on this server">live</button>
+              <span class="live-status" id="live-status" aria-live="polite">scripted · no model called</span>
+            </div>
+            <form class="pass" id="pass" hidden>
+              <label for="pass-in">passcode</label>
+              <input id="pass-in" name="passcode" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
+              <button class="key" type="submit">unlock</button>
+              <span class="pass-note" id="pass-note">kept in this tab only, sent only to start a round</span>
+            </form>
+            <div class="tasks opts" id="opp" role="radiogroup" aria-label="opponent">
+              <button class="key" role="radio" data-v="1">ante ×1</button>
+              <button class="key" role="radio" data-v="3">swarm ×3</button>
+            </div>
+            <p class="module-note" id="opp-note"></p>
+          </div>
+
+          <div class="module" data-kit="module">
+            <div class="module-label">pace <span class="module-aside" id="pace-aside">ticks / s</span></div>
+            <div class="tasks opts" id="pace" role="radiogroup" aria-label="pace">
+              <button class="key" role="radio" data-v="4">4 slow</button>
+              <button class="key" role="radio" data-v="6">6 even</button>
+              <button class="key" role="radio" data-v="9">9 fast</button>
+            </div>
+            <div class="module-label">size</div>
+            <div class="tasks opts" id="size" role="radiogroup" aria-label="grid size">
+              <button class="key" role="radio" data-v="s">s 20×13</button>
+              <button class="key" role="radio" data-v="m">m 28×18</button>
+              <button class="key" role="radio" data-v="l">l 36×23</button>
+            </div>
+          </div>
+
+          <div class="module" data-kit="module">
+            <div class="module-label">standings <span class="module-aside" id="stand-aside">tokens · a swarm adds up</span></div>
+            <ol class="standings" id="standings" aria-label="standings"></ol>
+          </div>
+
+          <div class="readouts">
+            <div class="lcd lcd-sm" data-kit="lcd"><span class="lcd-tag">left</span><span class="lcd-digits" id="r-time">-.-s</span></div>
+            <div class="lcd lcd-sm" data-kit="lcd"><span class="lcd-tag">tokens</span><span class="lcd-digits" id="r-score">00</span></div>
+            <div class="lcd lcd-sm" data-kit="lcd"><span class="lcd-tag" id="r-best-tag">best</span><span class="lcd-digits" id="r-best">--</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lcd tape" data-kit="lcd" aria-label="events">
+        <div class="lcd-tag"><span id="tape-tag">events · simulated</span><span>newest first</span></div>
+        <ol id="tape"></ol>
+      </div>
+    </section>
+
+    <section class="receipt" aria-label="round">
+      <h2>round</h2>
+      <dl id="receipt"></dl>
+      <p class="legend" id="legend"></p>
+    </section>
+
+    <footer class="foot">
+      <p>ante-swarm-bench · Independent work, not an Antigma release.</p>
+      <p>Scripted opponents run the trail rules and policy in your browser (trail-core.js, checked tick for tick against
+        the server's Python twin), one move per tick at the pace you pick. They are not Ante processes and no model is
+        called. With the live switch on (and the operator's passcode) the rivals are real Ante processes on this server,
+        calling <code>./trail look</code> and <code>./trail plan</code> in real time: each trail moves a cell per
+        tick and an Ante's plan runs until its next call lands, then it drives straight.</p>
+      <p>A swarm plays trail as one team: its members' tokens add up, and you are compared with the team's total. The
+        round ends when you are out, when the whole team is out, or at the clock. Live, each member sees its teammates'
+        heads and queued plans, can call <code>./trail team</code>, and pins notes that only the team reads; a scripted
+        swarm splits the tokens and keeps off its own members' paths.</p>
+      <p>The stored Ante runs are still here: <a href="/replay">replay them</a> on the trail replay board, or on the
+        <a href="/replay?b=hill">hill</a> one. Other cartridges: <a href="/hill/">hill</a> · <a href="/maze/">maze</a>.</p>
+      <p>Hardware look after <a href="https://github.com/shuding/spec-01">spec-01</a> (MIT); type is Spec Mono, a subset
+        of IBM Plex Mono (OFL). <a href="/NOTICE.txt">Notices</a>.</p>
+      <p class="keys">keys: ← ↑ → ↓ or w a s d steer · space A start / again · b or n B new grid · r same grid</p>
+    </footer>
+  </main>
+  <script src="/trail-core.js"></script>
+  <script src="/arcadelive.js"></script>
+  <script src="/arcade.js"></script>
+  <script src="/trail.js"></script>
+</body>
+</html>

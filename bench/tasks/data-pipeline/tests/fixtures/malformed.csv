@@ -1,0 +1,14 @@
+order_id,date,customer,category,amount,note
+M5001,2026-09-01,Ana Lopez,coffee,4.20,beans
+M5002,2026-09-01,Tom Garcia,groceries,55.10,weekly shop
+M5003,2026-09-02,Priya S,transport,18.75,train
+M5004,2026-09-02,Wei Chen,fun,64.00,climbing pass,EXTRA-FIELD
+M5005,2026-09-03,Marta R,coffee,3.80
+M5006,2026-09-03,Ana Lopez,fun,15.00,cinema
+M5007,2026-09-04,K. Osei,groceries,oops,top-up
+M5008,2026-09-05,Tom Garcia,transport,15.00,bus card
+M5009,2026-09-06,Wei Chen,coffee,4.20,beans
+M5010,2026-09-07,Marta R,groceries,41.60,weekly shop
+M5011,not-a-date,Priya S,transport,9.90,refund
+M5012,2026-09-08,K. Osei,fun,12.50,board game
+M5013,2026-09-09,Ana Lopez,coffee,3.50,flat white

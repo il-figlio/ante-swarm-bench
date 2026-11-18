@@ -1,0 +1,57 @@
+{
+ "note": "ground truth for the device-agent checks — the fake pod and the checkers both read this; do not edit",
+ "device": {
+  "banner": "HELLO podlet-1 2.4.1",
+  "channels": ["temp", "hum", "press"]
+ },
+ "commands": {
+  "PING": ["PONG"],
+  "READ": ["DATA"],
+  "STREAM": ["SAMPLE", "END"],
+  "CHANNELS": ["CHAN"],
+  "CALIBRATE": ["OK"]
+ },
+ "reads": {
+  "temp": [21.50, 22.00, 21.00, 23.50, 22.30, 21.80],
+  "hum": [44.00, 44.50, 43.80, 44.10],
+  "press": [101.30, 101.31, 101.28]
+ },
+ "stream": [
+  ["temp", 21.50],
+  ["hum", 44.00],
+  ["press", 101.30],
+  ["temp", 21.72],
+  ["hum", 44.12],
+  ["press", 101.33],
+  ["temp", 21.90],
+  ["hum", 44.31]
+ ],
+ "scenarios": {
+  "clean": {},
+  "corrupt": {
+   "inject": [
+    {"after_seq": 1, "kind": "garbage", "hex": "DEADBEEF"},
+    {"after_seq": 3, "kind": "bad_checksum",
+     "payload": "SAMPLE 97 temp 00.00"}
+   ]
+  },
+  "flaky": {
+   "die_after_frames": 3,
+   "partial_bytes": 12,
+   "marker": "flaky-died"
+  }
+ },
+ "import_allowlist": [
+  "abc", "argparse", "array", "atexit", "binascii", "bisect",
+  "collections", "contextlib", "copy", "csv", "dataclasses",
+  "datetime", "enum", "errno", "faulthandler", "fnmatch", "functools",
+  "gc", "glob", "hashlib", "heapq", "inspect", "io", "itertools",
+  "json", "keyword", "linecache", "locale", "logging", "math",
+  "numbers", "operator", "os", "pathlib", "pickle", "platform",
+  "pprint", "queue", "random", "re", "reprlib", "select", "selectors",
+  "shlex", "shutil", "signal", "stat", "statistics", "string",
+  "struct", "subprocess", "sys", "tempfile", "textwrap", "threading",
+  "time", "traceback", "types", "typing", "unittest", "uuid",
+  "warnings", "weakref"
+ ]
+}

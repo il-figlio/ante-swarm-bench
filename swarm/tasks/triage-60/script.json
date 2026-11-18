@@ -1,0 +1,251 @@
+[
+  {
+    "op": "read",
+    "path": "logs/node-01.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-02.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-03.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-04.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-05.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-06.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-07.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-08.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-09.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-10.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-11.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-12.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-13.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-14.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-15.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-16.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-17.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-18.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-19.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-20.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-21.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-22.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-23.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-24.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-25.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-26.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-27.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-28.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-29.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-30.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-31.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-32.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-33.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-34.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-35.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-36.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-37.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-38.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-39.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-40.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-41.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-42.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-43.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-44.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-45.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-46.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-47.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-48.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-49.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-50.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-51.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-52.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-53.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-54.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-55.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-56.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-57.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-58.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-59.log"
+  },
+  {
+    "op": "read",
+    "path": "logs/node-60.log"
+  },
+  {
+    "op": "write",
+    "path": "answer.json",
+    "content": "{\"file\": \"node-21.log\", \"errors\": 43}\n"
+  },
+  {
+    "op": "final",
+    "text": "node-21.log has the most ERROR lines: 43."
+  }
+]

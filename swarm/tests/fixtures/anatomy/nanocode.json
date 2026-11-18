@@ -1,0 +1,8 @@
+{"model": "m-1", "stream": true, "instructions": "nanocode agent. Today is 2026-11-12, cwd /tmp/swarm/c001-claude-n1-s001/work.",
+ "input": [
+  {"type": "additional_tools", "tools": [
+    {"type": "function", "name": "exec", "description": "Run a program.", "parameters": {"type": "object"}},
+    {"type": "function", "name": "wait", "description": "Wait.", "parameters": {"type": "object"}}]},
+  {"role": "user", "content": [{"type": "input_text", "text": "Task: Write ok to out.txt.\n\nBe brief."}]}
+ ],
+ "tools": [{"type": "function", "name": "mcp_files_list", "description": "List.", "parameters": {"type": "object"}}]}

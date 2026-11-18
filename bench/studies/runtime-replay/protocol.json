@@ -1,0 +1,430 @@
+{
+  "id": "core-text-20261016-v2",
+  "scope": "Configured runtime plus HTTP/SSE client and disclosed control shim; no tools, no live inference, not pure inner loop or task capability",
+  "status": "frozen_before_measured_campaign",
+  "instances": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "rounds": 6,
+  "order": "all six permutations of Ante/Pi/Hermes, each at 1/2/4/8; cells serial",
+  "context_utf8_bytes": 4096,
+  "turns_per_instance": 65,
+  "warm_turns_per_instance": 64,
+  "context": "one initial 4096-byte user message, growing retained conversation; exact semantic history gated at every request",
+  "response": "TRACE_COMPLETE, same 8 SSE events, TCP_NODELAY, no artificial latency",
+  "model_label": "openai/gpt-5.6-terra (synthetic replay label, no model executed)",
+  "effort_label": "medium; exact on-wire gate",
+  "output_budget": 16384,
+  "network": "private Linux network namespace, only loopback; no route or real auth",
+  "measurement": {
+    "cold": "process launch through all first successes; filesystem cache not cleared",
+    "warm": "barrier after every first success to every final turn; excludes teardown",
+    "cpu": "cgroup v2 usage_usec including descendant CPU and exited children",
+    "memory": "sampled sum PSS across complete cgroup, KiB, 100ms plus final barrier; transient peaks may be missed; RSS separate",
+    "observer": "driver/server outside engine cgroups; driver CPU includes replay, sampling and orchestration; wall time vulnerable to shared 2-vCPU driver contention",
+    "controls": "Ante stdlib Python supervisor + static Ante daemon; Pi Node Agent + provider SDK; Hermes Python AIAgent with fixed-prompt subclass. Control cost stays included. No CLI for Pi/Hermes.",
+    "cleanup": "all processes must exit and cgroup empty; Ante EOF/Shutdown requires external SIGTERM after500ms; recorded, excluded from performance interval",
+    "cold_cpu": "cgroup start to warm barrier",
+    "warm_cpu": "cgroup warm-barrier delta to all last turns"
+  },
+  "correctness": [
+    "exact system/user/assistant history",
+    "no tools",
+    "exact model/effort/budget",
+    "65 successful requests and65 final outputs per process",
+    "no leaked descendants"
+  ],
+  "stop_rule": "stop at first invalid cell, keep it; never replace losses or invalid runs",
+  "hypothesis": "Ante uses less sampled PSS and engine-group CPU for the same fixed text-turn work; any paired loss flagged; different metrics remain separate",
+  "gaps": [
+    "Only 4KiB text/no-tools workload; tool-loop, 64/256KiB context and fault/retry/cancellation remain unmeasured",
+    "Cold process is not cold disk, install or auth",
+    "No live model speed/capability/cost conclusion",
+    "No in-process Ante API available; process transport/control cost differs and remains included",
+    "Hermes configured no-tool AIAgent retains runtime housekeeping; prompt-only subclass is disclosed",
+    "No independent reproduction or immutable guest image"
+  ],
+  "pins": {
+    "ante": "0.2.11 sha256 6658300254eeacd1a70edc85891a9d85c7ff577d9c1968ae92b07a6b819dc205",
+    "pi-core": "0.85.1",
+    "pi-ai": "0.85.1",
+    "node": "24.16.0",
+    "hermes_commit": "7a963716b81be13ba513d4f127633b7da493aff2",
+    "hermes_archive_sha256": "93372f4adcd86737385d0cbef94c4f90f4e1cd65c106dea3b34a287a3d30859d",
+    "python": "3.12.3"
+  },
+  "cells": [
+    {
+      "round": 1,
+      "instances": 1,
+      "engine": "ante"
+    },
+    {
+      "round": 1,
+      "instances": 1,
+      "engine": "pi"
+    },
+    {
+      "round": 1,
+      "instances": 1,
+      "engine": "hermes"
+    },
+    {
+      "round": 1,
+      "instances": 2,
+      "engine": "ante"
+    },
+    {
+      "round": 1,
+      "instances": 2,
+      "engine": "pi"
+    },
+    {
+      "round": 1,
+      "instances": 2,
+      "engine": "hermes"
+    },
+    {
+      "round": 1,
+      "instances": 4,
+      "engine": "ante"
+    },
+    {
+      "round": 1,
+      "instances": 4,
+      "engine": "pi"
+    },
+    {
+      "round": 1,
+      "instances": 4,
+      "engine": "hermes"
+    },
+    {
+      "round": 1,
+      "instances": 8,
+      "engine": "ante"
+    },
+    {
+      "round": 1,
+      "instances": 8,
+      "engine": "pi"
+    },
+    {
+      "round": 1,
+      "instances": 8,
+      "engine": "hermes"
+    },
+    {
+      "round": 2,
+      "instances": 1,
+      "engine": "ante"
+    },
+    {
+      "round": 2,
+      "instances": 1,
+      "engine": "hermes"
+    },
+    {
+      "round": 2,
+      "instances": 1,
+      "engine": "pi"
+    },
+    {
+      "round": 2,
+      "instances": 2,
+      "engine": "ante"
+    },
+    {
+      "round": 2,
+      "instances": 2,
+      "engine": "hermes"
+    },
+    {
+      "round": 2,
+      "instances": 2,
+      "engine": "pi"
+    },
+    {
+      "round": 2,
+      "instances": 4,
+      "engine": "ante"
+    },
+    {
+      "round": 2,
+      "instances": 4,
+      "engine": "hermes"
+    },
+    {
+      "round": 2,
+      "instances": 4,
+      "engine": "pi"
+    },
+    {
+      "round": 2,
+      "instances": 8,
+      "engine": "ante"
+    },
+    {
+      "round": 2,
+      "instances": 8,
+      "engine": "hermes"
+    },
+    {
+      "round": 2,
+      "instances": 8,
+      "engine": "pi"
+    },
+    {
+      "round": 3,
+      "instances": 1,
+      "engine": "pi"
+    },
+    {
+      "round": 3,
+      "instances": 1,
+      "engine": "ante"
+    },
+    {
+      "round": 3,
+      "instances": 1,
+      "engine": "hermes"
+    },
+    {
+      "round": 3,
+      "instances": 2,
+      "engine": "pi"
+    },
+    {
+      "round": 3,
+      "instances": 2,
+      "engine": "ante"
+    },
+    {
+      "round": 3,
+      "instances": 2,
+      "engine": "hermes"
+    },
+    {
+      "round": 3,
+      "instances": 4,
+      "engine": "pi"
+    },
+    {
+      "round": 3,
+      "instances": 4,
+      "engine": "ante"
+    },
+    {
+      "round": 3,
+      "instances": 4,
+      "engine": "hermes"
+    },
+    {
+      "round": 3,
+      "instances": 8,
+      "engine": "pi"
+    },
+    {
+      "round": 3,
+      "instances": 8,
+      "engine": "ante"
+    },
+    {
+      "round": 3,
+      "instances": 8,
+      "engine": "hermes"
+    },
+    {
+      "round": 4,
+      "instances": 1,
+      "engine": "pi"
+    },
+    {
+      "round": 4,
+      "instances": 1,
+      "engine": "hermes"
+    },
+    {
+      "round": 4,
+      "instances": 1,
+      "engine": "ante"
+    },
+    {
+      "round": 4,
+      "instances": 2,
+      "engine": "pi"
+    },
+    {
+      "round": 4,
+      "instances": 2,
+      "engine": "hermes"
+    },
+    {
+      "round": 4,
+      "instances": 2,
+      "engine": "ante"
+    },
+    {
+      "round": 4,
+      "instances": 4,
+      "engine": "pi"
+    },
+    {
+      "round": 4,
+      "instances": 4,
+      "engine": "hermes"
+    },
+    {
+      "round": 4,
+      "instances": 4,
+      "engine": "ante"
+    },
+    {
+      "round": 4,
+      "instances": 8,
+      "engine": "pi"
+    },
+    {
+      "round": 4,
+      "instances": 8,
+      "engine": "hermes"
+    },
+    {
+      "round": 4,
+      "instances": 8,
+      "engine": "ante"
+    },
+    {
+      "round": 5,
+      "instances": 1,
+      "engine": "hermes"
+    },
+    {
+      "round": 5,
+      "instances": 1,
+      "engine": "ante"
+    },
+    {
+      "round": 5,
+      "instances": 1,
+      "engine": "pi"
+    },
+    {
+      "round": 5,
+      "instances": 2,
+      "engine": "hermes"
+    },
+    {
+      "round": 5,
+      "instances": 2,
+      "engine": "ante"
+    },
+    {
+      "round": 5,
+      "instances": 2,
+      "engine": "pi"
+    },
+    {
+      "round": 5,
+      "instances": 4,
+      "engine": "hermes"
+    },
+    {
+      "round": 5,
+      "instances": 4,
+      "engine": "ante"
+    },
+    {
+      "round": 5,
+      "instances": 4,
+      "engine": "pi"
+    },
+    {
+      "round": 5,
+      "instances": 8,
+      "engine": "hermes"
+    },
+    {
+      "round": 5,
+      "instances": 8,
+      "engine": "ante"
+    },
+    {
+      "round": 5,
+      "instances": 8,
+      "engine": "pi"
+    },
+    {
+      "round": 6,
+      "instances": 1,
+      "engine": "hermes"
+    },
+    {
+      "round": 6,
+      "instances": 1,
+      "engine": "pi"
+    },
+    {
+      "round": 6,
+      "instances": 1,
+      "engine": "ante"
+    },
+    {
+      "round": 6,
+      "instances": 2,
+      "engine": "hermes"
+    },
+    {
+      "round": 6,
+      "instances": 2,
+      "engine": "pi"
+    },
+    {
+      "round": 6,
+      "instances": 2,
+      "engine": "ante"
+    },
+    {
+      "round": 6,
+      "instances": 4,
+      "engine": "hermes"
+    },
+    {
+      "round": 6,
+      "instances": 4,
+      "engine": "pi"
+    },
+    {
+      "round": 6,
+      "instances": 4,
+      "engine": "ante"
+    },
+    {
+      "round": 6,
+      "instances": 8,
+      "engine": "hermes"
+    },
+    {
+      "round": 6,
+      "instances": 8,
+      "engine": "pi"
+    },
+    {
+      "round": 6,
+      "instances": 8,
+      "engine": "ante"
+    }
+  ],
+  "source_sha256": {
+    "clients.py": "76d2564061f79f2f6acbad7edb28116237cf726bc64d6f4076b90aa8420f3b0f",
+    "pi.mjs": "9486ccf417b239c3b90f6aaf3f0caad309fcd92665975a233525ae2a89e23d8e",
+    "replay.py": "c89577b004628d13e901a1f310c1cee4a0738a1c3611ce38123fadaa3a0637bf",
+    "runner.py": "e7ec46ec780878581a508c2d62ac0cb3298f4d5d86fd382aa9d995afd8594172",
+    "accounting_probe.py": "4277c419dd19ddc3f6429b219ad383106851fb647770c4388ed9641cc173ac17"
+  },
+  "sampling_s": 0.1,
+  "preflight_exclusion": "v1 launch stopped before completion after configured sampling20ms differed from declared100ms. All v1 attempts retained as excluded setup evidence; no performance selection."
+}

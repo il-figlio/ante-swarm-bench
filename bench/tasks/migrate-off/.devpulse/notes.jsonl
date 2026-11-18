@@ -1,0 +1,8 @@
+{"ts": "2026-09-07T09:12:00Z", "tag": "fix", "text": "empty digest no longer crashes on a fresh data dir"}
+{"ts": "2026-09-08T14:40:00Z", "tag": "feat", "text": "added --tag filter to devpulse list"}
+{"ts": "2026-09-09T10:05:00Z", "tag": "chore", "text": "vendored the notes fixture for the demo repo"}
+{"ts": "2026-09-10T16:22:00Z", "tag": "fix", "text": "search now matches tag names too"}
+{"ts": "2026-09-11T09:48:00Z", "tag": "blocker", "text": "changelog script still writes CRLF on Windows checkouts"}
+{"ts": "2026-09-11T15:30:00Z", "tag": "note", "text": "standup format: blockers first, then one line per theme"}
+{"ts": "2026-09-14T09:15:00Z", "tag": "feat", "text": "digest now groups notes by tag"}
+{"ts": "2026-09-14T11:02:00Z", "tag": "chore", "text": "bumped the sample data through mid-September"}

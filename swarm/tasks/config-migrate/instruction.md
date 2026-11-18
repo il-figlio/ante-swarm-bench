@@ -1,0 +1,1 @@
+Every config in services/ uses "timeout" in seconds as a number. The new loader wants "timeout_ms" in milliseconds instead. Migrate each file: replace "timeout" with "timeout_ms" (value times 1000), keep every other key and value as it is, and keep the files valid JSON.

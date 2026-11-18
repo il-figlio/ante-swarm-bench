@@ -1,0 +1,870 @@
+{
+  "id": "matched-tools-20261016-v1",
+  "status": "freeze after full-length calibration, before measured cells",
+  "families": [
+    "pi",
+    "hermes"
+  ],
+  "variants": {
+    "agent": [
+      "pi",
+      "ante-pi",
+      "hermes",
+      "ante-hermes"
+    ],
+    "control": [
+      "pi-direct",
+      "pi-mcp",
+      "hermes-direct",
+      "hermes-mcp"
+    ]
+  },
+  "instances": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "rounds": 4,
+  "turns_per_instance": 33,
+  "warm_episodes": 32,
+  "tools_per_episode": 2,
+  "sampling_s": 0.1,
+  "cell_deadline_s": 240,
+  "cleanup_grace_s": 3,
+  "model_label": "openai/gpt-5.6-terra (offline replay only)",
+  "effort": "medium",
+  "output_token_cap": 16384,
+  "initial_context_utf8_bytes": 4096,
+  "payload_utf8_bytes": 1024,
+  "trace": "write fixture-NNN.txt, read same file, final TRACE_COMPLETE; distinct file per episode",
+  "history": "retained, exact semantic prompt/arguments/results at every model request",
+  "grants": {
+    "pi": [
+      "read",
+      "write"
+    ],
+    "hermes": [
+      "read_file",
+      "write_file"
+    ]
+  },
+  "ordering": "Four Williams orderings [0,1,3,2],[1,2,0,3],[2,3,1,0],[3,0,2,1] within agent/control lanes; at each round/concurrency agent then control; cells serial",
+  "network": "fresh netns, loopback only, dummy auth, no live model",
+  "infrastructure": "one dedicated bench VM only, Linux cgroupv2,2vCPU/7.7GiB RAM; shared driver/observer outside engine groups",
+  "instrumentation": "cgroup CPU including exited children; engine/controller versus bridge subgroups.100ms summed PSS plus final barrier. Startup before subgroup move charged to engine; warm accounting after move. Diagnostic body CPU excludes child CPU. Never add independent component memory peaks.",
+  "hypotheses": [
+    "Ante engine + native-tool MCP route uses less warm CPU and/or memory than its native family agent; each metric and paired loss reported independently",
+    "Direct versus MCP engine-free controls identify bridge-route overhead for the same native dispatch, including process layout, IPC and controller; engine-pair differences alone cannot isolate it"
+  ],
+  "normalization": [
+    "MCP tool name prefix",
+    "MCP text-content envelope",
+    "exact process workspace prefix to $WORKSPACE"
+  ],
+  "exclusions": [
+    "No full Hermes CLI wrapper",
+    "No other native tools, parallel calls, retries, cancellation or real-model capability",
+    "Different schemas between families; only within-family pairs are strict matches",
+    "Prepared Python source bytecode differs from preceding text-only cold cohort",
+    "No immutable VM image or independently verified installer; historical kitv2.1 predates runner"
+  ],
+  "preparation": "Hermes exact pinned source compiled to Python3.12 bytecode once before full-length gate/campaign; no dependencies updated",
+  "stop_rule": "Stop at first invalid measured cell, preserve all attempted receipts; no replacing losses or dropping unfavorable repeats",
+  "flags": "Every paired increase in warm CPU/tool, PSS/instance, first success or warm elapsed is flagged. Control MCP increases are route overhead observations, negative deltas are retained and do not prove IPC is free. No statistical significance claim.",
+  "pins": {
+    "ante": "0.2.11 sha2566658300254eeacd1a70edc85891a9d85c7ff577d9c1968ae92b07a6b819dc205",
+    "pi-core": "0.85.1",
+    "pi-ai": "0.85.1",
+    "pi-tools": "0.85.1",
+    "hermes_commit": "7a963716b81be13ba513d4f127633b7da493aff2",
+    "node": "24.16.0",
+    "python": "3.12.3"
+  },
+  "cells": [
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 1,
+      "engine": "pi"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 1,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 1,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 1,
+      "engine": "hermes"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 1,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 1,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 1,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 1,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 2,
+      "engine": "pi"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 2,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 2,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 2,
+      "engine": "hermes"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 2,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 2,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 2,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 2,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 4,
+      "engine": "pi"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 4,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 4,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 4,
+      "engine": "hermes"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 4,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 4,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 4,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 4,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 8,
+      "engine": "pi"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 8,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 8,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 1,
+      "instances": 8,
+      "engine": "hermes"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 8,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 8,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 8,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 1,
+      "instances": 8,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 1,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 1,
+      "engine": "hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 1,
+      "engine": "pi"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 1,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 1,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 1,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 1,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 1,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 2,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 2,
+      "engine": "hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 2,
+      "engine": "pi"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 2,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 2,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 2,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 2,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 2,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 4,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 4,
+      "engine": "hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 4,
+      "engine": "pi"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 4,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 4,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 4,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 4,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 4,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 8,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 8,
+      "engine": "hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 8,
+      "engine": "pi"
+    },
+    {
+      "lane": "agent",
+      "round": 2,
+      "instances": 8,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 8,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 8,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 8,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "control",
+      "round": 2,
+      "instances": 8,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 1,
+      "engine": "hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 1,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 1,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 1,
+      "engine": "pi"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 1,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 1,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 1,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 1,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 2,
+      "engine": "hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 2,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 2,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 2,
+      "engine": "pi"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 2,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 2,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 2,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 2,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 4,
+      "engine": "hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 4,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 4,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 4,
+      "engine": "pi"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 4,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 4,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 4,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 4,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 8,
+      "engine": "hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 8,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 8,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "agent",
+      "round": 3,
+      "instances": 8,
+      "engine": "pi"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 8,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 8,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 8,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 3,
+      "instances": 8,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 1,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 1,
+      "engine": "pi"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 1,
+      "engine": "hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 1,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 1,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 1,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 1,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 1,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 2,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 2,
+      "engine": "pi"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 2,
+      "engine": "hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 2,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 2,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 2,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 2,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 2,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 4,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 4,
+      "engine": "pi"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 4,
+      "engine": "hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 4,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 4,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 4,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 4,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 4,
+      "engine": "pi-mcp"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 8,
+      "engine": "ante-hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 8,
+      "engine": "pi"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 8,
+      "engine": "hermes"
+    },
+    {
+      "lane": "agent",
+      "round": 4,
+      "instances": 8,
+      "engine": "ante-pi"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 8,
+      "engine": "hermes-mcp"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 8,
+      "engine": "pi-direct"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 8,
+      "engine": "hermes-direct"
+    },
+    {
+      "lane": "control",
+      "round": 4,
+      "instances": 8,
+      "engine": "pi-mcp"
+    }
+  ],
+  "source_sha256": {
+    "fixture.py": "f33e3f776db295a77d95c935924137d43b8b8e37e262b267779872c72201187a",
+    "runner.py": "57745546992ce96827cb775640ac8cd97cea3ac961dffeb190eeb4fb7caac1d6",
+    "hermes_bridge.py": "919f13348dc5268ab05cfa915cac89bddeee6110e03a57dbe7bd677a2abe9083",
+    "pi_tools.mjs": "f73665e33426f7d11980abec63bd0ccc67dc5ef506606eb42f81feb770975c4f",
+    "full_gate.py": "a336b266611e726e092bbb5072df25792eddfb914f776ded54fe60f6c7b12bc8",
+    "pi_bridge.mjs": "33511c2312a9c212af852da86a78706087a10c24c861ff33bcd824dfa52e20ef",
+    "hermes-schemas-all.json": "29e2b9adfe4a1729f7b39f47ce1103c8760f46a4219e9224fb3349d3c42b1ee4",
+    "README.md": "ed0ed56c37a5f93e4932dcff2c97fc85ce2116b074999ad391871b06190529d9",
+    "accounting_probe.py": "4277c419dd19ddc3f6429b219ad383106851fb647770c4388ed9641cc173ac17",
+    "replay.py": "ffc8d1f84dc5153979cca73c76a5788523da64514683e917fe3db72ceb2bd6ae",
+    "clients.py": "c85a7c0ba19f407d1287b4f673195351f1460675219bb22f788f10960db2e186",
+    "goldens.json": "ff4245b44c1147e05c71e70483f0324dc5d56d254e75f837bafaf47fa1b065ac",
+    "pi-schemas-all.json": "b965c8078e0376124aedf5f2f756446407d487ac4a87867d09afe4f82fd77b9b",
+    "pi.mjs": "ac8e5eb2b3581a1ed6acd5f03de510c36d9d88a2e6b6f3a95d23a26f359eeb38"
+  }
+}

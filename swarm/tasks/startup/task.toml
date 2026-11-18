@@ -1,0 +1,9 @@
+[task]
+id = "startup"
+allowed_changes = []
+
+[agent]
+timeout_sec = 120
+
+[metadata]
+tags = ["tier0", "overhead"]

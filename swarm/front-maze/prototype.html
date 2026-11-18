@@ -1,0 +1,706 @@
+<title>Maze Swarm</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one screen. A control bar, then the mazes take every remaining pixel; the call log sits beside them on
+   wide screens and becomes a pull-up sheet on narrow ones. Panes size from their own box (container queries +
+   ResizeObserver), never from the device. */
+/* Restyled to the AX-1 console (front-solo/solo.css, after spec-01's hardware skin): paper with a dot grid, metal
+   panels, gray LCD glass for the mazes and one key color. Light only, like the console. */
+@font-face { font-family: "Spec Mono"; src: url("/fonts/spec-mono-400-core.woff2") format("woff2"); font-weight: 400; font-display: swap;
+  unicode-range: U+0020-007E, U+00B7, U+2013-2014, U+2018-2019, U+201C-201D, U+2026; }
+@font-face { font-family: "Spec Mono"; src: url("/fonts/spec-mono-500-core.woff2") format("woff2"); font-weight: 500; font-display: swap;
+  unicode-range: U+0020-007E, U+00B7, U+2013-2014, U+2018-2019, U+201C-201D, U+2026; }
+:root {
+  color-scheme: light;
+  --bg: #efefeb;          /* paper */
+  --panel: #e6e6e1;       /* metal panels, bars, sheet */
+  --ink: #1b1b19;
+  --muted: #6f6f69;
+  --line: #c8c8c2;
+  --fog: #b3b4ae;         /* unexplored maze: unlit glass */
+  --floor: #c8c9c3;       /* explored maze: LCD glass */
+  --wall: #141413;
+  --accent: #e8501e;      /* the console's one key color: the selected agent and the exit path */
+  --accent-soft: rgb(232 80 30 / 0.14);
+  --good: #22a05a;
+  --sans: "Spec Mono", "SF Mono", ui-monospace, Menlo, monospace;
+  --display: "Helvetica Neue", Inter, system-ui, sans-serif;
+  --mono: "Spec Mono", "SF Mono", ui-monospace, Menlo, monospace;
+}
+
+html, body { height: 100%; }
+body { background: radial-gradient(circle, rgb(0 0 0 / 0.14) 1px, transparent 1.2px) 0 0 / 16px 16px, var(--bg); color: var(--ink);
+  font: 400 13px/1.45 var(--sans); font-variant-numeric: tabular-nums; overflow: hidden; }
+* { box-sizing: border-box; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.app {
+  container-type: inline-size;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 8px;
+  padding-block: 10px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ---------- control bar ---------- */
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; min-width: 0; }
+.brand h1 { margin: 0; font: 500 22px/1.1 var(--display); letter-spacing: -0.04em; white-space: nowrap; }
+.brand a { font: 400 11px/1 var(--mono); color: #b83c12; text-underline-offset: 2px; white-space: nowrap; }
+.proto { font: 500 10px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+  border: 1px solid var(--line); padding: 4px 6px; border-radius: 4px; white-space: nowrap; }
+.transport, .setup { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.btn {
+  min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--panel); font-size: 13px;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--ink); color: var(--panel); border-color: var(--ink); min-width: 76px; font-weight: 500; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--panel); }
+.seg button { min-height: 32px; min-width: 34px; padding: 0 9px; border: 0; background: none; cursor: pointer; font-size: 13px; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--ink); font-weight: 500; box-shadow: inset 0 -2px 0 var(--accent); }
+.seg-label { font: 500 10px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 2px 0 6px; }
+.setup-toggle { display: none; }
+
+.verdict { font: 400 12px/1.4 var(--mono); color: var(--muted); min-height: 17px; overflow-wrap: anywhere; }
+.verdict b { color: var(--ink); font-weight: 500; }
+
+/* ---------- stage: panes + side ---------- */
+.stage { min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 8px; }
+.panes { min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+.pane {
+  flex: 1 1 0; min-height: 0; min-width: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+}
+.pane[hidden] { display: none !important; }
+.pane-head { display: flex; align-items: center; gap: 8px; padding: 7px 10px 6px; border-bottom: 1px solid var(--line); min-width: 0; }
+.pane-title { font: 600 14px/1.2 var(--display); white-space: nowrap; }
+.pane-sub { font: 400 11px/1.2 var(--mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1; }
+.zoom { display: flex; gap: 4px; }
+.zoom button { min-width: 30px; min-height: 30px; padding: 0; border-radius: 5px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; font: 500 14px/1 var(--mono); }
+.box { position: relative; min-height: 0; min-width: 0; }
+.box canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+.box canvas.dragging { cursor: grabbing; }
+.pane-foot { display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 6px 10px 7px; border-top: 1px solid var(--line);
+  font: 400 11.5px/1.3 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.pane-foot b { color: var(--ink); font-weight: 500; }
+.pane-foot .found { color: var(--good); }
+
+/* side: tabs over one panel */
+.side { min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--panel);
+  border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.tabs { display: flex; border-bottom: 1px solid var(--line); }
+.tabs button { flex: 1; min-height: 40px; border: 0; background: none; cursor: pointer; font: 500 12px/1 var(--mono);
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.tabs button[aria-selected="true"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--accent); }
+.tabs .count { color: var(--muted); font-weight: 400; margin-left: 4px; }
+.panel { min-height: 0; overflow: auto; padding: 8px 10px; }
+.panel[hidden] { display: none !important; }
+.side.collapsed .panel { display: none; }
+
+.calls { list-style: none; margin: 0; padding: 0; font: 400 11.5px/1.65 var(--mono); font-variant-numeric: tabular-nums; }
+.calls li { display: grid; grid-template-columns: 5.5ch 4ch minmax(0, 1fr); gap: 8px; white-space: nowrap; }
+.calls li > span:last-child { overflow: hidden; text-overflow: ellipsis; }
+.calls .who { color: var(--muted); }
+.calls .sel .who, .calls .sel { color: var(--accent); }
+.calls .hit { color: var(--good); font-weight: 500; }
+.filter { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; font: 400 11px/1.3 var(--mono); color: var(--muted); }
+.filter button { min-height: 28px; border: 1px solid var(--line); border-radius: 5px; background: none; padding: 0 8px; cursor: pointer; font: inherit; }
+
+.agents { display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 4px; }
+.agent { min-height: 44px; display: grid; align-content: center; justify-items: start; gap: 2px; padding: 4px 7px; border: 1px solid var(--line);
+  border-radius: 6px; background: none; cursor: pointer; font: 500 12px/1.1 var(--mono); text-align: left; }
+.agent small { font: 400 10px/1.1 var(--mono); color: var(--muted); }
+.agent[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.agent .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; background: var(--muted); vertical-align: 1px; }
+.agent[data-state="explore"] .dot { background: var(--ink); }
+.agent[data-state="back"] .dot { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink); }
+.agent[data-state="found"] .dot { background: var(--good); }
+.agent[data-state="wait"] .dot, .agent[data-state="idle"] .dot { background: var(--fog); }
+.group-label { font: 500 10px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 10px 0 6px; }
+.group-label:first-child { margin-top: 2px; }
+
+.path-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.path-list button { width: 100%; display: grid; grid-template-columns: 5ch minmax(0, 1fr) 7ch; gap: 8px; align-items: center; min-height: 32px;
+  border: 1px solid var(--line); border-radius: 6px; background: none; padding: 0 8px; cursor: pointer; font: 400 12px/1 var(--mono); text-align: left; }
+.path-list button[aria-pressed="true"] { border-color: var(--accent); }
+.bar-track { height: 6px; background: var(--fog); border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--accent); }
+.note { color: var(--muted); font-size: 12.5px; max-width: 60ch; margin: 4px 0 10px; }
+.legend { display: grid; gap: 4px; font: 400 11.5px/1.4 var(--mono); color: var(--muted); margin-top: 10px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -2px; margin-right: 6px; border: 1px solid var(--line); }
+
+/* ---------- narrow: stacked panes, collapsible sheet, setup behind a button ---------- */
+@container (max-width: 759px) {
+  .brand h1 { font-size: 18px; }
+  .brand { flex-wrap: wrap; row-gap: 6px; }
+  .btn { padding: 0 8px; font-size: 12px; }
+  .seg button { padding: 0 6px; min-width: 30px; font-size: 12px; }
+  .setup-toggle { display: inline-flex; align-items: center; }
+  .setup[data-open="false"] { display: none; }
+  .setup { width: 100%; }
+  .stage { grid-template-rows: minmax(0, 1fr) auto; }
+  .side { max-height: 40dvh; }
+  .side.collapsed .tabs button[aria-selected="true"] { box-shadow: none; }
+  .side.collapsed { grid-template-rows: auto 0; }
+}
+/* ---------- wide: panes side by side, log on the right ---------- */
+@container (min-width: 760px) {
+  .stage { grid-template-columns: minmax(0, 1fr) 300px; grid-template-rows: minmax(0, 1fr); }
+  .panes { flex-direction: row; }
+}
+@container (min-width: 1280px) {
+  .stage { grid-template-columns: minmax(0, 1fr) 340px; }
+}
+@media (max-height: 500px) {
+  .app { gap: 6px; padding-block: 6px; }
+  .proto, .verdict { display: none; }
+  .pane-head { padding: 4px 8px; }
+  .pane-sub { display: none; }
+  .pane-foot { flex-wrap: nowrap; overflow: hidden; padding: 4px 8px; white-space: nowrap; }
+  .setup-toggle { display: inline-flex; align-items: center; }
+  .setup[data-open="false"] { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+.sw-ink { background: var(--ink); } .sw-good { background: var(--good); } .sw-fog { background: var(--fog); }
+.sw-floor { background: var(--floor); } .sw-muted { background: var(--muted); } .sw-accent { background: var(--accent); }
+.sw-back { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink); }
+</style>
+
+<div class="app" id="app">
+  <header class="bar">
+    <div class="brand"><h1>maze · analysis</h1><a href="/maze/">← maze cart</a><a href="/">replay console</a><span class="proto" title="Agents here are a simple search in the browser, not Ante processes">prototype · simulated agents</span></div>
+    <div class="transport">
+      <button class="btn primary" id="play" aria-pressed="false">Play</button>
+      <button class="btn" id="step" title="One tool call per agent (s)">Step</button>
+      <button class="btn" id="reset" title="Same maze, start over (r)">Reset</button>
+      <span class="seg" role="group" aria-label="Speed" id="speed">
+        <button data-v="1" aria-pressed="false">1×</button><button data-v="4" aria-pressed="true">4×</button><button data-v="16" aria-pressed="false">16×</button>
+      </span>
+      <button class="btn setup-toggle" id="setup-toggle" aria-expanded="false" aria-controls="setup">Setup</button>
+    </div>
+    <div class="setup" id="setup" data-open="false">
+      <span class="seg-label">View</span>
+      <span class="seg" role="group" aria-label="View" id="view">
+        <button data-v="both" aria-pressed="true">Both</button><button data-v="solo" aria-pressed="false">Solo</button><button data-v="swarm" aria-pressed="false">Swarm</button>
+      </span>
+      <span class="seg-label">Antes</span>
+      <span class="seg" role="group" aria-label="Swarm size" id="size">
+        <button data-v="4" aria-pressed="false">4</button><button data-v="16" aria-pressed="true">16</button><button data-v="64" aria-pressed="false">64</button>
+      </span>
+      <span class="seg-label">Map</span>
+      <span class="seg" role="group" aria-label="Coordination" id="coord">
+        <button data-v="shared" aria-pressed="true" title="Antes share what they have explored">Shared</button><button data-v="own" aria-pressed="false" title="Each Ante explores alone">Own</button>
+      </span>
+      <span class="seg-label">Maze</span>
+      <span class="seg" role="group" aria-label="Maze size" id="dims">
+        <button data-v="S" aria-pressed="false">24×15</button><button data-v="M" aria-pressed="true">40×25</button><button data-v="L" aria-pressed="false">64×40</button>
+      </span>
+      <button class="btn" id="new-maze" title="New seed">New maze <span id="seed-label" class="pane-sub"></span></button>
+    </div>
+  </header>
+
+  <div class="verdict" id="verdict" aria-live="polite"></div>
+
+  <main class="stage">
+    <section class="panes" id="panes">
+      <article class="pane" id="pane-solo" aria-label="One Ante">
+        <div class="pane-head"><span class="pane-title">1 Ante</span><span class="pane-sub">depth-first, alone</span>
+          <span class="zoom"><button data-z="in" aria-label="Zoom in">+</button><button data-z="out" aria-label="Zoom out">−</button><button data-z="fit" aria-label="Fit maze">⤢</button></span></div>
+        <div class="box"><canvas role="img" aria-label="Maze explored by one Ante"></canvas></div>
+        <div class="pane-foot"></div>
+      </article>
+      <article class="pane" id="pane-swarm" aria-label="Ante swarm">
+        <div class="pane-head"><span class="pane-title" id="swarm-title">16 Antes</span><span class="pane-sub" id="swarm-sub">shared map</span>
+          <span class="zoom"><button data-z="in" aria-label="Zoom in">+</button><button data-z="out" aria-label="Zoom out">−</button><button data-z="fit" aria-label="Fit maze">⤢</button></span></div>
+        <div class="box"><canvas role="img" aria-label="Maze explored by a swarm of Antes"></canvas></div>
+        <div class="pane-foot"></div>
+      </article>
+    </section>
+
+    <aside class="side" id="side">
+      <div class="tabs" role="tablist">
+        <button role="tab" id="tab-calls" aria-selected="true" aria-controls="p-calls">Calls<span class="count" id="calls-count"></span></button>
+        <button role="tab" id="tab-agents" aria-selected="false" aria-controls="p-agents">Agents</button>
+        <button role="tab" id="tab-path" aria-selected="false" aria-controls="p-path">Path</button>
+      </div>
+      <div class="panel" id="p-calls" role="tabpanel">
+        <div class="filter"><span id="filter-label">All agents · newest first</span><button id="clear-sel" hidden>Show all</button></div>
+        <ol class="calls" id="calls"></ol>
+      </div>
+      <div class="panel" id="p-agents" role="tabpanel" hidden>
+        <div id="agent-groups"></div>
+        <div class="legend">
+          <span><i class="sw-ink"></i>exploring new cells</span>
+          <span><i class="sw-back"></i>backtracking from a dead end</span>
+          <span><i class="sw-good"></i>found the exit</span>
+          <span><i class="sw-fog"></i>waiting to start, or nothing left to explore</span>
+        </div>
+      </div>
+      <div class="panel" id="p-path" role="tabpanel" hidden>
+        <p class="note">When an Ante reaches the exit, the shortest route from the start is the answer. Each cell of that route is credited to the Ante that reached it first.</p>
+        <div id="path-body"></div>
+        <div class="legend">
+          <span><i class="sw-floor"></i>explored</span>
+          <span><i class="sw-fog"></i>not explored yet</span>
+          <span><i class="sw-muted"></i>walked more than once (repeat work)</span>
+          <span><i class="sw-accent"></i>selected Ante, and the exit route</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+  <footer><p>ante-swarm-bench · Independent work, not an Antigma release.</p></footer>
+</div>
+
+<script src="maze-core.js"></script>
+<script>
+(() => {
+  // The maze, the call model and the explorer rule live in maze-core.js (shared with the Python harness).
+  const { createRun, stepRun, finished } = MazeCore;
+  const DIMS = { S: [24, 15], M: [40, 25], L: [64, 40] };
+  const SECONDS_PER_CALL = 0.8;   // simulated: what one tool call costs on the clock
+
+  const over = (run) => finished(run);
+
+  // ---------- state ----------
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const st = { dims: 'M', size: 16, shared: true, view: 'both', speed: 4, playing: false, seed: 2026, acc: 0, last: 0,
+    sel: null, maze: null, solo: null, swarm: null, dirty: true, tab: 'calls', panelDue: 0 };
+
+  function build() {
+    const [c, r] = DIMS[st.dims];
+    const params = { cols: c, rows: r, seed: st.seed, generator: 'prim', loops: 0.05, start: 'center' };
+    st.solo = createRun({ ...params, map: 'own' }, 1, { label: 'solo' });
+    st.swarm = createRun({ ...params, map: st.shared ? 'shared' : 'own' }, st.size, { label: 'swarm' });
+    st.maze = st.solo.maze;
+    st.sel = null;
+    $('seed-label').textContent = `#${st.seed}`;
+    $('swarm-title').textContent = `${st.size} Antes`;
+    $('swarm-sub').textContent = st.shared ? 'depth-first, shared map' : 'depth-first, each alone';
+    renderAgentButtons();
+    for (const p of panes) p.cam.z = 1, p.cam.follow = null, p.cam.pan = null;
+    st.dirty = true;
+    refreshPanels(true);
+  }
+
+  // ---------- panes, camera, drawing ----------
+  const $ = (id) => document.getElementById(id);
+  const panes = ['solo', 'swarm'].map((name) => {
+    const el = $('pane-' + name), canvas = el.querySelector('canvas');
+    return { name, el, canvas, ctx: canvas.getContext('2d'), foot: el.querySelector('.pane-foot'), w: 0, h: 0, dpr: 1,
+      cam: { z: 1, pan: null, follow: null }, geo: null };
+  });
+  const runOf = (p) => (p.name === 'solo' ? st.solo : st.swarm);
+
+  let colors = {};
+  function readColors() {
+    const cs = getComputedStyle(document.documentElement);
+    for (const k of ['floor', 'fog', 'wall', 'ink', 'muted', 'accent', 'good', 'panel', 'line']) colors[k] = cs.getPropertyValue('--' + k).trim();
+    st.dirty = true;
+  }
+
+  // Fit the maze to the pane: whole pixels per cell, and turned a quarter if that gives bigger cells (a wide maze
+  // in a tall pane). Zoom multiplies the fitted cell; pan is kept only while zoomed past the box.
+  function geometry(p) {
+    const { cols, rows } = st.maze;
+    const fitN = Math.min(p.w / cols, p.h / rows), fitR = Math.min(p.w / rows, p.h / cols);
+    const rot = fitR > fitN * 1.08;
+    const fit = Math.max(1, Math.floor(rot ? fitR : fitN));
+    const cell = Math.max(1, Math.round(fit * p.cam.z));
+    const SW = (rot ? rows : cols) * cell, SH = (rot ? cols : rows) * cell;
+    let ox = (p.w - SW) / 2, oy = (p.h - SH) / 2;
+    if (SW > p.w || SH > p.h) {
+      const pan = p.cam.pan || { x: ox, y: oy };
+      ox = SW > p.w ? Math.min(0, Math.max(p.w - SW, pan.x)) : ox;
+      oy = SH > p.h ? Math.min(0, Math.max(p.h - SH, pan.y)) : oy;
+      p.cam.pan = { x: ox, y: oy };
+    } else p.cam.pan = null;
+    return { rot, cell, fit, SW, SH, ox: Math.round(ox), oy: Math.round(oy), cols, rows };
+  }
+  // maze cell centre -> screen px, and back
+  const toScreen = (g, x, y) => (g.rot ? [g.ox + (g.rows - y - 0.5) * g.cell, g.oy + (x + 0.5) * g.cell] : [g.ox + (x + 0.5) * g.cell, g.oy + (y + 0.5) * g.cell]);
+  function toCell(g, sx, sy) {
+    const u = (sx - g.ox) / g.cell, v = (sy - g.oy) / g.cell;
+    const x = Math.floor(g.rot ? v : u), y = Math.floor(g.rot ? g.rows - u : v);
+    return x >= 0 && y >= 0 && x < g.cols && y < g.rows ? [x, y] : null;
+  }
+
+  function followCamera(p, g) {
+    const f = p.cam.follow != null ? runOf(p).agents.find((a) => a.k === p.cam.follow) : null;
+    if (!f || (g.SW <= p.w && g.SH <= p.h)) return g;
+    const [sx, sy] = toScreen(g, f.pos % g.cols, (f.pos / g.cols) | 0);
+    const k = reduced.matches ? 1 : 0.18;
+    p.cam.pan = { x: g.ox + (p.w / 2 - sx) * k, y: g.oy + (p.h / 2 - sy) * k };
+    return geometry(p);
+  }
+
+  function draw(p) {
+    const run = runOf(p);
+    if (!run || !p.w) return;
+    let g = geometry(p);
+    g = followCamera(p, g);
+    p.geo = g;
+    const { ctx } = p, { cols, rows, walls } = st.maze, c = g.cell;
+    ctx.setTransform(p.dpr, 0, 0, p.dpr, 0, 0);
+    ctx.fillStyle = colors.panel; ctx.fillRect(0, 0, p.w, p.h);
+    ctx.save();
+    ctx.translate(g.ox, g.oy);
+    if (g.rot) { ctx.translate(rows * c, 0); ctx.rotate(Math.PI / 2); }
+    // cells: fog, floor, repeat work
+    ctx.fillStyle = colors.fog; ctx.fillRect(0, 0, cols * c, rows * c);
+    ctx.fillStyle = colors.floor;
+    for (let i = 0; i < run.seen.length; i++) if (run.seen[i]) ctx.fillRect((i % cols) * c, ((i / cols) | 0) * c, c, c);
+    ctx.fillStyle = colors.muted;
+    for (let i = 0; i < run.visits.length; i++) {
+      const v = run.visits[i]; if (v < 2) continue;
+      ctx.globalAlpha = Math.min(0.55, 0.14 * (v - 1));
+      ctx.fillRect((i % cols) * c, ((i / cols) | 0) * c, c, c);
+    }
+    ctx.globalAlpha = 1;
+    // walls, only where explored (the fog hides the rest)
+    ctx.strokeStyle = colors.wall; ctx.lineWidth = Math.max(1, c / 7); ctx.lineCap = 'square';
+    ctx.beginPath();
+    for (let i = 0; i < walls.length; i++) {
+      if (!run.seen[i]) continue;
+      const x = (i % cols) * c, y = ((i / cols) | 0) * c, w = walls[i];
+      if (w & 1) { ctx.moveTo(x, y); ctx.lineTo(x + c, y); }
+      if (w & 2) { ctx.moveTo(x + c, y); ctx.lineTo(x + c, y + c); }
+      if (w & 4) { ctx.moveTo(x, y + c); ctx.lineTo(x + c, y + c); }
+      if (w & 8) { ctx.moveTo(x, y); ctx.lineTo(x, y + c); }
+    }
+    ctx.stroke();
+    const ctr = (i) => [((i % cols) + 0.5) * c, (((i / cols) | 0) + 0.5) * c];
+    const poly = (cells, width, color, alpha = 1) => {
+      if (cells.length < 2) return;
+      ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      ctx.beginPath(); cells.forEach((i, n) => { const [x, y] = ctr(i); n ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+      ctx.globalAlpha = 1;
+    };
+    // the selected Ante's whole walk
+    const sel = st.sel && st.sel.run === p.name ? run.agents.find((a) => a.k === st.sel.k) : null;
+    if (sel) poly(sel.trail, Math.max(1.5, c * 0.22), colors.accent, 0.45);
+    // the exit route, with a tick wherever credit passes to another Ante
+    if (run.done) {
+      const route = run.done.route;
+      poly(route, Math.max(2, c * 0.34), colors.accent, 0.95);
+      ctx.fillStyle = colors.panel;
+      for (let n = 1; n < route.length; n++) if (run.by[route[n]] !== run.by[route[n - 1]]) { const [x, y] = ctr(route[n]); ctx.beginPath(); ctx.arc(x, y, Math.max(1.5, c * 0.16), 0, 7); ctx.fill(); }
+      if (sel) {
+        ctx.strokeStyle = colors.ink; ctx.lineWidth = Math.max(1, c * 0.1);
+        for (const i of route) if (run.by[i] === sel.k) { const [x, y] = ctr(i); ctx.strokeRect(x - c * 0.3, y - c * 0.3, c * 0.6, c * 0.6); }
+      }
+    }
+    // start and exit
+    let [sx, sy] = ctr(st.maze.start);
+    ctx.fillStyle = colors.ink; ctx.fillRect(sx - c * 0.3, sy - c * 0.3, c * 0.6, c * 0.6);
+    [sx, sy] = ctr(st.maze.exit);
+    ctx.strokeStyle = colors.good; ctx.lineWidth = Math.max(1.5, c * 0.14);
+    ctx.beginPath(); ctx.arc(sx, sy, Math.max(2.5, c * 0.32), 0, 7); ctx.stroke();
+    // agents
+    for (const a of run.agents) {
+      if (a.state === 'wait') continue;
+      const [x, y] = ctr(a.pos), r = Math.max(1.8, c * 0.28);
+      const isSel = sel && sel.k === a.k;
+      ctx.beginPath(); ctx.arc(x, y, isSel ? r * 1.35 : r, 0, 7);
+      if (a.state === 'back' || a.state === 'idle') { ctx.strokeStyle = isSel ? colors.accent : colors.ink; ctx.lineWidth = Math.max(1, c * 0.1); ctx.stroke(); }
+      else { ctx.fillStyle = a.state === 'found' ? colors.good : isSel ? colors.accent : colors.ink; ctx.fill(); }
+    }
+    ctx.restore();
+    // labels in screen space, only when cells are big enough to read them
+    if (c >= 16) {
+      ctx.font = `500 ${Math.min(12, Math.round(c * 0.55))}px "IBM Plex Mono", ui-monospace, monospace`;
+      ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+      for (const a of run.agents) {
+        if (a.state === 'wait') continue;
+        const [x, y] = toScreen(g, a.pos % cols, (a.pos / cols) | 0);
+        if (x < -20 || y < -20 || x > p.w + 20 || y > p.h + 20) continue;
+        ctx.fillStyle = sel && sel.k === a.k ? colors.accent : colors.muted;
+        ctx.fillText(a.id, x + c * 0.42, y - c * 0.42);
+      }
+    }
+    // overview map while zoomed past the box
+    if (g.SW > p.w + 1 || g.SH > p.h + 1) drawMini(p, g, run);
+  }
+
+  function drawMini(p, g, run) {
+    const { ctx } = p, { cols, rows } = st.maze;
+    const W = g.rot ? rows : cols, H = g.rot ? cols : rows;
+    const k = Math.max(1, Math.floor(Math.min(110 / W, 80 / H)));
+    const mx = p.w - W * k - 8, my = p.h - H * k - 8;
+    ctx.fillStyle = colors.panel; ctx.globalAlpha = 0.92; ctx.fillRect(mx - 3, my - 3, W * k + 6, H * k + 6); ctx.globalAlpha = 1;
+    ctx.fillStyle = colors.fog; ctx.fillRect(mx, my, W * k, H * k);
+    ctx.fillStyle = colors.floor;
+    for (let i = 0; i < run.seen.length; i++) if (run.seen[i]) {
+      const x = i % cols, y = (i / cols) | 0;
+      ctx.fillRect(mx + (g.rot ? rows - 1 - y : x) * k, my + (g.rot ? x : y) * k, k, k);
+    }
+    ctx.strokeStyle = colors.accent; ctx.lineWidth = 1.5;
+    const s = k / g.cell;
+    ctx.strokeRect(mx + Math.max(0, -g.ox * s), my + Math.max(0, -g.oy * s), Math.min(W * k, p.w * s), Math.min(H * k, p.h * s));
+  }
+
+  function foot(p) {
+    const run = runOf(p);
+    const pct = Math.round((100 * run.seenCount) / (st.maze.cols * st.maze.rows));
+    const unique = run.seenCount - 1, repeat = run.calls ? Math.round((100 * Math.max(0, run.calls - unique)) / run.calls) : 0;
+    const active = run.agents.filter((a) => a.state === 'explore' || a.state === 'back').length;
+    const t = (run.done ? run.done.tick : run.tick) * SECONDS_PER_CALL;
+    const parts = [
+      `<span>time <b>${t.toFixed(1)}s</b></span>`, `<span>calls <b>${run.calls}</b></span>`,
+      `<span>mapped <b>${pct}%</b></span>`, `<span>repeat <b>${repeat}%</b></span>`,
+    ];
+    if (run.agents.length > 1) parts.push(`<span>active <b>${active}/${run.agents.length}</b></span>`);
+    if (run.done) parts.push(`<span class="found">exit · ${run.done.agent.id}</span>`);
+    p.foot.innerHTML = parts.join('');
+    p.canvas.setAttribute('aria-label', `${p.name === 'solo' ? 'One Ante' : run.agents.length + ' Antes'}: ${pct}% mapped, ${run.calls} calls${run.done ? ', exit found by ' + run.done.agent.id : ''}`);
+  }
+
+  function verdict() {
+    const a = st.solo, b = st.swarm, el = $('verdict');
+    if (a.done && b.done) {
+      const ta = a.done.tick, tb = b.done.tick;
+      const faster = ta / tb, cost = b.calls / Math.max(1, a.calls);
+      el.innerHTML = `<b>${st.size} Antes reached the exit ${faster >= 1 ? faster.toFixed(1) + '× sooner' : (1 / faster).toFixed(1) + '× later'}</b> than one (${(tb * SECONDS_PER_CALL).toFixed(1)}s vs ${(ta * SECONDS_PER_CALL).toFixed(1)}s), using ${cost.toFixed(1)}× the tool calls. Simulated agents on seed #${st.seed}.`;
+    } else if (!a.calls && !b.calls) {
+      el.textContent = `Same maze, same rules, one tool call per Ante per tick. Press Play. Simulated agents on seed #${st.seed}; no Ante process or model runs here.`;
+    } else {
+      const first = a.done ? '1 Ante' : b.done ? `${st.size} Antes` : null;
+      el.textContent = first ? `${first} found the exit; the other is still searching…` : 'Searching…';
+    }
+  }
+
+  // ---------- side panels ----------
+  function renderAgentButtons() {
+    const box = $('agent-groups');
+    box.replaceChildren();
+    for (const run of [st.solo, st.swarm]) {
+      const label = document.createElement('div'); label.className = 'group-label';
+      label.textContent = run.label === 'solo' ? '1 Ante' : `${run.agents.length} Antes`;
+      const grid = document.createElement('div'); grid.className = 'agents';
+      for (const a of run.agents) {
+        const b = document.createElement('button'); b.className = 'agent'; b.dataset.run = run.label; b.dataset.k = a.k;
+        b.innerHTML = `<span><span class="dot"></span>${a.id}</span><small></small>`;
+        b.onclick = () => select(run.label, a.k, true);
+        grid.append(b);
+      }
+      box.append(label, grid);
+    }
+  }
+
+  function refreshPanels(force) {
+    const now = performance.now();
+    if (!force && now < st.panelDue) return;
+    st.panelDue = now + 120;
+    // calls, newest first, filtered to the selected Ante
+    const all = [...st.solo.log, ...st.swarm.log].filter((e) => !st.sel || (e.run === st.sel.run && e.k === st.sel.k));
+    all.sort((x, y) => y.tick - x.tick || (x.run < y.run ? -1 : 1));
+    const rows = all.slice(0, 120).map((e) => {
+      const sel = st.sel && e.run === st.sel.run && e.k === st.sel.k;
+      return `<li class="${sel ? 'sel' : ''}"><span>${(e.tick * SECONDS_PER_CALL).toFixed(1)}s</span><span class="who">${e.who}</span><span class="${e.hit ? 'hit' : ''}">${e.call} · ${e.result}</span></li>`;
+    });
+    $('calls').innerHTML = rows.join('');
+    $('calls-count').textContent = String(st.solo.calls + st.swarm.calls);
+    const selAgent = st.sel ? (st.sel.run === 'solo' ? st.solo : st.swarm).agents.find((a) => a.k === st.sel.k) : null;
+    $('filter-label').textContent = selAgent ? `${selAgent.id} only · ${selAgent.calls} calls · ${selAgent.firsts} cells found first` : 'All agents · newest first';
+    $('clear-sel').hidden = !selAgent;
+    // agents
+    for (const b of document.querySelectorAll('.agent')) {
+      const run = b.dataset.run === 'solo' ? st.solo : st.swarm, a = run.agents[+b.dataset.k];
+      b.dataset.state = a.state;
+      b.setAttribute('aria-pressed', String(!!st.sel && st.sel.run === b.dataset.run && st.sel.k === a.k));
+      b.querySelector('small').textContent = `${a.calls} calls`;
+    }
+    // path credit
+    const body = $('path-body');
+    const parts = [];
+    for (const run of [st.solo, st.swarm]) {
+      const name = run.label === 'solo' ? '1 Ante' : `${run.agents.length} Antes`;
+      if (!run.done) { parts.push(`<div class="group-label">${name}</div><p class="note">No exit yet.</p>`); continue; }
+      const credit = new Map();
+      for (const i of run.done.route) credit.set(run.by[i], (credit.get(run.by[i]) || 0) + 1);
+      const list = [...credit.entries()].sort((x, y) => y[1] - x[1]);
+      const len = run.done.route.length;
+      parts.push(`<div class="group-label">${name} · route ${len} cells · ${list.length} contributor${list.length > 1 ? 's' : ''}</div><ul class="path-list">` +
+        list.map(([k, n]) => {
+          const a = run.agents[k], on = st.sel && st.sel.run === run.label && st.sel.k === k;
+          return `<li><button data-run="${run.label}" data-k="${k}" aria-pressed="${!!on}"><span>${a.id}</span><span class="bar-track"><span class="bar-fill" data-w="${Math.round((100 * n) / len)}"></span></span><span>${n} cells</span></button></li>`;
+        }).join('') + '</ul>');
+    }
+    body.innerHTML = parts.join('');
+    // Widths through the CSSOM, not a style attribute: the served page's CSP allows no inline style attributes.
+    for (const f of body.querySelectorAll('.bar-fill[data-w]')) f.style.width = f.dataset.w + '%';
+    for (const b of body.querySelectorAll('button')) b.onclick = () => select(b.dataset.run, +b.dataset.k, true);
+    for (const p of panes) foot(p);
+    verdict();
+  }
+
+  function select(run, k, follow) {
+    const same = st.sel && st.sel.run === run && st.sel.k === k;
+    st.sel = same ? null : { run, k };
+    for (const p of panes) p.cam.follow = null;
+    const p = panes.find((q) => q.name === run);
+    if (!same && follow && p) {
+      p.cam.follow = k;
+      if (p.cam.z < 2.5 && p.geo && p.geo.fit < 14) p.cam.z = Math.min(8, 18 / p.geo.fit);  // close enough to see it
+    }
+    st.dirty = true; refreshPanels(true);
+  }
+
+  // ---------- clock ----------
+  const TICKS_PER_S = 6;
+  function frame(now) {
+    const dt = st.last ? Math.min(250, now - st.last) : 0;
+    st.last = now;
+    if (st.playing) {
+      st.acc += (dt / 1000) * TICKS_PER_S * st.speed;
+      let n = Math.floor(st.acc); st.acc -= n;
+      while (n-- > 0) { stepRun(st.solo); stepRun(st.swarm); }
+      if (over(st.solo) && over(st.swarm)) setPlaying(false);
+      st.dirty = true;
+    }
+    if (st.dirty || panes.some((p) => p.cam.follow != null)) {
+      for (const p of panes) if (!p.el.hidden) draw(p);
+      st.dirty = false;
+      refreshPanels(false);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function setPlaying(on) {
+    st.playing = on;
+    $('play').textContent = on ? 'Pause' : (over(st.solo) && over(st.swarm) ? 'Replay' : 'Play');
+    $('play').setAttribute('aria-pressed', String(on));
+  }
+
+  // ---------- input ----------
+  function seg(id, apply) {
+    const el = $(id);
+    el.addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      for (const x of el.querySelectorAll('button')) x.setAttribute('aria-pressed', String(x === b));
+      apply(b.dataset.v);
+    });
+  }
+  seg('speed', (v) => { st.speed = +v; });
+  seg('size', (v) => { st.size = +v; build(); setPlaying(false); });
+  seg('coord', (v) => { st.shared = v === 'shared'; build(); setPlaying(false); });
+  seg('dims', (v) => { st.dims = v; build(); setPlaying(false); });
+  seg('view', (v) => { st.view = v; $('pane-solo').hidden = v === 'swarm'; $('pane-swarm').hidden = v === 'solo'; st.dirty = true; });
+  $('play').onclick = () => { if (over(st.solo) && over(st.swarm)) build(); setPlaying(!st.playing); };
+  $('step').onclick = () => { setPlaying(false); stepRun(st.solo); stepRun(st.swarm); st.dirty = true; refreshPanels(true); };
+  $('reset').onclick = () => { build(); setPlaying(false); };
+  $('new-maze').onclick = () => { st.seed = 1000 + Math.floor(Math.random() * 9000); build(); setPlaying(false); };
+  $('clear-sel').onclick = () => { st.sel = null; for (const p of panes) p.cam.follow = null; st.dirty = true; refreshPanels(true); };
+  $('setup-toggle').onclick = () => {
+    const open = $('setup').dataset.open !== 'true';
+    $('setup').dataset.open = String(open); $('setup-toggle').setAttribute('aria-expanded', String(open));
+  };
+  const TABS = ['calls', 'agents', 'path'];
+  for (const name of TABS) $('tab-' + name).onclick = () => {
+    const side = $('side');
+    if (st.tab === name) { side.classList.toggle('collapsed'); return; }   // tap the open tab to fold the sheet
+    side.classList.remove('collapsed');
+    st.tab = name;
+    for (const n of TABS) { $('tab-' + n).setAttribute('aria-selected', String(n === name)); $('p-' + n).hidden = n !== name; }
+  };
+
+  function zoomAt(p, factor, fx, fy) {
+    const g0 = p.geo || geometry(p);
+    const z1 = Math.min(10, Math.max(1, p.cam.z * factor));
+    if (z1 === p.cam.z) return;
+    const u = (fx - g0.ox) / g0.cell, v = (fy - g0.oy) / g0.cell;
+    p.cam.z = z1;
+    const c1 = Math.max(1, Math.round(g0.fit * z1));
+    p.cam.pan = { x: fx - u * c1, y: fy - v * c1 };
+    st.dirty = true;
+  }
+
+  for (const p of panes) {
+    p.el.querySelector('.zoom').addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.z === 'fit') { p.cam.z = 1; p.cam.pan = null; p.cam.follow = null; st.dirty = true; }
+      else zoomAt(p, b.dataset.z === 'in' ? 1.6 : 1 / 1.6, p.w / 2, p.h / 2);
+    });
+    new ResizeObserver(([e]) => {
+      const { width, height } = e.contentRect;
+      p.dpr = Math.min(2, window.devicePixelRatio || 1);
+      p.w = Math.floor(width); p.h = Math.floor(height);
+      p.canvas.width = Math.max(1, Math.round(p.w * p.dpr)); p.canvas.height = Math.max(1, Math.round(p.h * p.dpr));
+      st.dirty = true;
+    }).observe(p.canvas.parentElement);
+
+    const pts = new Map();
+    let drag = null, pinch = null;
+    p.canvas.addEventListener('pointerdown', (e) => {
+      p.canvas.setPointerCapture(e.pointerId);
+      pts.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
+      if (pts.size === 1) drag = { x: e.offsetX, y: e.offsetY, moved: false, pan: p.cam.pan ? { ...p.cam.pan } : null };
+      if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), z: p.cam.z }; drag = null; }
+    });
+    p.canvas.addEventListener('pointermove', (e) => {
+      if (!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
+      if (pinch && pts.size === 2) {
+        const [a, b] = [...pts.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
+        zoomAt(p, (pinch.z * d) / pinch.d / p.cam.z, (a.x + b.x) / 2, (a.y + b.y) / 2);
+        p.cam.follow = null;
+      } else if (drag) {
+        const dx = e.offsetX - drag.x, dy = e.offsetY - drag.y;
+        if (!drag.moved && Math.hypot(dx, dy) > 5) { drag.moved = true; p.canvas.classList.add('dragging'); }
+        if (drag.moved && drag.pan) { p.cam.pan = { x: drag.pan.x + dx, y: drag.pan.y + dy }; p.cam.follow = null; st.dirty = true; }
+      }
+    });
+    const end = (e) => {
+      pts.delete(e.pointerId);
+      if (pts.size < 2) pinch = null;
+      if (drag && !drag.moved && pts.size === 0) tap(p, e.offsetX, e.offsetY);
+      if (pts.size === 0) { drag = null; p.canvas.classList.remove('dragging'); }
+    };
+    p.canvas.addEventListener('pointerup', end);
+    p.canvas.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); drag = null; pinch = null; });
+    p.canvas.addEventListener('wheel', (e) => { e.preventDefault(); zoomAt(p, Math.exp(-e.deltaY * 0.0022), e.offsetX, e.offsetY); p.cam.follow = null; }, { passive: false });
+  }
+
+  // A tap picks the Ante nearest the tapped cell; on an explored cell with nobody near, the Ante that found it.
+  function tap(p, sx, sy) {
+    const g = p.geo; if (!g) return;
+    const cell = toCell(g, sx, sy); if (!cell) return;
+    const run = runOf(p), [cx, cy] = cell;
+    let best = null, bd = 2.6;
+    for (const a of run.agents) {
+      if (a.state === 'wait') continue;
+      const d = Math.hypot((a.pos % g.cols) - cx, ((a.pos / g.cols) | 0) - cy);
+      if (d < bd) { bd = d; best = a; }
+    }
+    const i = cy * g.cols + cx;
+    if (!best && run.seen[i]) best = run.agents[run.by[i]];
+    if (best) select(p.name, best.k, false);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea')) return;
+    if (e.key === ' ' && !e.target.closest('button')) { e.preventDefault(); $('play').click(); }
+    else if (e.key === 's') $('step').click();
+    else if (e.key === 'r') $('reset').click();
+    else if (e.key === 'f') for (const p of panes) { p.cam.z = 1; p.cam.pan = null; p.cam.follow = null; st.dirty = true; }
+    else if (e.key === 'Escape' && st.sel) $('clear-sel').click();
+  });
+
+  matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', readColors);
+  new MutationObserver(readColors).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  if (document.fonts) document.fonts.ready.then(() => { st.dirty = true; });
+
+  // Open in a working state: on wide screens the setup row shows, and the race starts unless motion is reduced.
+  readColors();
+  { const app = $('app'), cs = getComputedStyle(app);   // narrow screens: mazes first, the log starts folded
+    if (app.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) < 760) $('side').classList.add('collapsed'); }
+  build();
+  if (!reduced.matches) setPlaying(true);
+  requestAnimationFrame(frame);
+})();
+</script>

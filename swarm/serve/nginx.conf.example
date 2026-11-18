@@ -1,0 +1,19 @@
+# Example nginx location that proxies a page's API calls to a `swarm serve` lane. Placeholders in <angle brackets>.
+# The page calls same-origin /swarm/live/api/...; nginx adds the ingress secret, so the browser never sees it.
+# Put the secret in a root-only include file as:  set $swarm_ingress_secret "<same value as SWARM_INGRESS_SECRET>";
+location ^~ /swarm/live/api/ {
+    include <path-to-secret-include>.conf;
+    limit_except GET POST { deny all; }
+    client_max_body_size 2k;
+    proxy_pass https://<lane-host>/api/;
+    proxy_ssl_server_name on;
+    proxy_set_header Host <lane-host>;
+    proxy_set_header X-Swarm-Ingress $swarm_ingress_secret;
+    proxy_set_header X-Real-IP $remote_addr;   # the real client address as this proxy sees it
+    proxy_set_header Cookie "";
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    proxy_buffering off;          # server-sent events
+    proxy_read_timeout 900s;
+    add_header Cache-Control "no-store" always;
+}

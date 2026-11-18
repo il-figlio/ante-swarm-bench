@@ -1,0 +1,12 @@
+order_id,date,customer,category,amount,note
+Q2001,2026-09-01,"Lopez, Ana",coffee,4.20,beans refill
+Q2002,2026-09-02,Marta R,fun,64.00,"2x mugs, gift-wrapped"
+Q2003,2026-09-03,K. Osei,transport,18.75,"call before delivery
+leave at side door"
+Q2004,2026-09-04,"Chen, Wei",groceries,42.10,"she said ""keep the receipt"""
+Q2005,2026-09-05,Priya S,coffee,3.80,"flat white, extra shot"
+Q2006,2026-09-08,"Garcia, Tom",fun,15.00,cinema
+Q2007,2026-09-09,Marta R,groceries,38.90,"weekly shop, top-up"
+Q2008,2026-09-10,"Lopez, Ana",transport,12.00,taxi split
+Q2009,2026-09-11,K. Osei,fun,9.50,"rain check, ""maybe later"""
+Q2010,2026-09-12,"Chen, Wei",coffee,4.20,beans

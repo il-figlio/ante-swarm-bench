@@ -1,0 +1,9 @@
+[task]
+id = "config-migrate"
+allowed_changes = ["services/*.json"]
+
+[agent]
+timeout_sec = 120
+
+[metadata]
+tags = ["json", "migration"]

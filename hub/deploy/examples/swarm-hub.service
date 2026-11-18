@@ -1,0 +1,28 @@
+# Example systemd unit for the swarm hub. Paths are placeholders: /opt/swarm-hub holds this app directory,
+# /var/lib/swarm-hub holds run data. Secrets and the allow-list go in the EnvironmentFile (mode 600).
+[Unit]
+Description=Swarm hub (owner console and public receipts under /swarm/)
+After=network.target
+
+[Service]
+Type=simple
+User=swarm-hub
+Group=swarm-hub
+WorkingDirectory=/var/lib/swarm-hub
+EnvironmentFile=/etc/swarm-hub/hub.env
+Environment=SWARM_HUB_PORT=8003 SWARM_RUNS_DIR=/var/lib/swarm-hub/runs SWARM_ANNOTATIONS_DIR=/var/lib/swarm-hub/annotations
+ExecStart=/usr/bin/python3 /opt/swarm-hub/hub/server.py
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+# The runner needs an SSH key (in $HOME/.ssh) to drive exe.dev VMs; keep HOME inside the data dir.
+ReadOnlyPaths=/opt/swarm-hub
+ReadWritePaths=/var/lib/swarm-hub
+RestrictAddressFamilies=AF_INET AF_UNIX
+MemoryMax=512M
+TasksMax=256
+
+[Install]
+WantedBy=multi-user.target

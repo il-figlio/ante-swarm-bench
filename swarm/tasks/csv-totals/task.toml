@@ -1,0 +1,9 @@
+[task]
+id = "csv-totals"
+allowed_changes = ["report.py", "totals.csv"]
+
+[agent]
+timeout_sec = 120
+
+[metadata]
+tags = ["python", "data"]

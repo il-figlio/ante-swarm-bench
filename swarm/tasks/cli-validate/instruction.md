@@ -1,0 +1,1 @@
+`python3 temp.py 21.5` prints the Celsius value converted to Fahrenheit. When the argument is missing or not a number it crashes with a traceback. Make it print `error: expected a number` to stderr and exit with status 2 instead. Valid input must keep working exactly as now.

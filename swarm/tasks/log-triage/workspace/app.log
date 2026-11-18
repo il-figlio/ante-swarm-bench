@@ -1,0 +1,11 @@
+2026-10-30T09:00:01Z INFO  api      request served path=/health
+2026-10-30T09:00:02Z ERROR billing  card declined id=8812
+2026-10-30T09:00:02Z WARN  api      slow request ms=840
+2026-10-30T09:00:03Z ERROR api      upstream timeout path=/orders
+2026-10-30T09:00:04Z INFO  worker   job done id=31
+2026-10-30T09:00:05Z ERROR billing  retry exhausted id=8812
+2026-10-30T09:00:06Z ERROR search   index missing name=products
+2026-10-30T09:00:07Z INFO  billing  invoice sent id=990
+2026-10-30T09:00:08Z ERROR api      upstream timeout path=/cart
+2026-10-30T09:00:09Z WARN  worker   queue depth high n=120
+2026-10-30T09:00:10Z ERROR billing  card declined id=8820

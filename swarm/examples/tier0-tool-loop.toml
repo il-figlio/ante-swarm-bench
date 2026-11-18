@@ -1,0 +1,24 @@
+question = "What does each harness add per tool step? 50 trivial shell steps (echo N >> ticks.txt), alone and 8 at once; the step gap is reply-to-next-request. Scripted model; telemetry, analytics and update checks off for every harness."
+protocol = "naive"
+primary_outcome = "step_gap_s"
+model = { source = "scripted", id = "swarm-scripted-1", effort = "medium", max_output_tokens = 16384 }
+harnesses = ["mini", "ante", "codex", "claude-code"]
+sandbox = "process"
+tasks = ["../tasks/tool-loop-50"]
+seed = 103
+stop_rule = "Run every cell; five rounds per level."
+levels = [1, 8]
+repeats = 5
+
+[budget]
+max_requests_per_attempt = 60
+attempt_timeout_s = 300
+
+[admission]
+reserve_mb = 512
+max_pressure = "warn"
+wait_timeout_s = 600
+reserve_tasks = 256
+
+[harness_options.ante]
+telemetry = "off"

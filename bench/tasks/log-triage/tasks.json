@@ -1,0 +1,202 @@
+[
+ {
+  "id": "t01",
+  "persona": "C",
+  "title": "Triage host-01 logs for the 14:00 UTC incident",
+  "prompt": "Fleet triage: on-call reported elevated 5xx across the platform around 14:00 UTC yesterday (2026-09-15). Each host is being checked separately — yours is host-01. Go through the logs under logs/host-01/ and decide whether this host was part of the incident. Write your findings to analysis/host-01.md. First line must be a verdict: `Verdict: ANOMALY` if this host was hit, `Verdict: CLEAN` if it wasn't. If anomalous, state the incident window as UTC timestamps and name the error signature you found. Back the verdict with file:line citations from the logs either way. Finish the file with a single grep command (one line) that reproduces your key evidence. Don't modify anything under logs/ and don't create files outside analysis/.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-01.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t02",
+  "persona": "C",
+  "title": "Triage host-02 logs for the 14:00 UTC incident",
+  "prompt": "Was host-02 caught up in yesterday's ~14:00 UTC 5xx incident? The captured logs are in logs/host-02/. Write analysis/host-02.md starting with `Verdict: ANOMALY` or `Verdict: CLEAN`. If the host was involved give the incident window (UTC timestamps) and the signature error; cite log lines as file:line to support whatever you conclude. End the file with a one-line grep that pulls your key evidence back out. Leave the logs untouched and don't write any other files.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-02.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t03",
+  "persona": "C",
+  "title": "Triage host-03 logs for the 14:00 UTC incident",
+  "prompt": "We're splitting the fleet up after an error-rate alert around 14:00 UTC on 2026-09-15 — you have host-03. Look through logs/host-03/ and write analysis/host-03.md: a `Verdict: ANOMALY` or `Verdict: CLEAN` line first, then — if it was involved — the incident window as timestamps and the error signature. Cite file:line evidence for the verdict. Last line of the file: a one-line grep command that reproduces the key evidence. Only write that one file; the logs are read-only evidence.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-03.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t04",
+  "persona": "C",
+  "title": "Triage host-04 logs for the 14:00 UTC incident",
+  "prompt": "Customers complained about failures around 14:00 UTC yesterday and we're checking every host. Yours is host-04 — the logs are under logs/host-04/. Write up what you find in analysis/host-04.md. Start with `Verdict: ANOMALY` or `Verdict: CLEAN`. If this host shows an anomaly, give the window as UTC timestamps plus the signature, and cite evidence as file:line ranges; cite representative lines even if it's clean. Finish with a single grep one-liner that reproduces the key evidence. Don't touch the logs or add other files.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-04.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t05",
+  "persona": "C",
+  "title": "Triage host-05 logs for the 14:00 UTC incident",
+  "prompt": "Triage logs/host-05/ — did host-05 show an anomaly around 14:00 UTC on 2026-09-15? Report in analysis/host-05.md: `Verdict: ANOMALY` or `Verdict: CLEAN` on the first line, the incident window (timestamps) and signature plus file:line evidence if anomalous, citations backing the verdict either way, and a final one-line grep that reproduces the evidence. Nothing else in the repo changes.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-05.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t06",
+  "persona": "C",
+  "title": "Triage host-06 logs for the 14:00 UTC incident",
+  "prompt": "Yesterday ~14:00 UTC (2026-09-15) we paged for a spike in 5xx. I'm checking hosts one by one — take host-06. Read the logs in logs/host-06/ and write analysis/host-06.md. Line one: `Verdict: ANOMALY` or `Verdict: CLEAN`. Anomalous means you give me the incident window as UTC timestamps, the error signature, and file:line citations; clean still needs cited evidence (e.g. showing normal noise only). Bottom line of the file: a single grep command reproducing the key evidence. Only create that file.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-06.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t07",
+  "persona": "C",
+  "title": "Triage host-07 logs for the 14:00 UTC incident",
+  "prompt": "host-07 is your piece of the fleet triage for yesterday's ~14:00 UTC 5xx incident. Everything it logged is under logs/host-07/. Decide if it was involved and write analysis/host-07.md: start with `Verdict: ANOMALY` or `Verdict: CLEAN`; if anomalous state the incident window as UTC timestamps and the error signature; cite file:line evidence for your verdict either way; and end the file with a one-line grep that reproduces the key evidence. Don't modify the logs and don't write files anywhere else.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-07.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t08",
+  "persona": "C",
+  "title": "Triage host-08 logs for the 14:00 UTC incident",
+  "prompt": "Need a per-host writeup for the incident review. Around 14:00 UTC on 2026-09-15 we saw elevated 5xx fleet-wide. Check the logs for host-08 (logs/host-08/) and write analysis/host-08.md. First line: `Verdict: ANOMALY` or `Verdict: CLEAN`. If hit: incident window in UTC timestamps, signature error, file:line citations. Either way cite the lines your verdict rests on, and close the file with a single-line grep that reproduces the key evidence. One file only, logs stay as they are.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-08.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t09",
+  "persona": "C",
+  "title": "Triage host-09 logs for the 14:00 UTC incident",
+  "prompt": "Quick triage ask: did host-09 take part in the ~14:00 UTC incident yesterday? Logs in logs/host-09/. Write analysis/host-09.md — first line `Verdict: ANOMALY` or `Verdict: CLEAN`; if anomalous include the window (UTC timestamps) and the signature; support the verdict with file:line citations; last line is a one-line grep command that reproduces your key evidence. Keep every other file untouched.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-09.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t10",
+  "persona": "C",
+  "title": "Triage host-10 logs for the 14:00 UTC incident",
+  "prompt": "We're fanning out the post-incident sweep — one host each. host-10 is yours; its logs for 2026-09-15 are in logs/host-10/. The reported problem window is around 14:00 UTC. Write analysis/host-10.md with a `Verdict: ANOMALY` or `Verdict: CLEAN` line up top. If the host was involved, state the window as UTC timestamps and the signature; cite file:line evidence either way. End with a single grep one-liner reproducing the evidence. Don't edit the logs; write only that file.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-10.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t11",
+  "persona": "C",
+  "title": "Triage host-11 logs for the 14:00 UTC incident",
+  "prompt": "Elevated 5xx got reported around 14:00 UTC yesterday (2026-09-15) and I need to know whether host-11 was part of it. Go through logs/host-11/ and write analysis/host-11.md. First line must read `Verdict: ANOMALY` or `Verdict: CLEAN`. If anomalous: the incident window as UTC timestamps, the signature error, and file:line citations; if clean still cite the lines that show normal noise. Finish with a one-line grep that reproduces your key evidence. Nothing else gets written or changed.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-11.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t12",
+  "persona": "C",
+  "title": "Triage host-12 logs for the 14:00 UTC incident",
+  "prompt": "Triage logs/host-12/ for the incident review — 5xx spiked somewhere in the fleet around 14:00 UTC on 2026-09-15. Write analysis/host-12.md starting with `Verdict: ANOMALY` or `Verdict: CLEAN`. If this host was hit, give the incident window (timestamps) and signature with file:line citations; cite supporting lines regardless. Close the file with a single-line grep command that reproduces the key evidence. Logs are evidence — don't modify them, and don't create other files.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-12.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t13",
+  "persona": "C",
+  "title": "Triage host-13 logs for the 14:00 UTC incident",
+  "prompt": "One host per person for the 14:00 UTC incident sweep — you drew host-13. Look at logs/host-13/ (2026-09-15 capture) and write analysis/host-13.md. Put `Verdict: ANOMALY` or `Verdict: CLEAN` on the first line. Anomalous means stating the window as UTC timestamps plus the signature and file:line evidence; clean still needs citations to what you checked. Last line: one grep command, single line, that reproduces the key evidence. Only that file changes.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-13.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t14",
+  "persona": "C",
+  "title": "Triage host-14 logs for the 14:00 UTC incident",
+  "prompt": "Was host-14 involved in yesterday's ~14:00 UTC 5xx incident? Check logs/host-14/ and write analysis/host-14.md: `Verdict: ANOMALY` or `Verdict: CLEAN` first; if it was involved, the incident window in UTC timestamps and the error signature; file:line citations behind the verdict either way; and a closing one-line grep that reproduces the key evidence. Leave logs and every other file alone.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-14.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t15",
+  "persona": "C",
+  "title": "Triage host-15 logs for the 14:00 UTC incident",
+  "prompt": "Incident follow-up: a burst of 5xx around 14:00 UTC on 2026-09-15. Your host is host-15 — triage logs/host-15/ and write analysis/host-15.md. Start with `Verdict: ANOMALY` or `Verdict: CLEAN`. If anomalous give the window as UTC timestamps, the signature, and file:line citations; cite representative evidence even when clean. Bottom line of the file is a one-line grep that reproduces the key evidence. Write only that file.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-15.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t16",
+  "persona": "C",
+  "title": "Triage host-16 logs for the 14:00 UTC incident",
+  "prompt": "host-16 triage for the ~14:00 UTC incident yesterday — the fleet's logs for 2026-09-15 are split per host, yours is under logs/host-16/. Work out whether this host showed an anomaly and write analysis/host-16.md. First line: `Verdict: ANOMALY` or `Verdict: CLEAN`. If anomalous: incident window (UTC timestamps), signature, file:line citations. Either way cite the log lines you relied on, then end the file with a single-line grep that reproduces the key evidence. Don't touch anything else.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-16.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t17",
+  "persona": "C",
+  "title": "Triage host-17 logs for the 14:00 UTC incident",
+  "prompt": "Checking each host for involvement in the 14:00 UTC 5xx incident on 2026-09-15. Yours: host-17, logs at logs/host-17/. Write analysis/host-17.md — line one `Verdict: ANOMALY` or `Verdict: CLEAN`; if it was hit, the incident window as UTC timestamps and the signature, with file:line citations; cite lines backing the verdict regardless; finish with a one-line grep command reproducing the key evidence. The logs are read-only and no other files should appear.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-17.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t18",
+  "persona": "C",
+  "title": "Triage host-18 logs for the 14:00 UTC incident",
+  "prompt": "Triage ask for the incident doc: did host-18 show an anomaly around 14:00 UTC yesterday? Its logs are in logs/host-18/. Write analysis/host-18.md with `Verdict: ANOMALY` or `Verdict: CLEAN` on the first line. Anomalous → state the window as UTC timestamps, name the signature, cite file:line evidence; clean → cite what shows it stayed normal. Last line is a single grep command that reproduces the key evidence. Only create the analysis file.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-18.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t19",
+  "persona": "C",
+  "title": "Triage host-19 logs for the 14:00 UTC incident",
+  "prompt": "We're assigning one host each for yesterday's ~14:00 UTC (2026-09-15) error spike — host-19 is yours. Review logs/host-19/ and write analysis/host-19.md. First line must be `Verdict: ANOMALY` or `Verdict: CLEAN`. If this host was involved give the incident window in UTC timestamps plus the error signature and file:line citations; cite evidence either way. Close with a one-line grep that reproduces the key evidence. Leave the logs and the rest of the repo untouched.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-19.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ },
+ {
+  "id": "t20",
+  "persona": "C",
+  "title": "Triage host-20 logs for the 14:00 UTC incident",
+  "prompt": "Last host in the sweep: host-20, for the ~14:00 UTC 5xx incident on 2026-09-15. Go through logs/host-20/ and write analysis/host-20.md. Open with `Verdict: ANOMALY` or `Verdict: CLEAN`; if anomalous include the incident window as UTC timestamps, the signature, and file:line citations — cite evidence lines either way. Final line: a one-line grep command that reproduces your key evidence. Don't modify logs or write other files.",
+  "check": "tests.check_analysis",
+  "expect_files": ["analysis/host-20.md"],
+  "budget_s": 300,
+  "tags": ["logs", "triage", "fleet"]
+ }
+]

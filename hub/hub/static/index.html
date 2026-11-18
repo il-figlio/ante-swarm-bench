@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Swarm Hub</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--paper:#FAF8F6;--paper-2:#F1EDE8;--paper-3:#E9E3DC;--ink:#252525;--ink-2:#5E5751;--ink-3:#8A827A;--line:#DED8D1;--accent:#EA5518;--accent-ink:#B33E0E;--accent-tint:rgba(234,85,24,.09);--good:#1E7F3A;--bad:#B3261E;--c1:#EA5518;--c2:#1D6FA8;--c3:#8A7A1E;--c4:#7A4E9E;--grid:#E7E1DA}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#1C1A18;--paper-2:#252220;--paper-3:#2E2A27;--ink:#F1ECE6;--ink-2:#BDB4AB;--ink-3:#8A827A;--line:#3A3531;--accent:#F2703A;--accent-ink:#F2703A;--accent-tint:rgba(242,112,58,.13);--good:#5CC27A;--bad:#F07A72;--c1:#D95926;--c2:#3987E5;--c3:#C98500;--c4:#9085E9;--grid:#2E2A27}}
+:root[data-theme="dark"]{--paper:#1C1A18;--paper-2:#252220;--paper-3:#2E2A27;--ink:#F1ECE6;--ink-2:#BDB4AB;--ink-3:#8A827A;--line:#3A3531;--accent:#F2703A;--accent-ink:#F2703A;--accent-tint:rgba(242,112,58,.13);--good:#5CC27A;--bad:#F07A72;--c1:#D95926;--c2:#3987E5;--c3:#C98500;--c4:#9085E9;--grid:#2E2A27}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Space Grotesk",system-ui,sans-serif;font-size:15px;line-height:1.5;padding-block:20px 56px;padding-inline:clamp(12px,4vw,48px);max-width:1200px;margin-inline:auto}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:20px}
+header h1{font-size:22px;font-weight:600;margin:0;letter-spacing:-.01em}
+header .sub{color:var(--ink-2);font-size:14px;flex:1;min-width:180px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+/* floating status pill — exe.dev "Connected" pattern: ephemeral status, not a bar */
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--paper-2);font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-2);white-space:nowrap}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:var(--ink-3)}
+.pill.live{border-color:var(--good);color:var(--good)}
+.pill.live .dot{background:var(--good)}
+@media (prefers-reduced-motion:no-preference){.pill.live .dot{animation:pulse 1.6s ease-in-out infinite}}
+@keyframes pulse{50%{opacity:.35}}
+/* run chips — accent border+tint when active, never solid fill */
+.runs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;overflow-x:auto;padding-bottom:2px}
+.runs button{font:inherit;font-weight:500;background:var(--paper-2);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:9px 16px;cursor:pointer;min-height:40px;white-space:nowrap}
+.runs button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-tint)}
+.runs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:26px}
+.tile{padding:12px 14px;border-top:2px solid var(--line)}
+.tile .v{font-family:"IBM Plex Mono",monospace;font-size:26px;font-weight:500;line-height:1.1;margin-top:4px}
+.tile .v small{font-size:13px;color:var(--ink-2);margin-left:2px}
+.tile .k{font-size:13px;color:var(--ink-2)}
+.tile.ok .v{color:var(--good)} .tile.bad .v{color:var(--bad)}
+section{margin-bottom:30px}
+h2{font-size:16px;font-weight:600;margin:0 0 4px}
+.lead{color:var(--ink-2);font-size:14px;margin:0 0 12px;max-width:68ch}
+.chart{position:relative;width:100%;overflow-x:auto}
+svg{display:block;max-width:100%;height:auto}
+svg text{font-family:"IBM Plex Mono",monospace;font-size:11px;fill:var(--ink-2)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink-2);margin:8px 0 0}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;background:var(--sw)}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--paper);font-family:"IBM Plex Mono",monospace;font-size:12px;padding:6px 8px;border-radius:4px;white-space:nowrap;transform:translate(-50%,-115%);display:none}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:500;color:var(--ink-2);font-size:12px}
+td.n,th.n{text-align:right}
+.ok{color:var(--good)} .bad{color:var(--bad)}
+.note{font-size:13px;color:var(--ink-2);max-width:72ch}
+@media (prefers-reduced-motion:no-preference){.runs button{transition:border-color .15s}}
+/* config card — exe.dev inset-grouped list: rows, hairline separators, mono values */
+.card{border:1px solid var(--line);border-radius:14px;background:var(--paper-2);margin-bottom:20px;overflow:hidden}
+.cfg{display:grid;grid-template-columns:1fr 1fr}
+.cfg .row{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);min-height:52px}
+.cfg .row:nth-child(odd){border-right:1px solid var(--line)}
+.cfg .row>span{flex:1;color:var(--ink-2);font-size:13px}
+.cfg .row select,.cfg .row input{font:inherit;font-family:"IBM Plex Mono",monospace;font-size:13px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);min-width:0;max-width:100%}
+.cfg .row input[type=number]{width:76px;text-align:right}
+.cfg .wide{grid-column:1/-1;flex-direction:column;align-items:stretch;gap:6px}
+.cfg .row[hidden]{display:none}
+.cfg .wide>span{flex:0 1 auto;min-width:0}
+.cfg textarea{flex:1;font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.5;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);min-height:96px;resize:vertical}
+/* segmented source control — the mode-rail pattern */
+.seg{display:inline-flex;background:var(--paper-3);border-radius:999px;padding:3px;gap:2px}
+.seg button{font:inherit;font-size:13px;font-weight:500;border:0;border-radius:999px;background:transparent;color:var(--ink-2);padding:6px 16px;cursor:pointer;min-height:32px}
+.seg button[aria-pressed="true"]{background:var(--paper);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.actions{display:flex;gap:10px;align-items:center;padding:12px 16px;flex-wrap:wrap}
+.actions button{font:inherit;font-weight:500;padding:10px 20px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;min-height:44px}
+.actions button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.actions button:disabled{opacity:.45;cursor:default}
+.killbtn{font:inherit;font-size:12px;padding:6px 12px;border-radius:999px;border:1px solid var(--bad);color:var(--bad);background:transparent;cursor:pointer;min-height:32px}
+.actions button:focus-visible,.cfg select:focus-visible,.cfg input:focus-visible,.cfg textarea:focus-visible,.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:640px){
+  .cfg{grid-template-columns:1fr}
+  .cfg .row:nth-child(odd){border-right:0}
+  .cfg .row select,.cfg .row input{flex:1}
+  .cfg textarea{min-height:120px}
+}
+</style>
+</head>
+<body>
+<header><h1>Swarm Hub</h1><span class="sub">Ephemeral Ante cells on exe.dev · live and recorded runs</span><span class="pill" id="statuspill"><span class="dot"></span><span id="statustext">…</span></span></header>
+<section class="card" id="panel" aria-label="Start a run">
+  <div class="cfg">
+    <div class="row"><span>Harness</span><select id="harness"><option value="ante">Ante 0.preview.99</option><option value="pi">Pi 0.85.1</option><option value="hermes">Hermes 2026.9.14</option></select></div>
+    <div class="row"><span>Mode</span><select id="mode"><option value="local">density: N on one VM</option><option value="vm">one VM per cell</option></select></div>
+    <div class="row"><span>Cells</span><input id="cells" type="number" min="1" max="32" value="8"></div>
+    <div class="row"><span>Model</span><select id="model"><option value="terra">gpt-5.6-terra</option><option value="luna">gpt-5.6-luna</option></select></div>
+    <div class="row"><span>Effort</span><select id="effort"><option>min</option><option>low</option><option selected>medium</option><option>high</option></select></div>
+    <div class="row"><span>Task source</span><span class="seg" id="src"><button data-src="pack" aria-pressed="true">Pack</button><button data-src="custom" aria-pressed="false">Custom</button></span></div>
+    <div class="row" id="row-pack"><span>Task pack</span><select id="pack"></select></div>
+    <div class="row" id="row-check" hidden><span>Check</span><select id="check"><option value="">no check — run only</option></select></div>
+    <div class="row wide" id="row-prompts" hidden><span class="eyebrow">one task per line · each cell takes a line (density mode round-robins)</span><textarea id="prompts" spellcheck="false" placeholder="Fix the pagination bug in server.py so ?limit&offset work together&#10;Add a --version flag that prints the version from pyproject.toml"></textarea></div>
+    <div class="row"><span>Token ceiling</span><input id="maxtok" type="number" min="0" step="10000" value="0" title="0 = none; run is cancelled when input+output tokens exceed this"></div>
+    <div class="row"><span class="eyebrow" id="estimate">…</span></div>
+  </div>
+  <div class="actions">
+    <button id="start" class="primary">Start swarm</button>
+    <button id="stop" disabled>Stop run</button>
+    <span id="status" class="eyebrow"></span>
+  </div>
+</section>
+<div class="runs" role="tablist" id="runs"></div>
+<div class="tiles" id="tiles"></div>
+<section><h2>Cell lifecycle</h2><p class="lead">Every action the brain took, per cell, from clone to destroy. Bar length is measured wall time.</p><div class="chart" id="gantt"></div></section>
+<section><h2>Harness memory during the task</h2><p class="lead">Resident memory of the harness process(es), sampled over SSH while the model was in the loop. In density runs the line is the sum over all instances on the VM.</p><div class="chart" id="mem"></div><div class="legend" id="memlegend"></div></section>
+<section><h2>Live events</h2><p class="lead">The harnesses' own JSON event stream, tailed over SSH during the run and persisted to <span class="mono">events.jsonl</span> in the run dir.</p><div class="mono" id="events" style="font-size:12px;max-height:220px;overflow-y:auto;white-space:pre-wrap;word-break:break-all"></div></section>
+<section><h2>Receipts</h2><div style="overflow-x:auto"><table id="receipts"></table></div></section>
+<p class="note" id="foot"></p>
+<p class="note">ante-swarm-bench · Independent work, not an Antigma release.</p>
+<script src="app.js?v=dash3"></script>
+<script src="/agentation/loader.js" defer></script>
+</body>
+</html>

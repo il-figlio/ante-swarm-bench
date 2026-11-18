@@ -1,0 +1,16 @@
+[
+  {
+    "op": "write",
+    "path": "note.txt",
+    "content": "hello from agent\n"
+  },
+  {
+    "op": "write",
+    "path": "result.txt",
+    "content": "done\n"
+  },
+  {
+    "op": "final",
+    "text": "Wrote note.txt and result.txt."
+  }
+]
