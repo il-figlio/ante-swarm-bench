@@ -19,15 +19,25 @@ run_tests() {
   fi
 }
 
-echo "== bench: protocol relay and adapters"
-(cd "$ROOT" && run_tests discover -s tests/bench -p 'test_*.py')
+# Bench and Hub run once, alongside the non-maze Swarm tests.
+shard=${2:-}
+if [[ -n "$shard" && "$test_mode" != profile ]]; then
+  echo "CI shards require profile mode" >&2
+  exit 2
+fi
+if [[ "$shard" != maze-play ]]; then
+  echo "== bench: protocol relay and adapters"
+  (cd "$ROOT" && run_tests discover -s tests/bench -p 'test_*.py')
 
-echo "== hub: hub, runner, annotations"
-(cd "$ROOT/hub" && run_tests discover -s tests)
+  echo "== hub: hub, runner, annotations"
+  (cd "$ROOT/hub" && run_tests discover -s tests)
+fi
 
 if [[ "$test_mode" != quick ]]; then
   echo "== swarm: harness, lanes, front, maze, games"
-  if [[ -r /proc/pressure/memory || "${SWARM_REQUIRE_PSI:-0}" == "1" ]]; then
+  if [[ -n "$shard" ]]; then
+    (cd "$ROOT/swarm" && PYTHONPATH=src:tests python3 "$ROOT/tests/swarm_ci_shard.py" "$shard" -v --durations 20)
+  elif [[ -r /proc/pressure/memory || "${SWARM_REQUIRE_PSI:-0}" == "1" ]]; then
     (cd "$ROOT/swarm" && PYTHONPATH=src:tests run_tests discover -s tests)
   else
     echo "NOTE: /proc/pressure/memory unavailable on this host; admission controls remain intact."

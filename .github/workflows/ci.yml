@@ -7,7 +7,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  suites:
+    name: suites (${{ matrix.shard }})
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [other, maze-play]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,4 +23,16 @@ jobs:
         with:
           node-version: "22"
       - name: Run benchmark test suites
-        run: bash tests/run-all.sh profile
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: bash tests/run-all.sh profile "$SHARD"
+
+  test:
+    needs: suites
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require both suites to pass
+        env:
+          RESULT: ${{ needs.suites.result }}
+        run: test "$RESULT" = success
