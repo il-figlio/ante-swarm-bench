@@ -106,7 +106,7 @@ def verify(root: Path) -> list[str]:
     summary_path = root / "summary.json"
     if summary_path.exists():
         recorded = json.loads(summary_path.read_text())
-        recomputed = summarize(attempts, cells)
+        recomputed = summarize(attempts, cells, swarm_version=(plan or {}).get("swarm_version"))
         if canonical(recorded.get("groups")) != canonical(recomputed["groups"]):
             problems.append("summary.json does not match the recorded attempts")
         if plan is not None:

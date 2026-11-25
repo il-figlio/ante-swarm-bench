@@ -87,4 +87,6 @@ Cross-check: the lockstep simulations in Python (`maze.simulate`) and JS (`maze-
 ## Limitations
 
 - The Linux-only paths (`SO_PEERCRED`, `/proc` ancestry, joining a real cgroup) are covered by unit tests. Those tests were last run on macOS, so check them on Linux before you rely on them.
-- A secret-seed maze's `call_budget` equals one agent's calls on the plain maze. "Equal cost" holds on average, but not for each maze.
+- A secret-seed maze's `call_budget` equals one agent's calls on the plain `own`-map maze (DFS backtracking). Because the `shared`-map explorer uses BFS `next-edge` instead of DFS backtracking, even a single agent takes a different path and call count on `shared` vs `own` (992 vs 736 calls on the default seed).
+- In `MazeService` runs (`swarm run`), `shared` stops all agents as soon as any agent reaches the exit (`done = exit_by is not None`), while `own` requires every agent to reach the exit independently (`done = a.reached`). Compare `exit.t` (time to first exit) in `logs/maze-c<cell>-<task>.json` rather than `batch_wall_s` or total `calls` across `shared` vs `own`.
+- `summary.json` and `report.html` surface aggregated `cells.jsonl` maze metrics (`maze_exits`, `maze_exit_s_median`, `maze_calls_median`, `maze_unique_cells_median`, `maze_repeat_pct_median`, `maze_credit_agents_median`) when maze cells are present; per-agent call breakdowns remain in `logs/maze-*.json`.

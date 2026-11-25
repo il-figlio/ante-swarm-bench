@@ -17,7 +17,7 @@ ALLOWED = {e.strip().lower() for e in os.environ.get("SWARM_ALLOWED_EMAILS", "")
 INGRESS = os.environ.get("SWARM_INGRESS_TOKEN", "")  # shared secret nginx injects; blocks local processes forging the identity header
 RUN_ID = re.compile(r"^[a-z0-9][a-z0-9-]{0,40}$")
 RUNNER = Path(os.environ.get("SWARM_RUNNER", Path(__file__).parent.parent / "runner" / "swarm_run.py")).resolve()
-PACKS = Path(os.environ.get("SWARM_PACKS_DIR", Path(__file__).parent.parent / "bench" / "tasks")).resolve()
+PACKS = Path(os.environ.get("SWARM_PACKS_DIR", Path(__file__).resolve().parents[2] / "bench" / "tasks")).resolve()
 ANNOTATIONS = Path(os.environ.get("SWARM_ANNOTATIONS_DIR", RUNS.parent / "annotations")).resolve()
 LOGIN_URL = os.environ.get("SWARM_LOGIN_URL", "/__exe.dev/login?redirect=%2Fswarm%2F")
 MAX_VMS = int(os.environ.get("SWARM_MAX_VMS", "2")); MAX_LOCAL = int(os.environ.get("SWARM_MAX_LOCAL", "32"))
@@ -54,7 +54,8 @@ ALOCK = threading.Lock()
 def run_dirs():
     """Run directories in numeric order — a lexicographic sort would put r100 before r99."""
     if not RUNS.is_dir(): return []
-    return sorted((d for d in RUNS.iterdir() if d.is_dir() and RUN_ID.match(d.name)), key=lambda d: int(d.name[1:]))
+    return sorted((d for d in RUNS.iterdir() if d.is_dir() and RUN_ID.match(d.name)),
+                  key=lambda d: (0, int(d.name[1:])) if re.fullmatch(r"r\d+", d.name) else (1, d.name))
 
 def next_run_id():
     ids = sorted(int(d.name[1:]) for d in RUNS.iterdir() if d.is_dir() and re.fullmatch(r"r\d{2,4}", d.name)) if RUNS.is_dir() else []
@@ -183,9 +184,12 @@ class H(BaseHTTPRequestHandler):
         except OSError: return {}
         if key not in self.PEAKS_CACHE:
             sm = jload(s) or []
-            self.PEAKS_CACHE[key] = {"peak_vm_used_kb": max(0, max((x.get("vm_used_kb") or 0 for x in sm if isinstance(x, dict)), default=0)),
-                                     "peak_load1": max(0, max((x.get("load1") or 0 for x in sm if isinstance(x, dict)), default=0)),
-                                     "peak_ante_rss_kb": max(0, max((x.get("ante_rss_kb") or 0 for x in sm if isinstance(x, dict)), default=0))}  # clamp sampler's -1 sentinels
+            def peak_nonneg(field):
+                vals = [x.get(field) for x in sm if isinstance(x, dict) and isinstance(x.get(field), (int, float)) and not isinstance(x.get(field), bool) and x.get(field) >= 0]
+                return max(vals) if vals else None
+            self.PEAKS_CACHE[key] = {"peak_vm_used_kb": peak_nonneg("vm_used_kb"),
+                                     "peak_load1": peak_nonneg("load1"),
+                                     "peak_ante_rss_kb": peak_nonneg("ante_rss_kb")}
             if len(self.PEAKS_CACHE) > 512: self.PEAKS_CACHE.clear()
         return self.PEAKS_CACHE[key]
     def _public(self, path):
@@ -202,8 +206,10 @@ class H(BaseHTTPRequestHandler):
                 if r.get("matrix_id"): row["rss_measurements"] = sum(x.get("peak_rss_kb") is not None for x in r.get("results", []))
                 row["shadow_cost_usd"] = None if r.get("matrix_id") else shadow_cost(r.get("tokens")); row["date"] = time.strftime("%Y-%m-%d", time.gmtime(d.stat().st_mtime))
                 pk = self._peaks(d / "samples.json")
-                row["peak_vm_used_kb"] = pk.get("peak_vm_used_kb", 0); row["peak_load1"] = pk.get("peak_load1", 0)
-                if not row.get("peak_vm_ante_rss_kb") or row["peak_vm_ante_rss_kb"] < 0: row["peak_vm_ante_rss_kb"] = pk.get("peak_ante_rss_kb", 0)
+                row["peak_vm_used_kb"] = pk.get("peak_vm_used_kb") if pk.get("peak_vm_used_kb") is not None else r.get("peak_vm_used_kb")
+                row["peak_load1"] = pk.get("peak_load1") if pk.get("peak_load1") is not None else r.get("peak_load1")
+                if row.get("peak_vm_ante_rss_kb") is None or (isinstance(row.get("peak_vm_ante_rss_kb"), (int, float)) and row["peak_vm_ante_rss_kb"] < 0):
+                    row["peak_vm_ante_rss_kb"] = pk.get("peak_ante_rss_kb")
                 runs.append(row)
             live = [d.name for d in RUNS.iterdir() if d.is_dir() and RUN_ID.match(d.name) and run_is_live(d)] if RUNS.is_dir() else []
             return self._send(200, json.dumps({"runs": runs, "live": live, "price_source": PRICE_SOURCE, "usd_per_mtok": {"input": USD_IN or None, "cached_input": USD_CACHED or None, "output": USD_OUT or None}}).encode(), extra=cors)

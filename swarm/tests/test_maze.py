@@ -210,6 +210,28 @@ class SimulateTest(unittest.TestCase):
         self.assertEqual(sum(a["per_agent_calls"]), a["calls"])
         self.assertGreater(len(a["credit"]), 1)
 
+    def test_own_map_credits_only_the_winner(self):
+        p = {"cols": 40, "rows": 25, "seed": 2026, "map": "own"}
+        r = mz.simulate(p, 4)
+        self.assertIsNotNone(r["exit_agent"])
+        self.assertEqual(r["credit"], {r["exit_agent"]: len(mz.generate(p).shortest_route())})
+
+    def test_summary_surfaces_maze_metrics_only_when_present(self):
+        from swarm.summary import summarize
+        attempt = {"harness": "mini", "level": 4, "passed": True, "failure": None,
+                   "agent": {"wall_s": 1.0, "cpu_s": 0.2, "max_process_rss_kb": 10240},
+                   "requests": {"count": 4}, "admission": {"wait_s": 0.0}}
+        plain_cell = {"harness": "mini", "level": 4, "batch_wall_s": 1.0, "max_running": 4}
+        self.assertNotIn("maze_runs", summarize([attempt], [plain_cell])["groups"]["mini@4"])
+        maze_cell = {**plain_cell, "maze": {"m1": {"summary": {
+            "calls": 120, "unique_cells": 80, "repeat_pct": 33.33,
+            "exit": {"t": 0.42, "agent": "a0"}, "credit": {"a0": 10, "a1": 5},
+        }}}}
+        g = summarize([attempt], [maze_cell])["groups"]["mini@4"]
+        self.assertEqual((g["maze_runs"], g["maze_exits"], g["maze_exit_s_median"],
+                          g["maze_calls_median"], g["maze_credit_agents_median"]),
+                         (1, 1, 0.42, 120.0, 2.0))
+
     def test_agents_start_four_per_tick(self):
         r = mz.simulate({"cols": 30, "rows": 20, "seed": 9, "step_limit": 500}, 9)
         self.assertTrue(all(c > 0 for c in r["per_agent_calls"]))

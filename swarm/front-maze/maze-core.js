@@ -233,9 +233,11 @@
     repeatPct() { return this.calls ? 100 * Math.max(0, this.calls - this.unique) / this.calls : 0; }
 
     // Route cells credited to whoever entered them first; empty until somebody reaches the exit.
+    // On private maps (map="own"), agents share nothing, so the entire route belongs to the winner.
     credit() {
       const out = {};
       if (this.exitBy === null) return out;
+      if (!this.shared) { out[this.exitBy.k] = shortestRoute(this.maze).length; return out; }
       for (const cell of shortestRoute(this.maze)) {
         const k = this.by[cell];
         if (this.agents.some((a) => a.k === k)) out[k] = (out[k] || 0) + 1;

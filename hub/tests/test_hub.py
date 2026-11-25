@@ -122,4 +122,24 @@ class HubTests(unittest.TestCase):
         pr.wait()
         import shutil; shutil.rmtree(tmp / "runs" / rid)  # test_owner_lists_runs asserts the list is empty
 
+    def test_public_runs_keeps_missing_samples_null_and_handles_non_numeric_dirs(self):
+        import shutil
+        fixture = Path(__file__).resolve().parent / "fixtures" / "mini-run"
+        dst = tmp / "runs" / "mini-run"
+        shutil.copytree(fixture, dst)
+        try:
+            code, body, _h = self.req("/swarm/public/runs")
+            self.assertEqual(code, 200)
+            row = next(r for r in json.loads(body)["runs"] if r["id"] == "mini-run")
+            self.assertIsNone(row["peak_vm_used_kb"])
+            self.assertIsNone(row["peak_load1"])
+            self.assertIsNone(row["peak_vm_ante_rss_kb"])
+            code2, body2, _h2 = self.req("/swarm/public/runs/mini-run")
+            self.assertEqual(code2, 200)
+            detail = json.loads(body2)
+            self.assertEqual(len(detail["receipts"]["results"]), 2)
+            self.assertEqual(detail["meta"]["pack"], "web-app")
+        finally:
+            shutil.rmtree(dst)
+
 if __name__ == "__main__": unittest.main()

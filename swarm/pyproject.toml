@@ -1,6 +1,6 @@
 [project]
 name = "swarm-bench"
-version = "0.1.0"
+version = "0.1.1"
 description = "Measure how many coding-agent instances a machine can run at once, on your own tasks, with verifiable results."
 requires-python = ">=3.11"
 dependencies = []

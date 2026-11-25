@@ -94,6 +94,17 @@ def usage_tokens(audit):
     return out
 
 
+def model_verified(audit, model):
+    """True only when every request was accepted, at least one generation request succeeded (200),
+    and every HTTP 200 generation response completed its stream and echoed the configured model."""
+    if not audit or not all(r.get('accepted') is True for r in audit):
+        return False
+    gen_ok = [r for r in audit if r.get('route') != 'count_tokens' and r.get('status') == 200]
+    if not gen_ok:
+        return False
+    return all(r.get('stream_complete') is True and r.get('response_model') == model for r in gen_ok)
+
+
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--harness',choices=['ante','pi','hermes','claude-code','codex'],required=True);ap.add_argument('--protocol',choices=['shared-v3-claude','shared-v3-codex'],required=True);ap.add_argument('--task-count',type=int);ap.add_argument('--matrix-id',default='');ap.add_argument('--audit',action='store_true');ap.add_argument('--pack',choices=['toolbox'],default='toolbox');ap.add_argument('--instances',type=int,default=1);ap.add_argument('--run-id',required=True);ap.add_argument('--model',required=True);ap.add_argument('--effort',choices=['low','medium','high'],default='medium');ap.add_argument('--timeout',type=int,default=180);ap.add_argument('--root',default='/var/lib/ante-bench');ap.add_argument('--code',default='/opt/ante-bench/campaign-20261031');ap.add_argument('--time-bin',default='/usr/bin/time');ap.add_argument('--repeat',type=int,default=0)
     ap.add_argument('--node',default='/opt/swarm/node/bin/node');ap.add_argument('--python3',default='/usr/bin/python3');ap.add_argument('--gate-port',type=int,default=8766)
@@ -120,7 +131,7 @@ def main():
     if a.harness=='hermes':prep=json.loads((code/'hermes-preparation.json').read_text());version=version.splitlines()[0]+' · release '+prep['source_hermes_release']+' ('+prep['source_hermes_commit'][:7]+')'
     revision=hashlib.sha256(json.dumps(hashes(pack),sort_keys=True).encode()).hexdigest();start=time.monotonic()
     meta={'run_id':a.run_id,'mode':'local','cells':a.instances,'effort':a.effort,'model':a.model,'harness':a.harness,'task_count':count,'matrix_id':a.matrix_id,'harness_version':version,'task_revision':revision,'pack':a.pack,'started':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'pid':os.getpid(),'timeout_s':a.timeout,'protocol_revision':'shared-v3','protocol':a.protocol,'repeat':a.repeat,'provider_route':cohort['provider_route'],'provider_source':cohort['provider_route'],'wire':cohort['wire'],'effort_mapping':cohort['effort_mapping'],'test_upstream':a.test_upstream or None,'telemetry':'off','raw_homes_retained':True,'worker_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'relay_sha256':hashlib.sha256((code/'model_gate.py').read_bytes()).hexdigest() if a.audit else None,'shared_protocol':protocol,'protocol_sha256':hashlib.sha256((code/'protocol.json').read_bytes()).hexdigest(),'preparation':json.loads((code/'hermes-preparation.json').read_text()) if a.harness=='hermes' else None};(d/'meta.json').write_text(json.dumps(meta))
-    env={'PATH':'/usr/bin:/bin','HOME':str(root),'ANTE_HOME':str(root/'ante-home'),'ANTE_TELEMETRY':'off','LANG':'C.UTF-8','PYTHONDONTWRITEBYTECODE':'1','PI_OFFLINE':'1'}
+    env={'PATH':'/usr/bin:/bin','HOME':str(root),'ANTE_HOME':str(root/'ante-home'),'ANTE_TELEMETRY':'off','LANG':'C.UTF-8','PYTHONNOUSERSITE':'1','PYTHONDONTWRITEBYTECODE':'1','PI_OFFLINE':'1'}
     gate=None
     if a.audit:
         from model_gate import Gate, UPSTREAM
@@ -168,7 +179,7 @@ def main():
         check_rc=execute([a.python3,'-m','unittest',check,'-q'],w,env,30,d/(tid+'.check')) if pristine else 1
         peak=re.search(r'Maximum resident set size \(kbytes\):\s*(\d+)',timing.read_text() if timing.exists() else '')
         audit=[r for r in gate.rows if r['task']==tid] if gate else []
-        model_ok=not gate or bool(audit) and all(r['accepted'] for r in audit)
+        model_ok=not gate or model_verified(audit, a.model)
         passed=rc==0 and check_rc==0 and not off and model_ok
         return {'task':tid,'cell':f'worker/i{i+1:02d}','harness':a.harness,'passed':passed,'failure':'' if passed else 'output_limit' if stats.get('termination_reason')=='output_limit' else 'timeout' if rc==124 else 'check_failed' if check_rc else 'off_target' if off else 'ante_error','ante_rc':rc,'check':'OK' if check_rc==0 else 'FAILED','checker_pristine':pristine,'launch_argv':cmd[:cmd.index(t['prompt'])] if t['prompt'] in cmd else cmd,'ante_secs':agent_secs,'model_verified':model_ok,'request_audit':audit,'peak_process_tree_rss_kb':stats.get('peak_tree_rss_kb') or None,'peak_rss_kb':int(peak[1]) if peak else None,'files':' '.join(changed),'off_target_files':off,'tokens':usage_tokens(audit)}
     journal_lock=threading.Lock()

@@ -2,6 +2,8 @@
 import math
 from collections import Counter
 
+from . import VERSION
+
 
 def wilson(passes: int, total: int, z: float = 1.96) -> list[float] | None:
     if total == 0:
@@ -41,7 +43,7 @@ def _anatomy(ran, rows) -> dict:
     return out
 
 
-def summarize(attempts: list[dict], cells: list[dict]) -> dict:
+def summarize(attempts: list[dict], cells: list[dict], *, swarm_version: str | None = VERSION) -> dict:
     groups = {}
     for record in attempts:
         key = f"{record['harness']}@{record['level']}"
@@ -141,4 +143,24 @@ def summarize(attempts: list[dict], cells: list[dict]) -> dict:
             if any("probes" in r.get("requests", {}) for r in ran):
                 extra["probes_median"] = quantile([r["requests"].get("probes") for r in ran], 0.5)
             out[key].update(extra)
+        # The 0.1.0 recorder stored maze cells without adding them to the summary.
+        if swarm_version in (None, "0.1.0"):
+            continue
+        maze_summaries = [
+            entry["summary"]
+            for c in batch
+            for entry in (c.get("maze") or {}).values()
+            if isinstance(entry, dict) and isinstance(entry.get("summary"), dict)
+        ]
+        if maze_summaries:
+            exits = [m["exit"]["t"] for m in maze_summaries if isinstance(m.get("exit"), dict) and m["exit"].get("t") is not None]
+            out[key].update({
+                "maze_runs": len(maze_summaries),
+                "maze_exits": len(exits),
+                "maze_exit_s_median": quantile(exits, 0.5),
+                "maze_calls_median": quantile([m.get("calls") for m in maze_summaries], 0.5),
+                "maze_unique_cells_median": quantile([m.get("unique_cells") for m in maze_summaries], 0.5),
+                "maze_repeat_pct_median": quantile([m.get("repeat_pct") for m in maze_summaries], 0.5),
+                "maze_credit_agents_median": quantile([len(m["credit"]) for m in maze_summaries if isinstance(m.get("credit"), dict)], 0.5),
+            })
     return {"groups": out}

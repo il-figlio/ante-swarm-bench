@@ -59,7 +59,8 @@ class Gate:
                 row = {'request_id': uuid.uuid4().hex, 'received_at': time.time(), 'task': match[1], 'route': route,
                        'model': data.get('model'), 'accepted': data.get('model') == model, 'status': None}
                 if route == 'responses':
-                    row.update(requested_effort=(data.get('reasoning') or {}).get('effort'), effort=effort, max_output_tokens=max_tokens)
+                    row.update(requested_effort=(data.get('reasoning') or {}).get('effort'), effort=effort,
+                               requested_max_output_tokens=data.get('max_output_tokens'), max_output_tokens=max_tokens)
                 elif route == 'messages':
                     cfg = data.get('output_config') if isinstance(data.get('output_config'), dict) else {}
                     row.update(requested_effort=cfg.get('effort'), effort=effort, requested_thinking=data.get('thinking'),
@@ -96,6 +97,10 @@ class Gate:
                 try:
                     with urllib.request.urlopen(req, timeout=180) as response:
                         row['status'] = response.status
+                        ctype = response.headers.get('Content-Type', 'application/json')
+                        is_sse = ctype.startswith('text/event-stream')
+                        if is_sse:
+                            row['stream_complete'] = False
                         outer.save(row)
                         # Quota headers are admin-only and never added to public request rows.
                         quota = {k: v for k, v in response.headers.items() if k.lower().startswith(QUOTA_PREFIXES) and any(x in k.lower() for x in QUOTA_WORDS)}
@@ -104,10 +109,9 @@ class Gate:
                             admin.mkdir(exist_ok=True)
                             with (admin / 'quota-headers.jsonl').open('a') as f:
                                 f.write(json.dumps({'run_id': run_id, 'observed_at': time.time(), 'headers': quota}) + '\n')
-                        ctype = response.headers.get('Content-Type', 'application/json')
                         self.send_response(response.status)
                         self.send_header('Content-Type', ctype)
-                        if ctype.startswith('text/event-stream'):
+                        if is_sse:
                             self.send_header('Cache-Control', 'no-cache')
                         self.end_headers()
                         buffer = b''
@@ -139,8 +143,11 @@ class Gate:
                                     row['stop_reason'] = payload.get('stop_reason')
                                 else:
                                     row['input_tokens_counted'] = payload.get('input_tokens')
+                                row['stream_complete'] = route != 'responses' or payload.get('status') == 'completed'
                             except (ValueError, AttributeError):
-                                pass
+                                row['stream_complete'] = False
+                        elif is_json:
+                            row['stream_complete'] = False
                         outer.save(row)
                 except urllib.error.HTTPError as e:
                     payload = e.read()
@@ -156,12 +163,17 @@ class Gate:
                     self.end_headers()
                     self.wfile.write(payload)
                 except (BrokenPipeError, ConnectionResetError):
-                    pass
+                    if row.get('stream_complete') is not True:
+                        row['stream_complete'] = False
+                        outer.save(row)
                 except Exception:
                     if row['status'] is None:
                         row['status'] = 502
                         outer.save(row)
                         self.send_error(502, 'Managed model request failed')
+                    elif row.get('stream_complete') is not True:
+                        row['stream_complete'] = False
+                        outer.save(row)
 
         class BenchHTTPServer(ThreadingHTTPServer):
             request_queue_size = 128
@@ -177,6 +189,7 @@ class Gate:
                 response = event.get('response', {})
                 row['usage'] = response.get('usage')
                 row['response_model'] = response.get('model')
+                row['stream_complete'] = True
                 self.save(row)
         elif route == 'messages':
             if kind == 'message_start':
@@ -187,6 +200,9 @@ class Gate:
                 usage = row.setdefault('usage', {})
                 usage.update({k: v for k, v in (event.get('usage') or {}).items() if v is not None})
                 row['stop_reason'] = (event.get('delta') or {}).get('stop_reason')
+                self.save(row)
+            elif kind == 'message_stop':
+                row['stream_complete'] = True
                 self.save(row)
 
     def save(self, row):

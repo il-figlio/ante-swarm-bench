@@ -22,7 +22,7 @@ HARNESSES = {
     "hermes": {"proc": "hermes", "match": "hermes/.venv/bin/hermes", "cmd": lambda prompt, effort, model:
         f"hermes chat --quiet --oneshot --yolo --max-turns 40 --in \"$PWD\" " + (f"-m {shlex.quote(model)} " if model else "") + f"-q {shlex.quote(prompt)}"},
     "pi": {"proc": "node", "match": "pi-coding-agent/dist/cli.js", "cmd": lambda prompt, effort, model:
-        f"pi -p --mode json --no-session --no-extensions --no-skills --thinking {'low' if effort in ('min','low','medium') else 'high'} " + (f"--model {shlex.quote(model)} " if model else "") + shlex.quote(prompt)},
+        f"pi -p --mode json --no-session --no-extensions --no-skills --thinking {'low' if effort in ('min','low') else effort} " + (f"--model {shlex.quote(model)} " if model else "") + shlex.quote(prompt)},
 }
 TOKEN_SCRIPT = r"""import json,sys;i=o=c=0
 def walk(x):
@@ -195,14 +195,40 @@ def ante_cmd(remote, tid, prompt, check, timeout, effort, model, harness="ante")
             # restore protected tracked files before judging: agents may add new files under tests/ but cannot rewrite checkers, the manifest, or the corpus
             f"for p in tests logs tools; do git checkout -q main -- \"$p\" 2>/dev/null; done; "
             f"git add -A; git -c user.name={harness}-cell -c user.email=cell@swarm -c commit.gpgsign=false commit -q -m 'task {tid} ({harness})' || true; "
-            f"CHECK=$(python3 -m unittest {check} -q 2>&1 | tail -1); "
+            f"python3 -m unittest {check} -q >/tmp/chk-{tid} 2>&1; CHECK_RC=$?; CHECK=$(tail -1 /tmp/chk-{tid}); "
+            f"CHECK_RAN=$(grep -E '^Ran [0-9]+ tests? in ' /tmp/chk-{tid} | tail -1 | awk '{{print $2}}'); "
             f"TOK=$(python3 -c {shlex.quote(TOKEN_SCRIPT)} /tmp/out-{tid} 2>/dev/null); "
-            f"echo RC=$RC; cat /tmp/ru-{tid}; echo CHECK=$CHECK; echo TOKENS=$TOK; echo FILES=$(git log --name-only --format='' main..HEAD 2>/dev/null | sort -u | tr '\\n' ' '); tail -c 300 /tmp/err-{tid}")
+            f"echo RC=$RC; cat /tmp/ru-{tid}; echo CHECK_RC=$CHECK_RC; echo CHECK_RAN=$CHECK_RAN; echo CHECK=$CHECK; echo TOKENS=$TOK; echo FILES=$(git log --name-only --format='' main..HEAD 2>/dev/null | sort -u | tr '\\n' ' '); tail -c 300 /tmp/err-{tid}")
+
+def check_passed(r):
+    """True only when unittest exited 0, reported OK, and ran at least one non-skipped test.
+    Prevents skipped optional-input checkers (e.g. 'Ran 0 tests ... OK (skipped=1)') from counting as passes,
+    while still allowing suites that skip a subset of tests (e.g. clean-host log-triage: Ran 7, skipped=2)."""
+    if r.get("check_rc") not in ("", None, "0"):
+        return False
+    chk = r.get("check") or ""
+    if not chk.startswith("OK"):
+        return False
+    m = re.search(r"skipped=(\d+)", chk)
+    skipped = int(m.group(1)) if m else 0
+    ran_raw = r.get("check_ran")
+    if ran_raw not in ("", None):
+        try:
+            ran = int(ran_raw)
+        except ValueError:
+            return False
+        if ran <= 0 or skipped >= ran:
+            return False
+    elif skipped > 0:
+        return False
+    return True
 
 def parse(out):
     g = lambda k: next((l.split("=", 1)[1] for l in out.splitlines() if l.startswith(k + "=")), "")
     tok = g("TOKENS").split(); tokens = {"input": int(tok[0]), "output": int(tok[1]), "cache_read": int(tok[2])} if len(tok) == 3 else None
-    return {"rc": g("RC") or "?", "rusage": next((l for l in out.splitlines() if l.startswith("peak_rss_kb")), ""), "check": g("CHECK"), "files": g("FILES").strip(), "tokens": tokens}
+    return {"rc": g("RC") or "?", "rusage": next((l for l in out.splitlines() if l.startswith("peak_rss_kb")), ""),
+            "check": g("CHECK"), "check_rc": g("CHECK_RC"), "check_ran": g("CHECK_RAN"),
+            "files": g("FILES").strip(), "tokens": tokens}
 
 def fetch(host, remote, tid, workdir, R, label):
     p, s = run(["git", "--git-dir", str(workdir / "work.git"), "fetch", "-q", f"ssh://{host}/~/{remote.replace('~/', '')}", f"+task/{tid}:{label}/task/{tid}"])
@@ -216,9 +242,11 @@ def run_one(host, label, remote, task, workdir, R, a, stagger=0.0):
     with LOCK: R.instances[label] = (host, task["id"])
     p, s = ssh(host, ante_cmd(remote, task["id"], task["prompt"], task.get("check", ""), a.timeout, a.effort, a.model, a.harness), timeout=a.timeout + 60)
     with LOCK: R.instances.pop(label, None)  # task process is gone — a kill from here on must not hit a stale pid file
-    r = parse(p.stdout); ok = r["rc"] == "0" and r["check"].startswith("OK")
-    fail = "" if ok else ("cancelled" if R.cancelled() else "timeout" if r["rc"] == "124" else "check_failed" if r["rc"] == "0" else "ante_error")
+    r = parse(p.stdout)
     exp = set(task.get("expect_files") or []); touched = set(r["files"].split()); off = sorted(touched - exp) if exp else []
+    chk_ok = check_passed(r)
+    ok = r["rc"] == "0" and chk_ok and not off
+    fail = "" if ok else ("cancelled" if R.cancelled() else "timeout" if r["rc"] == "124" else "off_target" if (r["rc"] == "0" and chk_ok and off) else "check_failed" if r["rc"] == "0" else "ante_error")
     R.log(label, f"ante task {task['id']}", s, "ok" if ok else fail, f"{r['rusage']} tokens={r['tokens']} files={r['files']}" + (f" off-target={off}" if off else ""))
     fetched = fetch(host, remote, task["id"], workdir, R, label) if not R.cancelled() else False
     requeue = None

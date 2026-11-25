@@ -102,7 +102,7 @@ def entry_reason(entry, gated: bool) -> str | None:
     if not result:
         return "no_result"
     attempts, passes = result.get("attempts"), result.get("passes")
-    if gated and attempts and passes is not None and 2 * passes < attempts - (result.get("not_run") or 0):
+    if gated and attempts and passes is not None and (passes == 0 or 2 * passes < attempts - (result.get("not_run") or 0)):
         return "under_half_passed"
     return None
 

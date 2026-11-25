@@ -161,7 +161,7 @@ class Admission:
                         self.pending.append((now, estimate, threads, attempt_id))
                         self.committed[attempt_id] = threads
                         self.disk_committed[attempt_id] = disk_estimate
-                    decision = {"admitted": True, "wait_s": round(now - started, 3), "held_for": sorted(reasons),
+                    decision = {"admitted": True, "wait_s": round(now - started, 3) if reasons else 0.0, "held_for": sorted(reasons),
                                 "pressure": state["pressure"], "available_mb": state["available_mb"],
                                 "estimate_mb": round(estimate, 1), "pressure_unknown": state["pressure"] == "unknown",
                                 "tasks_free": state.get("tasks_free"), "estimate_threads": threads,
@@ -326,7 +326,7 @@ def run(plan_path: Path, out: Path, cancel: threading.Event | None = None) -> Pa
         for signum, handler in previous.items():
             signal.signal(signum, handler)
     attempts = read_jsonl(bundle.root / "attempts.jsonl")
-    summary = summarize(attempts, cells)
+    summary = summarize(attempts, cells, swarm_version=plan.get("swarm_version"))
     usage = resource.getrusage(resource.RUSAGE_SELF)
     summary.update(cancelled=cancel.is_set(), crashed=crashed,
                    complete=is_complete(plan, cells, attempts, read_jsonl(bundle.root / "skipped.jsonl"), cancel.is_set(), crashed),

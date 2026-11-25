@@ -41,6 +41,12 @@ class Upstream(BaseHTTPRequestHandler):
         SEEN.append({"path": self.path, "headers": {k.lower(): v for k, v in self.headers.items()}, "body": body})
         if body.get("model") == "boom":
             payload, ctype, code = json.dumps({"error": {"message": "nope"}}).encode(), "application/json", 400
+        elif body.get("model") == "trunc-sse":
+            ev = {"type": "response.created", "response": {"id": "r_trunc", "model": "trunc-sse"}}
+            payload, ctype, code = f"event: response.created\ndata: {json.dumps(ev)}\n\n".encode(), "text/event-stream", 200
+        elif body.get("model") == "wrong-model":
+            ev = {"type": "response.completed", "response": {"id": "r_wm", "model": "other-model", "usage": {"input_tokens": 10, "output_tokens": 2}}}
+            payload, ctype, code = f"event: response.completed\ndata: {json.dumps(ev)}\n\n".encode(), "text/event-stream", 200
         elif self.path == "/v1/messages/count_tokens":
             payload, ctype, code = json.dumps({"input_tokens": 7}).encode(), "application/json", 200
         elif self.path == "/v1/chat/completions" and body.get("stream"):
@@ -57,7 +63,8 @@ class Upstream(BaseHTTPRequestHandler):
         elif body.get("stream"):
             payload, ctype, code = (messages_sse() if self.path == "/v1/messages" else responses_sse()), "text/event-stream", 200
         else:
-            payload, ctype, code = json.dumps({"id": "r", "output": [], "usage": {"input_tokens": 50, "output_tokens": 5}}).encode(), "application/json", 200
+            reply_status = getattr(self.server, "response_status", "completed")
+            payload, ctype, code = json.dumps({"id": "r", "status": reply_status, "output": [], "usage": {"input_tokens": 50, "output_tokens": 5}}).encode(), "application/json", 200
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(payload)))
@@ -246,11 +253,39 @@ class RelayTests(unittest.TestCase):
         self.assertEqual([r["request_id"] for r in rows], [f"a1#{i}" for i in range(4)])
         self.assertEqual(self.relay.budget.used, 150 + 55 + 10 + 44)
 
+    def test_json_responses_require_terminal_success(self):
+        from unittest.mock import patch
+        for status in ("completed", "failed", "incomplete", "in_progress", None):
+            with self.subTest(status=status), patch.object(self.up, "response_status", status, create=True):
+                url = self.register()
+                code, _, _ = self.post(url + "/responses", {"model": "gpt-x", "reasoning": {"effort": "medium"}})
+                row = self.relay.release("a1")[0][0]
+                self.assertEqual(code, 200)
+                self.assertEqual(row["completed"], status == "completed")
+                self.assertEqual(row["error"], None if status == "completed" else "stream_incomplete")
+
     def test_probe_rows_carry_a_request_id(self):
         url = self.register()
         urllib.request.urlopen(url + "/models", timeout=5).close()
         rows, _ = self.relay.release("a1")
         self.assertEqual(rows[0]["request_id"], "a1#0")
+
+    def test_truncated_sse_and_response_model_mismatch_are_not_completed(self):
+        url = self.register(key="t1", model="trunc-sse")
+        code, _, _ = self.post(url + "/responses", {"model": "trunc-sse", "reasoning": {"effort": "medium"}, "stream": True})
+        self.assertEqual(code, 200)
+        rows, _ = self.relay.release("t1")
+        self.assertFalse(rows[0]["completed"])
+        self.assertFalse(rows[0]["stream_complete"])
+        self.assertEqual(rows[0]["error"], "stream_incomplete")
+
+        url2 = self.register(key="m1", model="wrong-model")
+        code2, _, _ = self.post(url2 + "/responses", {"model": "wrong-model", "reasoning": {"effort": "medium"}, "stream": True})
+        self.assertEqual(code2, 200)
+        rows2, _ = self.relay.release("m1")
+        self.assertFalse(rows2[0]["completed"])
+        self.assertEqual(rows2[0]["response_model"], "other-model")
+        self.assertEqual(rows2[0]["error"], "response_model_mismatch")
 
 
 if __name__ == "__main__":
