@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
@@ -17,4 +18,4 @@ jobs:
         with:
           node-version: "22"
       - name: Run benchmark test suites
-        run: bash tests/run-all.sh
+        run: bash tests/run-all.sh profile
