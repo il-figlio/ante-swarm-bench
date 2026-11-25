@@ -148,4 +148,33 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(p.returncode, 124); self.assertIsInstance(p.stdout, str)
         self.assertEqual(p.stdout, "partial"); self.assertIn("oops", p.stderr)
 
+    def test_skipped_zero_test_checker_cannot_pass(self):
+        # Regression: tbench-ported setUpClass SkipTest prints 'Ran 0 tests' + 'OK (skipped=1)' and exits 0.
+        skipped_out = "RC=0\npeak_rss_kb=100 user_s=0 sys_s=0 wall_s=1\nCHECK_RC=0\nCHECK_RAN=0\nCHECK=OK (skipped=1)\nTOKENS=\nFILES=\n"
+        with mock.patch.object(sr, "ship_base", return_value=True), \
+             mock.patch.object(sr, "ssh", return_value=(P(0, skipped_out), 1.0)), \
+             mock.patch.object(sr, "fetch", return_value=True):
+            r = sr.run_one("h", "c1", "~/w/t", {"id": "t05", "prompt": "p", "check": "tests.check_t05"}, self.tmp, self.R, self.args())
+        self.assertFalse(r["passed"])
+        self.assertEqual(r["failure"], "check_failed")
+        # All-skipped tests also fail, whereas partial skips (e.g. clean-host log-triage: 7 ran, 2 skipped) pass.
+        self.assertFalse(sr.check_passed({"check_rc": "0", "check_ran": "3", "check": "OK (skipped=3)"}))
+        self.assertFalse(sr.check_passed({"check_rc": "1", "check_ran": "3", "check": "OK"}))
+        self.assertTrue(sr.check_passed({"check_rc": "0", "check_ran": "7", "check": "OK (skipped=2)"}))
+
+    def test_pi_medium_effort_is_not_downgraded_to_low(self):
+        c = sr.ante_cmd("~/workspace/t", "t01", "do it", "tests.t", 60, "medium", "m", "pi")
+        self.assertIn("--thinking medium", c)
+
+    def test_off_target_files_fail_the_task(self):
+        out = "RC=0\npeak_rss_kb=100 user_s=0 sys_s=0 wall_s=1\nCHECK_RC=0\nCHECK_RAN=5\nCHECK=OK\nTOKENS=\nFILES=analysis/host-02.md\n"
+        task = {"id": "t01", "prompt": "p", "check": "tests.check_analysis", "expect_files": ["analysis/host-01.md"]}
+        with mock.patch.object(sr, "ship_base", return_value=True), \
+             mock.patch.object(sr, "ssh", return_value=(P(0, out), 1.0)), \
+             mock.patch.object(sr, "fetch", return_value=True):
+            r = sr.run_one("h", "c1", "~/w/t", task, self.tmp, self.R, self.args())
+        self.assertFalse(r["passed"])
+        self.assertEqual(r["failure"], "off_target")
+        self.assertEqual(r["off_target_files"], ["analysis/host-02.md"])
+
 if __name__ == "__main__": unittest.main()

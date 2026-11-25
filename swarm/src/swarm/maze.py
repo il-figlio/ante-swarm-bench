@@ -668,9 +668,12 @@ class MazeModel:
         return 100 * max(0, self.calls - self.unique) / self.calls if self.calls else 0.0
 
     def credit(self) -> dict[str, int]:
-        """Route cells credited to whoever entered them first. Empty until somebody reaches the exit."""
+        """Route cells credited to whoever entered them first. Empty until somebody reaches the exit.
+        On private maps (map="own", no teams), agents share nothing, so the entire route belongs to the winner."""
         if self.exit_by is None:
             return {}
+        if not self.shared and not self.teams:
+            return {self.exit_by: len(self.maze.shortest_route())}
         ids = {a.index: a.id for a in self.agents.values()}
         out: dict[str, int] = {}
         for cell in self.maze.shortest_route():

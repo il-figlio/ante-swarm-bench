@@ -153,6 +153,30 @@ class AdmissionTests(unittest.TestCase):
             self.assertTrue(admission.acquire("agent", "waits", threading.Event())["admitted"])
             self.assertLess(time.monotonic() - started, 5)
 
+    def test_unheld_concurrent_acquires_record_zero_wait(self):
+        from unittest import mock
+        from swarm import host
+        from swarm.runner import Admission
+        import threading
+        state = {"pressure": "normal", "available_mb": 100000, "total_mb": 0, "swap_used_mb": 0, "pressure_source": "test"}
+        tasks = {"tasks_free": 900, "tasks_limit": 1000, "tasks_source": "test"}
+
+        def slow_state():
+            time.sleep(0.01)
+            return state
+
+        with mock.patch.object(host, "memory_state", side_effect=slow_state), mock.patch.object(host, "task_headroom", return_value=tasks):
+            admission = Admission({"max_pressure": "normal", "reserve_mb": 0, "reserve_tasks": 100, "allow_unknown": False,
+                                   "wait_timeout_s": 5}, None, lambda row: None)
+            decisions = []
+            threads = [threading.Thread(target=lambda i=i: decisions.append(admission.acquire("mini", f"a{i}", threading.Event()))) for i in range(4)]
+            for t in threads:
+                t.start()
+            for t in threads:
+                t.join()
+        self.assertEqual(len(decisions), 4)
+        self.assertTrue(all(d["admitted"] and d["held_for"] == [] and d["wait_s"] == 0.0 for d in decisions), decisions)
+
 
 class SpecAndVerifyTests(unittest.TestCase):
     def test_unknown_keys_and_missing_allowed_changes_are_rejected(self):

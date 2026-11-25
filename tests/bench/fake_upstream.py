@@ -95,7 +95,7 @@ class H(BaseHTTPRequestHandler):
             payload = f'event: {name}\ndata: {json.dumps(obj)}\n\n'.encode()
             self.wfile.write(f'{len(payload):x}\r\n'.encode() + payload + b'\r\n')
             self.wfile.flush()
-            time.sleep(0.02)
+            time.sleep(0.03)
         self.wfile.write(b'0\r\n\r\n')
         self.close_connection = True
 

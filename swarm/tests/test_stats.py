@@ -133,6 +133,12 @@ class RaceTests(unittest.TestCase):
         del r["reps"][0]["lanes"]["a"]["result"]["cpu_s_median"]
         self.assertIsNone(stats.rep_values(r)[0]["cpu"]["a"][0])
 
+    def test_zero_ran_cell_is_excluded_from_gated_metrics(self):
+        e = entry()
+        e["result"].update(attempts=4, passes=0, not_run=4)
+        self.assertEqual(stats.entry_reason(e, gated=True), "under_half_passed")
+        self.assertIsNone(stats.entry_reason(e, gated=False))
+
     def test_speed(self):
         rnd = random.Random(4)
         lanes = [f"l{i}" for i in range(6)]

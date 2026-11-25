@@ -62,10 +62,11 @@ def _id(item) -> str | None:
 
 
 class SSEUsage:
-    """Reads usage out of a streamed reply as it passes through (OpenAI Responses or Anthropic Messages)."""
+    """Reads usage, completion state, and response model out of a streamed reply (Responses, Messages, or Chat)."""
 
     def __init__(self, kind: str):
         self.kind, self.buffer, self.usage, self.id = kind, b"", {}, None
+        self.done, self.model = False, None
 
     def feed(self, chunk: bytes):
         self.buffer += chunk
@@ -74,8 +75,12 @@ class SSEUsage:
             line = line.strip()
             if not line.startswith(b"data:"):
                 continue
+            raw_data = line[5:].strip()
+            if self.kind == "chat" and raw_data == b"[DONE]":
+                self.done = True
+                continue
             try:
-                event = json.loads(line[5:].strip())
+                event = json.loads(raw_data)
             except ValueError:
                 continue
             if not isinstance(event, dict):
@@ -83,19 +88,31 @@ class SSEUsage:
             kind = event.get("type")
             if self.kind == "chat":
                 self.id = self.id or _id(event)
+                if isinstance(event.get("model"), str) and event["model"]:
+                    self.model = event["model"]
                 if isinstance(event.get("usage"), dict):
                     self.usage = usage_of("chat", event["usage"])  # the last chunk carries it (stream_options.include_usage)
                 continue
             if kind in ("response.created", "message_start"):
-                self.id = self.id or _id(event.get("response") or event.get("message"))
+                obj = event.get("response") or event.get("message") or {}
+                self.id = self.id or _id(obj)
+                if isinstance(obj.get("model"), str) and obj["model"]:
+                    self.model = obj["model"]
             if self.kind == "responses" and kind in ("response.completed", "response.incomplete", "response.failed"):
-                self.usage = usage_of("responses", (event.get("response") or {}).get("usage"))
+                resp = event.get("response") or {}
+                if isinstance(resp.get("model"), str) and resp["model"]:
+                    self.model = resp["model"]
+                self.usage = usage_of("responses", resp.get("usage"))
+                if kind == "response.completed":
+                    self.done = True
             elif self.kind == "messages" and kind == "message_start":
                 self.usage = usage_of("messages", (event.get("message") or {}).get("usage"))
             elif self.kind == "messages" and kind == "message_delta":
                 out = (event.get("usage") or {}).get("output_tokens")
                 if isinstance(out, int):
                     self.usage = dict(self.usage or usage_of("messages", {}), output_tokens=out)
+            elif self.kind == "messages" and kind == "message_stop":
+                self.done = True
 
 
 class RelayModel(ScriptedModel):
@@ -158,8 +175,15 @@ class RelayModel(ScriptedModel):
                     reply_json = json.loads(payload)
                     usage = usage_of(kind, reply_json.get("usage")) if kind != "count_tokens" else {}
                     row["upstream_id"] = _id(reply_json) if kind != "count_tokens" else None
+                    if kind != "count_tokens" and isinstance(reply_json, dict):
+                        if isinstance(reply_json.get("model"), str) and reply_json["model"]:
+                            row["response_model"] = reply_json["model"]
+                        if status < 400:
+                            row["stream_complete"] = True
                 except (ValueError, AttributeError):
                     usage = {}
+                    if status < 400 and kind != "count_tokens":
+                        row["stream_complete"] = False
                 complete = True
                 if status >= 400:   # the provider's error message, so a refusal can be diagnosed from the row
                     row["detail"] = payload[:300].decode("utf-8", "replace")
@@ -196,6 +220,10 @@ class RelayModel(ScriptedModel):
             except OSError:
                 row["client_gone"] = True  # the harness hung up; keep reading so the usage is still counted
         row["upstream_id"] = reader.id
+        if status < 400:
+            row["stream_complete"] = reader.done
+            if reader.model:
+                row["response_model"] = reader.model
         return reader.usage
 
     def _finish(self, attempt, row, status, usage, kind):
@@ -203,11 +231,20 @@ class RelayModel(ScriptedModel):
         tokens = (usage.get("input_tokens", 0) + usage.get("output_tokens", 0)) if usage else 0
         if kind != "count_tokens":
             self.budget.add(tokens)
+        allowed_models = {m for m in (attempt.model, attempt.helper) if m}
+        resp_model = row.get("response_model")
+        model_mismatch = bool(status < 400 and kind != "count_tokens" and resp_model and allowed_models and resp_model not in allowed_models)
+        stream_incomplete = bool(status < 400 and row.get("stream_complete") is False)
+        completed = status < 400 and not stream_incomplete and not model_mismatch
         with self.lock:
-            row.update(status=status, completed=status < 400, sent_mono=round(sent, 6),
+            row.update(status=status, completed=completed, sent_mono=round(sent, 6),
                        elapsed_s=round(sent - row.get("recv_mono", sent), 6), **usage)
             if status >= 400:
                 row["error"] = f"upstream_{status}"
+            elif stream_incomplete:
+                row["error"] = "stream_incomplete"
+            elif model_mismatch:
+                row["error"] = "response_model_mismatch"
             if kind == "count_tokens":
                 row["kind"] = "count_tokens"
         self._trace(attempt, row)

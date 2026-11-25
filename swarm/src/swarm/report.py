@@ -169,6 +169,24 @@ def render(root: Path) -> str:
         "peak_rss_mb": ("peak_rss_mb_median", "Peak memory per instance, median MB", "MB"),
         "cpu_s_per_success": ("cpu_s_per_success", "CPU seconds per verified success", "s"),
     }.get(primary, ("successes_per_minute", "Verified successes per minute, only when the wave filled", "per min"))
+    maze_html = ""
+    if any(g.get("maze_runs") for g in groups):
+        mrows = "".join(
+            f"<tr><td>{html.escape(g['harness'])}</td><td class='n'>{g['level']}</td>"
+            f"<td class='n'>{g.get('maze_exits', 0)}/{g.get('maze_runs', 0)}</td>"
+            f"<td class='n'>{_fmt(g.get('maze_exit_s_median'), 3)}</td>"
+            f"<td class='n'>{_fmt(g.get('maze_calls_median'), 1)}</td>"
+            f"<td class='n'>{_fmt(g.get('maze_unique_cells_median'), 1)}</td>"
+            f"<td class='n'>{_fmt(g.get('maze_repeat_pct_median'), 1)}</td>"
+            f"<td class='n'>{_fmt(g.get('maze_credit_agents_median'), 1)}</td></tr>"
+            for g in groups if g.get("maze_runs"))
+        maze_html = (
+            "<h2>Maze coordination</h2><div class='card wrap'><table>"
+            "<tr><th>Harness</th><th class='n'>N</th><th class='n'>Exits</th><th class='n'>Exit t p50 s</th>"
+            "<th class='n'>Calls p50</th><th class='n'>Unique cells p50</th><th class='n'>Repeat % p50</th>"
+            "<th class='n'>Credited agents p50</th></tr>"
+            f"{mrows}</table></div>"
+        )
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Swarm run report</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
@@ -185,10 +203,10 @@ def render(root: Path) -> str:
 <h2>Results by harness and level</h2><div class="card wrap"><table>
 <tr><th>Harness</th><th class="n">N</th><th class="n">Passed</th><th class="n">95% CI</th><th class="n">Succ/min</th><th class="n">Wall p50 s</th>
 <th class="n">Peak MB p50</th><th class="n">Tree MB p50</th><th class="n">Escaped</th><th class="n">CPU s/success</th><th class="n">Max running</th><th class="n">Admit wait s</th><th>Failures</th></tr>{rows}</table></div>
-{timing_html}
+{timing_html}{maze_html}
 <h2>Admission</h2><div class="card muted">{len(admission)} launch decisions, {len(held)} held at least once
 (reserve {spec['admission']['reserve_mb']} MB and {spec['admission'].get('reserve_tasks', 0)} task slots, max pressure {html.escape(spec['admission']['max_pressure'])}).
-Peak MB is the largest single process (kernel rusage, complete for every attempt). Tree MB is process-tree RSS sampled every {spec['sample_interval_s']} s; it double-counts shared pages and misses attempts shorter than the interval (sample count in brackets). Escaped counts processes that detached from the attempt and outlived it (found by an environment tag); they are recorded with their memory, stopped, and fail the attempt as descendant_leak. CPU is rusage of each agent and the descendants it reaped.</div>
+N is requested concurrency per cell, Max running is the peak number of agents alive at once, and Passed is verified completions. Succ/min divides verified passes by total cell wall time (sandbox setup, agent run, hidden check and cleanup), and stays blank if the wave did not reach N simultaneously or if any launch was held by admission. Peak MB is the largest single process (kernel rusage, complete for every attempt). Tree MB is process-tree RSS sampled every {spec['sample_interval_s']} s; it double-counts shared pages and misses attempts shorter than the interval (sample count in brackets). Escaped counts processes that detached from the attempt and outlived it (found by an environment tag); they are recorded with their memory, stopped, and fail the attempt as descendant_leak. CPU is rusage of each agent and the descendants it reaped.</div>
 <h2>Failures ({len(failures)})</h2><div class="card wrap">{'<table><tr><th>Attempt</th><th>Task</th><th>Class</th><th class="n">Exit</th><th>Request errors</th></tr>' + fail_rows + '</table>' if failures else '<span class="muted">None.</span>'}</div>
 <p class="muted" style="font-size:12px;margin-top:24px">Verify this bundle offline with <span class="mono">swarm verify &lt;bundle&gt;</span>. Stop rule: {html.escape(spec['stop_rule'])}</p>
 </main><div id="tip"></div><script>{JS}</script></body></html>"""

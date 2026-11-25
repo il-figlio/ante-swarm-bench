@@ -161,7 +161,7 @@ class Admission:
                         self.pending.append((now, estimate, threads, attempt_id))
                         self.committed[attempt_id] = threads
                         self.disk_committed[attempt_id] = disk_estimate
-                    decision = {"admitted": True, "wait_s": round(now - started, 3), "held_for": sorted(reasons),
+                    decision = {"admitted": True, "wait_s": round(now - started, 3) if reasons else 0.0, "held_for": sorted(reasons),
                                 "pressure": state["pressure"], "available_mb": state["available_mb"],
                                 "estimate_mb": round(estimate, 1), "pressure_unknown": state["pressure"] == "unknown",
                                 "tasks_free": state.get("tasks_free"), "estimate_threads": threads,

@@ -96,6 +96,8 @@ class RelayTest(unittest.TestCase):
         self.assertNotIn('authorization', up['headers'])
         row = [x for x in self.gate_g.rows if x['task'] == 't04-01'][-1]
         self.assertEqual((row['requested_effort'], row['effort']), ('xhigh', 'medium')); self.assertEqual(row['usage']['input_tokens'], 150)
+        self.assertEqual((row['requested_max_output_tokens'], row['max_output_tokens']), (999999, 16384))
+        self.assertIs(row['stream_complete'], True)
 
     def test_5_count_tokens_forwarded_and_unknown_routes_404(self):
         r, _ = post(f'/{RUN}/t05-01/v1/messages/count_tokens', {'model': MODEL_C, 'messages': [{'role': 'user', 'content': 'hi'}]})
@@ -109,6 +111,47 @@ class RelayTest(unittest.TestCase):
         lines = (self.run_dir / 'request-audit.jsonl').read_text().splitlines()
         self.assertGreater(len(lines), 5)
         self.assertNotIn('"hi"', ''.join(lines)); self.assertNotIn('sk-secret-client', ''.join(lines))
+
+    def test_7_truncated_sse_and_model_verified_reject_partial_or_wrong_echo(self):
+        from http.server import BaseHTTPRequestHandler
+        import worker
+
+        class TruncatingH(BaseHTTPRequestHandler):
+            protocol_version = 'HTTP/1.1'
+            def log_message(self, *a): pass
+            def do_POST(self):
+                self.rfile.read(int(self.headers.get('Content-Length', '0')))
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/event-stream')
+                self.send_header('Transfer-Encoding', 'chunked')
+                self.end_headers()
+                ev = f'event: message_start\ndata: {json.dumps({"type": "message_start", "message": {"id": "m1", "model": MODEL_C, "usage": {"input_tokens": 10}}})}\n\n'.encode()
+                self.wfile.write(f'{len(ev):x}\r\n'.encode() + ev + b'\r\n0\r\n\r\n')
+                self.wfile.flush()
+                self.close_connection = True
+
+        srv = fu.Server(('127.0.0.1', 0), TruncatingH)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        g = Gate(self.run_dir, RUN, MODEL_C, 'medium', upstream=f'http://127.0.0.1:{srv.server_address[1]}', port=0)
+        try:
+            gport = g.server.server_address[1]
+            r, _ = post(f'/{RUN}/t07-01/v1/messages', {'model': MODEL_C, 'max_tokens': 10, 'stream': True, 'messages': [{'role': 'user', 'content': 'hi'}]}, port=gport)
+            r.read()
+            row = [x for x in g.rows if x['task'] == 't07-01'][-1]
+            self.assertEqual(row['status'], 200)
+            self.assertIs(row['stream_complete'], False)
+            self.assertFalse(worker.model_verified([row], MODEL_C))
+        finally:
+            g.close(); srv.shutdown(); srv.server_close()
+
+        # Silent upstream model substitution or missing generation 200 must fail model_verified.
+        self.assertFalse(worker.model_verified([{'accepted': True, 'route': 'messages', 'status': 200, 'stream_complete': True, 'response_model': 'other-model'}], MODEL_C))
+        self.assertFalse(worker.model_verified([{'accepted': True, 'route': 'count_tokens', 'status': 200}], MODEL_C))
+        self.assertFalse(worker.model_verified([{'accepted': True, 'route': 'messages', 'status': 500}], MODEL_C))
+        self.assertTrue(worker.model_verified([
+            {'accepted': True, 'route': 'messages', 'status': 429},
+            {'accepted': True, 'route': 'messages', 'status': 200, 'stream_complete': True, 'response_model': MODEL_C},
+        ], MODEL_C))
 
 
 if __name__ == '__main__':

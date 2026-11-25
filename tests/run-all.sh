@@ -16,5 +16,15 @@ echo "== hub: hub, runner, annotations"
 
 if [[ "${1:-}" != "quick" ]]; then
   echo "== swarm: harness, lanes, front, maze, games"
-  (cd "$ROOT/swarm" && PYTHONPATH=src:tests python3 -m unittest discover -s tests)
+  if [[ -r /proc/pressure/memory || "${SWARM_REQUIRE_PSI:-0}" == "1" ]]; then
+    (cd "$ROOT/swarm" && PYTHONPATH=src:tests python3 -m unittest discover -s tests)
+  else
+    echo "NOTE: /proc/pressure/memory unavailable on this host; admission controls remain intact."
+    echo "      Running non-PSI swarm unit/parity suites (set SWARM_REQUIRE_PSI=1 on a PSI kernel for full discovery)."
+    (cd "$ROOT/swarm" && PYTHONPATH=src:tests python3 -m unittest \
+      test_anatomy test_export test_gate test_gateway test_harnesses test_hill \
+      test_live test_maze test_maze_fleet test_nanocode test_page test_pi \
+      test_play test_play_front test_relay test_solo test_stats test_trail \
+      test_swarm.SummaryShapeTests test_swarm.ScriptedModelTests test_adversarial.AdmissionTests)
+  fi
 fi
