@@ -130,6 +130,26 @@ class SummaryShapeTests(unittest.TestCase):
         group = summary["groups"]["mini@2"]
         self.assertFalse([k for k in group if k.startswith("first_request_b") or "canary" in k or "cache_write" in k])
 
+    def test_sealed_010_maze_bundle_verifies_with_its_recorded_summary(self):
+        from swarm.bundle import Bundle
+        from swarm.plan import plan_digest
+        from swarm.summary import summarize
+        from swarm.util import append_jsonl, write_json
+
+        with tempdir() as td:
+            bundle = Bundle.create(Path(td) / "old-maze")
+            planned = {"index": 0, "harness": "mini", "round": 1, "level": 1}
+            plan = {"swarm_version": "0.1.0", "cells": [planned]}
+            write_json(bundle.root / "plan.json", dict(plan, plan_sha256=plan_digest(plan)))
+            attempt = bundle.append_attempt(dict(OLD_SHAPE_ATTEMPTS[0], level=1, cell=0))
+            cell = dict(OLD_SHAPE_CELLS[0], cell=0, round=1, level=1, attempted=1, max_running=1)
+            # 0.1.0 summarized the ordinary cell fields and kept maze details only in cells.jsonl.
+            summary = summarize([attempt], [cell])
+            write_json(bundle.root / "summary.json", dict(summary, complete=True, cells_run=1))
+            append_jsonl(bundle.root / "cells.jsonl", dict(cell, maze={"m": {"summary": {"calls": 2}}}))
+            bundle.seal()
+            self.assertEqual(verify(bundle.root), [])
+
     def test_new_fields_add_medians_and_the_commonest_canary(self):
         import copy
         from swarm.summary import summarize

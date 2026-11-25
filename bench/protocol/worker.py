@@ -102,7 +102,7 @@ def model_verified(audit, model):
     gen_ok = [r for r in audit if r.get('route') != 'count_tokens' and r.get('status') == 200]
     if not gen_ok:
         return False
-    return all(r.get('stream_complete') is not False and r.get('response_model') == model for r in gen_ok)
+    return all(r.get('stream_complete') is True and r.get('response_model') == model for r in gen_ok)
 
 
 def main():

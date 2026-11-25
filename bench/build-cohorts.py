@@ -16,6 +16,7 @@ Gate runs are not part of any cohort here.
 The output carries results; none is committed to this repository.
 """
 import argparse, json, re, statistics, sys
+from itertools import product
 from pathlib import Path
 
 LINE = re.compile(r"^(?P<ts>\S+) (?P<run>r\d+) model=(?P<model>\S+) harness=(?P<harness>\S+) level=x(?P<level>\d+) repeat=(?P<repeat>\d+) passed/attempted=(?P<passed>\d+)/(?P<attempted>\d+) total_secs=(?P<secs>[\d.]+) exit=(?P<exit>\d+)$")
@@ -107,6 +108,20 @@ def cell_from(run_id, receipts, log, meta=None):
     return cell
 
 
+def expected_grid(matrix_id, revision):
+    protocol = sh(Path(__file__).parent / "protocol" / "protocol.json")
+    if revision == protocol["protocol_revision"]:
+        for cohort in protocol["cohorts"].values():
+            if cohort["matrix_id"] == matrix_id:
+                return (set(product(cohort["models"], cohort["harnesses"], protocol["concurrency"],
+                                    range(1, protocol["repeats"] + 1))), protocol["attempts_per_cell"])
+    # The predecessor matrix is documented in protocol/README.md.
+    if (matrix_id, revision) == ("shared-v2-20261030", "shared-v2"):
+        return (set(product(("openai/gpt-6.1-sol", "openai/gpt-6.1-terra"),
+                            ("ante", "pi", "hermes", "ante-pi"), (1, 8), (1, 2, 3))), 32)
+    sys.exit(f"{matrix_id}: no frozen cohort for protocol revision {revision!r}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", required=True)
@@ -150,12 +165,12 @@ def main():
         for c in cells:
             if c["model"] not in models:
                 models.append(c["model"])
-        want_grid = {(m, h, lvl, rep) for m in models for h in harnesses for lvl in (1, 8) for rep in (1, 2, 3)}
+        want_grid, attempts_per_cell = expected_grid(matrix_id, first["protocol_revision"])
         got_grid = [(c["model"], c["harness"], c["level"], c["repeat"]) for c in cells]
         if len(set(got_grid)) != len(got_grid):
             sys.exit(f"{matrix_id}: duplicate cell")
-        if set(got_grid) != want_grid or any(c["attempted"] != 32 for c in cells):
-            sys.exit(f"{matrix_id}: {len(cells)} cells, expected full (1,8)x(1..3) grid of {len(want_grid)} cells with 32 attempts each")
+        if set(got_grid) != want_grid or any(c["attempted"] != attempts_per_cell for c in cells):
+            sys.exit(f"{matrix_id}: {len(cells)} cells, expected frozen grid of {len(want_grid)} cells with {attempts_per_cell} attempts each")
         cohorts.append({
             "id": matrix_id,
             "status": "published",
@@ -163,7 +178,7 @@ def main():
             "effort": first["effort"],
             "provider_route": first["provider_route"],
             "telemetry": first["telemetry"],
-            "attempts_per_cell": 32,
+            "attempts_per_cell": attempts_per_cell,
             "repeats": 3,
             "levels": [1, 8],
             "models": [{"id": m, "label": MODEL_LABELS.get(m, m)} for m in models],

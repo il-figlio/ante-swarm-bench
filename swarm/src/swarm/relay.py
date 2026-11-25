@@ -179,7 +179,7 @@ class RelayModel(ScriptedModel):
                         if isinstance(reply_json.get("model"), str) and reply_json["model"]:
                             row["response_model"] = reply_json["model"]
                         if status < 400:
-                            row["stream_complete"] = True
+                            row["stream_complete"] = kind != "responses" or reply_json.get("status") == "completed"
                 except (ValueError, AttributeError):
                     usage = {}
                     if status < 400 and kind != "count_tokens":

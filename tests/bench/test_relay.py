@@ -99,6 +99,22 @@ class RelayTest(unittest.TestCase):
         self.assertEqual((row['requested_max_output_tokens'], row['max_output_tokens']), (999999, 16384))
         self.assertIs(row['stream_complete'], True)
 
+    def test_json_responses_require_terminal_success(self):
+        from unittest.mock import patch
+        import worker
+
+        original = fu.H.json_reply
+        for index, status in enumerate(("completed", "failed", "incomplete", "in_progress", None)):
+            task = f"t-json-{index}"
+            def reply(handler, obj):
+                return original(handler, dict(obj, status=status))
+            with self.subTest(status=status), patch.object(fu.H, "json_reply", reply):
+                response, _ = post(f'/{RUN}/{task}/v1/responses', {'model': MODEL_G, 'input': 'x'}, port=GATE + 1)
+                self.assertEqual(json.loads(response.read())["status"], status)
+                row = next(r for r in self.gate_g.rows if r["task"] == task)
+                self.assertEqual(row["stream_complete"], status == "completed")
+                self.assertEqual(worker.model_verified([row], MODEL_G), status == "completed")
+
     def test_5_count_tokens_forwarded_and_unknown_routes_404(self):
         r, _ = post(f'/{RUN}/t05-01/v1/messages/count_tokens', {'model': MODEL_C, 'messages': [{'role': 'user', 'content': 'hi'}]})
         self.assertEqual(r.status, 200); self.assertEqual(json.loads(r.read())['input_tokens'], 42)

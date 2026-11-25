@@ -143,7 +143,7 @@ class Gate:
                                     row['stop_reason'] = payload.get('stop_reason')
                                 else:
                                     row['input_tokens_counted'] = payload.get('input_tokens')
-                                row['stream_complete'] = True
+                                row['stream_complete'] = route != 'responses' or payload.get('status') == 'completed'
                             except (ValueError, AttributeError):
                                 row['stream_complete'] = False
                         elif is_json:

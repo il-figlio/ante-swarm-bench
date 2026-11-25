@@ -326,7 +326,7 @@ def run(plan_path: Path, out: Path, cancel: threading.Event | None = None) -> Pa
         for signum, handler in previous.items():
             signal.signal(signum, handler)
     attempts = read_jsonl(bundle.root / "attempts.jsonl")
-    summary = summarize(attempts, cells)
+    summary = summarize(attempts, cells, swarm_version=plan.get("swarm_version"))
     usage = resource.getrusage(resource.RUSAGE_SELF)
     summary.update(cancelled=cancel.is_set(), crashed=crashed,
                    complete=is_complete(plan, cells, attempts, read_jsonl(bundle.root / "skipped.jsonl"), cancel.is_set(), crashed),
