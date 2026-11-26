@@ -1,0 +1,24 @@
+name: Harness compatibility
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: ['swarm/**', 'tests/ci/**', '.github/workflows/harness-compatibility.yml']
+  push:
+    branches: [main]
+    paths: ['swarm/**', 'tests/ci/**', '.github/workflows/harness-compatibility.yml']
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test real CLIs and delegated Linux resource limits
+        run: bash tests/ci/harness-compatibility.sh
