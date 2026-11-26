@@ -56,6 +56,8 @@ Start with [DESIGN.md](DESIGN.md) for principles and concepts. Then read [docs/r
 
 ## Quick start
 
+For a first local run, use `sh tools/local-smoke.sh`. The script downloads a checksum-pinned public snapshot, runs the bundled mini agent at concurrency 1 and 4 with the scripted model, verifies the bundle and prints its HTML report path. It needs Python 3.11+, curl and tar. The hosted 128-agent fleet-fix solo race uses a separate recorder revision and Linux cgroup limits.
+
 Run these from this directory. Write bundles outside the source tree:
 
 ```sh
